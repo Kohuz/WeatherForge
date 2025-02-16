@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Weather forge</string>
+    <string name="bottom_nav_title_stations_map">Stations map</string>
+    <string name="bottom_nav_title_stations_list">Stations List</string>
+</resources>
