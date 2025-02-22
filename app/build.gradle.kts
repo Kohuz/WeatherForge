@@ -57,7 +57,6 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
     implementation(libs.retrofit)
     implementation(libs.okhttp)
@@ -65,6 +64,6 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.retrofit2.kotlinx.serialization.converter)
 
-
+    implementation(libs.koin.android.v350)
 
 }

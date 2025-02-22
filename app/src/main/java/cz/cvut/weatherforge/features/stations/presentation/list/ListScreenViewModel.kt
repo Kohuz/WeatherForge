@@ -57,9 +57,9 @@ class ListScreenViewModel(private val repository: StationRepository): ViewModel(
                 }
             //Request failed
             if(!result.isSuccess){
-//                _screenStateStream.update { state ->
-//                    state.copy(successful = false, dialogOpen = true, loading = false)
-//                }
+                _screenStateStream.update { state ->
+                    state.copy(successful = false, dialogOpen = true, loading = false)
+                }
             }
             //Request successful
             else {
@@ -70,6 +70,17 @@ class ListScreenViewModel(private val repository: StationRepository): ViewModel(
 
             }
         }
+    }
+    fun onDialogClose() {
+        _screenStateStream.update { state ->
+            state.copy(dialogOpen = false)
+        }
+    }
 
+    fun onDialogCloseRetry() {
+        _screenStateStream.update { state ->
+            state.copy(dialogOpen = false, loading = true)
+        }
+        onEntriesSearched()
     }
 }

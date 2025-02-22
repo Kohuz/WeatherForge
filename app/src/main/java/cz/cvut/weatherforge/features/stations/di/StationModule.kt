@@ -4,19 +4,21 @@ import cz.cvut.weatherforge.features.stations.data.StationRepository
 import cz.cvut.weatherforge.features.stations.data.api.StationApiDescription
 import cz.cvut.weatherforge.features.stations.data.api.StationRemoteDataSource
 import cz.cvut.weatherforge.features.stations.data.api.StationRetrofitDataSource
-import org.koin.core.module.dsl.viewModelOf
+import cz.cvut.weatherforge.features.stations.presentation.list.ListScreenViewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.*
+import org.koin.core.module.dsl.singleOf
+import org.koin.androidx.viewmodel.ext.android.viewModel
+
 import org.koin.dsl.module
+
 import retrofit2.Retrofit
 
-val stationModule get() =  module {
+val stationModule = module {
     single { get<Retrofit>().create(StationApiDescription::class.java) }
     factory<StationRemoteDataSource> { StationRetrofitDataSource(apiDescription = get()) }
+    singleOf(::StationRepository)
+    viewModel { ListScreenViewModel(get()) }
 
-    factory {
-        StationRepository(
-            stationRemoteDataSource = get(),
-        )
-    }
-    viewModelOf(::ListScreenViewModel)
-    viewModelOf(::DetailScreenViewModel)
+
 }
