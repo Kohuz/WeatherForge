@@ -10,7 +10,7 @@ class StationRetrofitDataSource(private val apiDescription: StationApiDescriptio
         elevationMax: Number?,
         active: Boolean?
     ): List<Station> {
-        return apiDescription.getSportEntries(name,
+        return apiDescription.getStations(name,
             elevationMin,
             elevationMax,
             active)

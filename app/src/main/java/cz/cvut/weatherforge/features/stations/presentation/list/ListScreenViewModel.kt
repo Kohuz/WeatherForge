@@ -37,6 +37,7 @@ class ListScreenViewModel(private val repository: StationRepository): ViewModel(
         _screenStateStream.update { state ->
             state.copy(currentQuery=query)
         }
+        onEntriesSearched()
     }
 
     fun onEntriesSearched(){
@@ -51,9 +52,9 @@ class ListScreenViewModel(private val repository: StationRepository): ViewModel(
             //Fetch entries
             val result: StationResult =
                 when(currentFilter){
-                    Filter.Active ->  repository.getStations(name= screenStateStream.value.currentQuery, active = true)
-                    Filter.Inactive -> repository.getStations(name= screenStateStream.value.currentQuery, active = false)
-                    else -> repository.getStations(name= screenStateStream.value.currentQuery)
+                    Filter.Active ->  repository.getStations(active = true)
+                    Filter.Inactive -> repository.getStations( active = false)
+                    else -> repository.getStations()
                 }
             //Request failed
             if(!result.isSuccess){
@@ -63,7 +64,8 @@ class ListScreenViewModel(private val repository: StationRepository): ViewModel(
             }
             //Request successful
             else {
-                val sortedResultByLocation= result.stations.sortedBy { it.location}
+                val filtered = result.stations.filter { it.location.contains(screenStateStream.value.currentQuery) }
+                val sortedResultByLocation= filtered.sortedBy { it.location}
                 _screenStateStream.update { state ->
                     state.copy(results = sortedResultByLocation, loading = false, dialogOpen = false)
                 }

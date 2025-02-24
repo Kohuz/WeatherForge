@@ -6,7 +6,7 @@ import retrofit2.http.Query
 
 interface StationApiDescription {
     @GET("stations")
-    suspend fun getSportEntries(@Query("name", encoded = true)
+    suspend fun getStations(@Query("name", encoded = true)
                                 name: String?,
                                 @Query("elevationMin", encoded = true)
                                 elevationMin: Number?,

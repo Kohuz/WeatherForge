@@ -1,7 +1,7 @@
 package cz.cvut.weatherforge.features.stations.data
 
+import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
-import java.time.LocalDateTime
 
 
 @Serializable
