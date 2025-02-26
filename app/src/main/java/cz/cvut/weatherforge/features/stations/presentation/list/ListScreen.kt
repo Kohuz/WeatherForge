@@ -196,10 +196,7 @@ fun TopSearchBar(query: String, onQueryChange: (String) -> Unit) {
                 Icon(imageVector = Icons.Filled.Search, contentDescription = "searchIcon")
             },
             placeholder = { Text(text = "Enter your search") },
-            colors = TextFieldDefaults.textFieldColors(
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            ),
+
             trailingIcon = {
                 Icon(Icons.Default.Clear,
                     contentDescription = "clear text",
