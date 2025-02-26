@@ -4,16 +4,8 @@ import cz.cvut.weatherforge.features.stations.data.Station
 
 class StationRetrofitDataSource(private val apiDescription: StationApiDescription):
     StationRemoteDataSource {
-    override suspend fun getStations(
-        name: String?,
-        elevationMin: Number?,
-        elevationMax: Number?,
-        active: Boolean?
-    ): List<Station> {
-        return apiDescription.getStations(name,
-            elevationMin,
-            elevationMax,
-            active)
+    override suspend fun getStations(): List<Station> {
+        return apiDescription.getStations()
     }
 
 }

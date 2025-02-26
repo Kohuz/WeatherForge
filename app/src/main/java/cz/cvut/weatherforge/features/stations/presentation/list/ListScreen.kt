@@ -59,7 +59,6 @@ fun ListScreen( viewModel: ListScreenViewModel = koinViewModel()) {
             TopSearchBar(
                 screenState.currentQuery,
                 viewModel::onQueryChange,
-                viewModel::onEntriesSearched
             )
         }
     ) { paddingValues ->
@@ -173,7 +172,7 @@ fun ResultCard(station: Station, onClick: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopSearchBar(query: String, onQueryChange: (String) -> Unit, onStationsSearched: () -> Unit) {
+fun TopSearchBar(query: String, onQueryChange: (String) -> Unit) {
     val keyboardController = LocalSoftwareKeyboardController.current
     TopAppBar(
         modifier = Modifier.padding(vertical = 5.dp),
@@ -182,7 +181,6 @@ fun TopSearchBar(query: String, onQueryChange: (String) -> Unit, onStationsSearc
             onValueChange = { newQuery -> onQueryChange(newQuery) },
             keyboardActions = KeyboardActions(
                 onDone = {
-                    onStationsSearched()
                     keyboardController?.hide()
                 }
             ),

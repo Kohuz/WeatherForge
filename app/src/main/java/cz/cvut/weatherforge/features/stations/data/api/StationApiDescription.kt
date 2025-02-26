@@ -5,13 +5,9 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface StationApiDescription {
+//    @GET("geostations")
+//    suspend fun getGeoStations(): List<Station>
+
     @GET("stations")
-    suspend fun getStations(@Query("name", encoded = true)
-                                name: String?,
-                                @Query("elevationMin", encoded = true)
-                                elevationMin: Number?,
-                                @Query("elevationMax", encoded = true)
-                                elevationMax: Number?,
-                                @Query("active", encoded = true)
-                                active: Boolean?): List<Station>
+    suspend fun getStations(): List<Station>
 }
