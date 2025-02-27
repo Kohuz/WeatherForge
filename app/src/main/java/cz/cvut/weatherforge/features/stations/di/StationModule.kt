@@ -5,6 +5,7 @@ import cz.cvut.weatherforge.features.stations.data.api.StationApiDescription
 import cz.cvut.weatherforge.features.stations.data.api.StationRemoteDataSource
 import cz.cvut.weatherforge.features.stations.data.api.StationRetrofitDataSource
 import cz.cvut.weatherforge.features.stations.presentation.list.ListScreenViewModel
+import cz.cvut.weatherforge.features.stations.presentation.map.MapScreenViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.dsl.*
 import org.koin.core.module.dsl.singleOf
@@ -19,6 +20,7 @@ val stationModule = module {
     factory<StationRemoteDataSource> { StationRetrofitDataSource(apiDescription = get()) }
     singleOf(::StationRepository)
     viewModel { ListScreenViewModel(get()) }
+    viewModel { MapScreenViewModel(get())}
 
 
 }

@@ -27,13 +27,13 @@ fun Station.isActive(): Boolean {
 }
 
 @Serializable
-data class GeoJSONFeatureCollection(
+data class GeoJSONStationCollection(
     val type: String = "FeatureCollection",
-    val features: List<GeoJSONFeature>
+    val features: List<GeoJSONStation>
 )
 
 @Serializable
-data class GeoJSONFeature(
+data class GeoJSONStation(
     val type: String = "Feature",
     val geometry: GeoJSONGeometry,
     val properties: StationProperties
@@ -55,6 +55,6 @@ data class StationProperties(
     val elevation: Double
 )
 
-fun parseGeoJSON(geoJSONString: String): GeoJSONFeatureCollection {
+fun parseGeoJSON(geoJSONString: String): GeoJSONStationCollection {
     return Json.decodeFromString(geoJSONString)
 }

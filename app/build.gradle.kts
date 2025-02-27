@@ -69,6 +69,11 @@ dependencies {
     implementation(libs.koin.android.v350)
     implementation(libs.kotlinx.datetime)
     implementation(libs.maps.compose)
+    implementation(libs.accompanist.permissions)
+    implementation(libs.play.services.location)
+    implementation(libs.android.maps.utils)
+    implementation(libs.android.maps.utils)
+
 }
 
 secrets {
