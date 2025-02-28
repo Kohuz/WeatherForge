@@ -1,5 +1,8 @@
 package cz.cvut.weatherforge.features.stations.di
 
+import com.kozubek.livesport.features.sportEntries.data.StationLocalDataSource
+import com.kozubek.livesport.features.sportEntries.data.db.StationRoomDataSource
+import cz.cvut.weatherforge.core.data.db.LocalDatabase
 import cz.cvut.weatherforge.features.stations.data.StationRepository
 import cz.cvut.weatherforge.features.stations.data.api.StationApiDescription
 import cz.cvut.weatherforge.features.stations.data.api.StationRemoteDataSource
@@ -19,6 +22,10 @@ import retrofit2.Retrofit
 val stationModule = module {
     single { get<Retrofit>().create(StationApiDescription::class.java) }
     factory<StationRemoteDataSource> { StationRetrofitDataSource(apiDescription = get()) }
+    factory<StationLocalDataSource> { StationRoomDataSource(stationDao = get()) }
+
+    single { get<LocalDatabase>().stationDao() }
+
     singleOf(::StationRepository)
     viewModel { ListScreenViewModel(get()) }
     viewModel { MapScreenViewModel(get())}

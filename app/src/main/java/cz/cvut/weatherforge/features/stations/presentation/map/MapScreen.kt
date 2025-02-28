@@ -106,15 +106,7 @@ fun MapScreen(navigateToDetail: (id: String) -> Unit, viewModel: MapScreenViewMo
                 false // Return false to allow default behavior
             },
             clusterItemContent = {
-                MarkerComposable (
-                    size = cluster.size
-                    Modifier.height(5.dp),
-                    Modifier.width(5.dp),
-                    title = "GeoJSON Point",
-                    snippet = "Data from backend"
-                ){
                     Icon(Icons.Filled.Person, contentDescription = null)
-                }
             }
 
             )
