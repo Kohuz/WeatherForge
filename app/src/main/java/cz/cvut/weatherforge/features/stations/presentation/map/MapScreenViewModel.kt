@@ -10,12 +10,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.model.LatLng
-import cz.cvut.weatherforge.features.stations.data.GeoJSONStationCollection
-import cz.cvut.weatherforge.features.stations.data.GeoStationResult
-import cz.cvut.weatherforge.features.stations.data.Station
+import cz.cvut.weatherforge.features.stations.data.model.Station
 import cz.cvut.weatherforge.features.stations.data.StationRepository
-import cz.cvut.weatherforge.features.stations.data.StationResult
-import cz.cvut.weatherforge.features.stations.presentation.list.ListScreenViewModel.Filter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

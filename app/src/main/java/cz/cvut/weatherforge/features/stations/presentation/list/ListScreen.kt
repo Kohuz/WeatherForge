@@ -29,7 +29,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -42,12 +41,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import cz.cvut.weatherforge.features.stations.data.Station
+import cz.cvut.weatherforge.features.stations.data.model.Station
 import org.koin.androidx.compose.koinViewModel
 
 
 @Composable
-fun ListScreen( viewModel: ListScreenViewModel = koinViewModel()) {
+fun ListScreen(navigateToDetail: (id: String) -> Unit, viewModel: ListScreenViewModel = koinViewModel()) {
     val screenState by viewModel.screenStateStream.collectAsStateWithLifecycle()
     val results = screenState.results
     val loading = screenState.loading
@@ -86,7 +85,7 @@ fun ListScreen( viewModel: ListScreenViewModel = koinViewModel()) {
                             items(results) { station ->
                                 ResultCard(
                                     station = station,
-                                    onClick = {  }
+                                    onClick = {navigateToDetail(station.stationId)}
                                 )
                             }
                         }

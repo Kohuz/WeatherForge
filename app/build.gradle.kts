@@ -71,7 +71,7 @@ dependencies {
     implementation(libs.maps.compose)
     implementation(libs.accompanist.permissions)
     implementation(libs.play.services.location)
-
+    implementation("com.google.maps.android:maps-compose-utils:6.4.4")
 }
 
 secrets {

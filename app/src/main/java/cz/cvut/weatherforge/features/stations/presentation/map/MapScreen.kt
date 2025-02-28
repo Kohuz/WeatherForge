@@ -14,21 +14,34 @@ import com.google.android.gms.location.LocationServices
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.rememberCameraPositionState
 import android.util.Log
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.Marker
+import com.google.maps.android.clustering.Cluster
+import com.google.maps.android.clustering.ClusterManager
+import com.google.maps.android.compose.MapsComposeExperimentalApi
+import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.clustering.Clustering
+import cz.cvut.weatherforge.features.stations.data.model.ClusterStation
+import cz.cvut.weatherforge.features.stations.data.model.Station
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class, MapsComposeExperimentalApi::class)
 @Composable
-fun MapScreen(viewModel: MapScreenViewModel = koinViewModel()) {
+fun MapScreen(navigateToDetail: (id: String) -> Unit, viewModel: MapScreenViewModel = koinViewModel()) {
     val screenState by viewModel.screenStateStream.collectAsStateWithLifecycle()
     val results = screenState.results
     val cameraPositionState = rememberCameraPositionState()
+
 
     val context = LocalContext.current
     val userLocation by viewModel.userLocation
@@ -72,14 +85,39 @@ fun MapScreen(viewModel: MapScreenViewModel = koinViewModel()) {
         userLocation?.let {
             cameraPositionState.position = CameraPosition.fromLatLngZoom(it, 10f)
         }
+//
+//        results.forEach { station ->
+//            MarkerComposable (
+//                state = MarkerState(position = LatLng(station.latitude, station.longitude)),
+//                title = "GeoJSON Point",
+//                snippet = "Data from backend"
+//            ){
+//                Icon(Icons.Filled.Person, contentDescription = null)
+//            }
+//        }
+        Clustering(items = results,
+            onClusterClick = { cluster ->
+                // Handle when a cluster is clicked
+                Log.d("MapScreen", "Cluster clicked: ${cluster.size} items")
+                false // Return false to allow default behavior (e.g., zooming in)
+            },
+            onClusterItemClick = { marker ->
+                navigateToDetail(marker.stationId)
+                false // Return false to allow default behavior
+            },
+            clusterItemContent = {
+                MarkerComposable (
+                    size = cluster.size
+                    Modifier.height(5.dp),
+                    Modifier.width(5.dp),
+                    title = "GeoJSON Point",
+                    snippet = "Data from backend"
+                ){
+                    Icon(Icons.Filled.Person, contentDescription = null)
+                }
+            }
 
-        results.forEach { station ->
-            Marker(
-
-                state = MarkerState(position = LatLng(station.latitude, station.longitude)),
-                title = "GeoJSON Point",
-                snippet = "Data from backend"
             )
-        }
     }
 }
+

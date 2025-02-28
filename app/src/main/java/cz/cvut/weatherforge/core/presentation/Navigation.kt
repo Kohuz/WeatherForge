@@ -24,6 +24,9 @@ import cz.cvut.weatherforge.features.stations.presentation.list.ListScreen
 import cz.cvut.weatherforge.features.stations.presentation.map.MapScreen
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import cz.cvut.weatherforge.features.stations.presentation.detail.DetailScreen
 
 sealed class Screens(val route: String) {
 
@@ -35,34 +38,25 @@ sealed class Screens(val route: String) {
         abstract val icon: ImageVector
 
         data object Map : TopLevel("stations/map") {
-
             override val title = R.string.bottom_nav_title_stations_map
-
             override val icon = Icons.Filled.Person
         }
 
         data object List : TopLevel("stations/list") {
-
             override val title = R.string.bottom_nav_title_stations_list
-
             override val icon = Icons.Filled.Info
         }
 
         companion object {
-
             val all get() = listOf(Map, List)
         }
     }
 
-    class StationDetail(stationId: String) : Screens("stations/$stationId") {
-
-        companion object {
-
-            const val ID = "id"
-        }
+    data object Detail : Screens("stations/detail/{id}") {
+        const val ID = "id"
+        fun createRoute(id: String) = "stations/detail/$id"
     }
 }
-
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
@@ -93,11 +87,28 @@ fun Navigation() {
             modifier = Modifier.padding(innerPadding),
         ) {
             composable(route = Screens.TopLevel.List.route) {
-                ListScreen()
+                ListScreen(navigateToDetail = { stationId ->
+                    navController.navigate(Screens.Detail.createRoute(stationId))
+                })
             }
 
             composable(route = Screens.TopLevel.Map.route) {
-                MapScreen()
+                MapScreen(navigateToDetail = { stationId ->
+                    navController.navigate(Screens.Detail.createRoute(stationId))
+                })
+            }
+
+            composable(
+                route = Screens.Detail.route,
+                arguments = listOf(navArgument(Screens.Detail.ID) { type = NavType.StringType })
+            ) { entry ->
+                val stationId = entry.arguments?.getString(Screens.Detail.ID)
+                if (stationId != null) {
+                    DetailScreen(
+                        stationId = stationId,
+                        navigateUp = { navController.navigateUp() }
+                    )
+                }
             }
         }
     }

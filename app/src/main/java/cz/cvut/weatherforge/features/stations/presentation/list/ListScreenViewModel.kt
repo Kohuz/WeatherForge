@@ -2,10 +2,10 @@ package cz.cvut.weatherforge.features.stations.presentation.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import cz.cvut.weatherforge.features.stations.data.Station
+import cz.cvut.weatherforge.features.stations.data.model.Station
 import cz.cvut.weatherforge.features.stations.data.StationRepository
-import cz.cvut.weatherforge.features.stations.data.StationResult
-import cz.cvut.weatherforge.features.stations.data.isActive
+import cz.cvut.weatherforge.features.stations.data.model.StationsResult
+import cz.cvut.weatherforge.features.stations.data.model.isActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -44,7 +44,7 @@ class ListScreenViewModel(private val repository: StationRepository) : ViewModel
             }
 
             // Fetch all stations
-            val result: StationResult = repository.getStations()
+            val result: StationsResult = repository.getStations()
 
             // Handle the result
             if (!result.isSuccess) {
