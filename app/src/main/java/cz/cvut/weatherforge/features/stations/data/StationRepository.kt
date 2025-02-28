@@ -15,13 +15,4 @@ class StationRepository(
                 StationResult(emptyList(), isSuccess = false)
             }
     }
-    suspend fun getGeoStations(): GeoStationResult {
-        return try {
-            val stations = stationRemoteDataSource.getGeoStations()
-            GeoStationResult(stations, isSuccess = true)
-        } catch (t: Throwable) {
-            Log.v("api", t.toString())
-            GeoStationResult(GeoJSONStationCollection("", emptyList()), isSuccess = false)
-        }
-    }
 }

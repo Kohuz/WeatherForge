@@ -28,7 +28,7 @@ class MapScreenViewModel(private val repository: StationRepository) : ViewModel(
     val screenStateStream get() = _screenStateStream.asStateFlow()
 
     // Store the full list of stations
-    private var allStations: GeoJSONStationCollection = GeoJSONStationCollection("", emptyList())
+    private var allStations: List<Station> = emptyList()
 
     data class MapScreenState(
         val results: List<Station> = emptyList(),
@@ -41,23 +41,23 @@ class MapScreenViewModel(private val repository: StationRepository) : ViewModel(
     }
 
     private fun loadStations() {
+
         viewModelScope.launch {
             _screenStateStream.update { state ->
                 state.copy(loading = true)
             }
 
-            // Fetch all stations
-            val result: GeoStationResult = repository.getGeoStations()
+            val result = repository.getStations()
 
-            // Handle the result
             if (!result.isSuccess) {
                 _screenStateStream.update { state ->
                     state.copy(successful = false, loading = false)
                 }
             } else {
-                // Store the full list of stations
                 allStations = result.stations
-
+                _screenStateStream.update { state ->
+                    state.copy(results = allStations, loading = false)
+                }
             }
         }
     }

@@ -18,6 +18,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import org.koin.androidx.compose.koinViewModel
@@ -27,11 +28,9 @@ import org.koin.androidx.compose.koinViewModel
 fun MapScreen(viewModel: MapScreenViewModel = koinViewModel()) {
     val screenState by viewModel.screenStateStream.collectAsStateWithLifecycle()
     val results = screenState.results
-    // Initialize the camera position state, which controls the camera's position on the map
     val cameraPositionState = rememberCameraPositionState()
-    // Obtain the current context
+
     val context = LocalContext.current
-    // Observe the user's location from the ViewModel
     val userLocation by viewModel.userLocation
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
 
@@ -61,7 +60,6 @@ fun MapScreen(viewModel: MapScreenViewModel = koinViewModel()) {
                 permissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
             }
         }
-        val layer = Geo(map: GoogleMap, geoJsonFile: JSONObject)
 
 
     }
@@ -72,13 +70,16 @@ fun MapScreen(viewModel: MapScreenViewModel = koinViewModel()) {
     ){
         // If the user's location is available, place a marker on the map
         userLocation?.let {
-            Marker(
-                state = MarkerState(position = it), // Place the marker at the user's location
-                title = "Your Location", // Set the title for the marker
-                snippet = "This is where you are currently located." // Set the snippet for the marker
-            )
-            // Move the camera to the user's location with a zoom level of 10f
             cameraPositionState.position = CameraPosition.fromLatLngZoom(it, 10f)
+        }
+
+        results.forEach { station ->
+            Marker(
+
+                state = MarkerState(position = LatLng(station.latitude, station.longitude)),
+                title = "GeoJSON Point",
+                snippet = "Data from backend"
+            )
         }
     }
 }

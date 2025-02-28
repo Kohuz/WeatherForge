@@ -17,6 +17,7 @@ data class Station(
     val longitude: Double,
     val latitude: Double,
     val elevation: Double,
+
 )
 
 fun Station.isActive(): Boolean {
@@ -29,7 +30,7 @@ fun Station.isActive(): Boolean {
 @Serializable
 data class GeoJSONStationCollection(
     val type: String = "FeatureCollection",
-    val features: List<GeoJSONStation>
+    val stations: List<GeoJSONStation>
 )
 
 @Serializable

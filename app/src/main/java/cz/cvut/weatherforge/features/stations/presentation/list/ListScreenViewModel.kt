@@ -34,7 +34,6 @@ class ListScreenViewModel(private val repository: StationRepository) : ViewModel
     }
 
     init {
-        // Load stations once when the ViewModel is created
         loadStations()
     }
 
