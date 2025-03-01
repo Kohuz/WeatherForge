@@ -36,4 +36,25 @@ class StationRepository(
             StationResult(null, isSuccess = false)
         }
     }
+
+    suspend fun getClosestStation(lat: Float, long: Float): StationResult {
+        return try {
+            val stations = stationRemoteDataSource.getClosest(lat, long, 1)
+            StationResult(stations.first(), isSuccess = true)
+        } catch (t: Throwable) {
+            Log.v("api", t.toString())
+            StationResult(null, isSuccess = false)
+        }
+    }
+
+    suspend fun getNearbyStations(lat: Float, long: Float): StationsResult {
+        return try {
+            val stations = stationRemoteDataSource.getClosest(lat, long, 4)
+            StationsResult(stations, isSuccess = true)
+        } catch (t: Throwable) {
+            Log.v("api", t.toString())
+            StationsResult(emptyList(), isSuccess = false)
+        }
+    }
+
 }

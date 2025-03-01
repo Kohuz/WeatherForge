@@ -10,4 +10,8 @@ class StationRetrofitDataSource(private val apiDescription: StationApiDescriptio
     override suspend fun getStation(stationId: String): Station? {
         return apiDescription.getStation(stationId)
     }
+    override suspend fun getClosest(lat: Float, long: Float, count: Int): List<Station> {
+        return apiDescription.getClosest(lat, long, count)
+
+    }
 }

@@ -2,6 +2,7 @@ package cz.cvut.weatherforge
 
 import android.app.Application
 import cz.cvut.weatherforge.core.data.di.coreModule
+import cz.cvut.weatherforge.features.home.di.homeModule
 import cz.cvut.weatherforge.features.stations.di.stationModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin
@@ -11,7 +12,7 @@ class App : Application() {
         super.onCreate()
         startKoin {
             androidContext(this@App)
-            modules(stationModule, coreModule)
+            modules(stationModule, coreModule, homeModule)
         }
     }
 }

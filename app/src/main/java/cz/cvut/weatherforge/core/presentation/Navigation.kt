@@ -3,8 +3,12 @@ package cz.cvut.weatherforge.core.presentation
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBarItem
@@ -26,35 +30,37 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import cz.cvut.weatherforge.features.home.presentation.HomeScreen
 import cz.cvut.weatherforge.features.stations.presentation.detail.DetailScreen
 
 sealed class Screens(val route: String) {
 
     sealed class TopLevel(route: String) : Screens(route) {
+                abstract val icon: ImageVector
 
-        @get:StringRes
-        abstract val title: Int
-
-        abstract val icon: ImageVector
-
-        data object Map : TopLevel("stations/map") {
-            override val title = R.string.bottom_nav_title_stations_map
-            override val icon = Icons.Filled.Person
+        data object Map : TopLevel("map") {
+            override val icon = Icons.Filled.Place
         }
 
-        data object List : TopLevel("stations/list") {
-            override val title = R.string.bottom_nav_title_stations_list
-            override val icon = Icons.Filled.Info
+        data object List : TopLevel("list") {
+            override val icon = Icons.AutoMirrored.Filled.List
         }
+        data object Home : TopLevel("home") {
+            override val icon = Icons.Filled.Home
+        }
+
+//        data object Settings : TopLevel("settings") {
+//            override val icon = Icons.Filled.Info
+//        }
 
         companion object {
-            val all get() = listOf(Map, List)
+            val all get() = listOf(Home, Map, List)
         }
     }
 
-    data object Detail : Screens("stations/detail/{id}") {
+    data object Detail : Screens("detail/{id}") {
         const val ID = "id"
-        fun createRoute(id: String) = "stations/detail/$id"
+        fun createRoute(id: String) = "detail/$id"
     }
 }
 @Composable
@@ -68,7 +74,6 @@ fun Navigation() {
                 Screens.TopLevel.all.forEach { screen ->
                     NavigationBarItem(
                         icon = { Icon(screen.icon, contentDescription = null) },
-                        label = { Text(stringResource(screen.title)) },
                         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                         onClick = {
                             navController.navigate(screen.route) {
@@ -97,6 +102,13 @@ fun Navigation() {
                     navController.navigate(Screens.Detail.createRoute(stationId))
                 })
             }
+            composable(route = Screens.TopLevel.Home.route) {
+                HomeScreen()
+            }
+//            composable(route = Screens.TopLevel.Settings.route) {
+//                SettingsScreen()
+//            }
+
 
             composable(
                 route = Screens.Detail.route,
