@@ -88,7 +88,7 @@ fun Navigation() {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screens.TopLevel.Map.route,
+            startDestination = Screens.TopLevel.Home.route,
             modifier = Modifier.padding(innerPadding),
         ) {
             composable(route = Screens.TopLevel.List.route) {

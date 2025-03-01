@@ -75,6 +75,8 @@ dependencies {
     implementation("com.google.maps.android:maps-compose-utils:6.4.4")
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
+    implementation(libs.accompanist.pager)
+    implementation(libs.accompanist.pager.indicators)
 }
 
 secrets {

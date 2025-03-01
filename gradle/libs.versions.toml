@@ -1,4 +1,5 @@
 [versions]
+accompanistPagerIndicators = "0.28.0"
 accompanistPermissions = "0.31.0-alpha"
 agp = "8.7.3"
 androidMapsUtils = "3.11.1"
@@ -34,6 +35,8 @@ secretsGradlePlugin = "2.0.1"
 roomKtx = "2.6.1"
 
 [libraries]
+accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPagerIndicators" }
+accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanistPagerIndicators" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 android-maps-utils = { module = "com.google.maps.android:android-maps-utils", version.ref = "androidMapsUtils" }
 android-maps-utils-v226 = { module = "com.google.maps.android:android-maps-utils", version.ref = "googleAndroidMapsUtils" }
