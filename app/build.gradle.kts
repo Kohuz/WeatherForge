@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("org.jetbrains.kotlin.plugin.serialization")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
-
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -73,6 +73,8 @@ dependencies {
     implementation(libs.accompanist.permissions)
     implementation(libs.play.services.location)
     implementation("com.google.maps.android:maps-compose-utils:6.4.4")
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
 }
 
 secrets {

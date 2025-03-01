@@ -28,6 +28,8 @@ okhttp = "4.12.0"
 playServicesLocation = "21.0.1"
 retrofit = "2.11.0"
 retrofit2KotlinxSerializationConverter = "1.0.0"
+roomCompiler = "2.6.1"
+roomRuntime = "2.6.1"
 secretsGradlePlugin = "2.0.1"
 roomKtx = "2.6.1"
 
@@ -39,6 +41,8 @@ android-maps-utils-v3100 = { module = "com.google.maps.android:android-maps-util
 android-maps-utils-v3110 = { module = "com.google.maps.android:android-maps-utils", version.ref = "androidMapsUtilsVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-ktx-v1130 = { module = "androidx.core:core-ktx", version.ref = "coreKtxVersion" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompiler" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
