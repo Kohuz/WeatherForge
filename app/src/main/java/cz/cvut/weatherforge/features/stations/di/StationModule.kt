@@ -19,9 +19,10 @@ import retrofit2.Retrofit
 val stationModule = module {
     single { get<Retrofit>().create(StationApiDescription::class.java) }
     factory<StationRemoteDataSource> { StationRetrofitDataSource(apiDescription = get()) }
-    factory<StationLocalDataSource> { StationRoomDataSource(stationDao = get()) }
+    factory<StationLocalDataSource> { StationRoomDataSource(stationDao = get(), elementCodelistDao = get()) }
 
     single { get<LocalDatabase>().stationDao() }
+    single { get<LocalDatabase>().elementCodelistDao() }
 
     singleOf(::StationRepository)
     viewModel { ListScreenViewModel(get()) }

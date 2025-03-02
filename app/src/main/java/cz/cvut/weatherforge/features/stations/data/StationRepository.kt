@@ -4,6 +4,7 @@ import android.util.Log
 import com.kozubek.livesport.features.sportEntries.data.StationLocalDataSource
 import cz.cvut.weatherforge.features.stations.data.api.StationRemoteDataSource
 import cz.cvut.weatherforge.features.stations.data.model.ElementCodelistItem
+import cz.cvut.weatherforge.features.stations.data.model.ElementsCodelistResult
 import cz.cvut.weatherforge.features.stations.data.model.StationResult
 import cz.cvut.weatherforge.features.stations.data.model.StationsResult
 
@@ -58,19 +59,19 @@ class StationRepository(
         }
     }
 
-    suspend fun getElementsCodelist(): List<ElementCodelistItem> {
+    suspend fun getElementsCodelist(): ElementsCodelistResult {
         return try {
-            val localStations = stationLocalDataSource.getStations()
-            if (localStations.isNotEmpty()) {
-                StationsResult(localStations, isSuccess = true)
+            val localElements = stationLocalDataSource.getElements()
+            if (localElements.isNotEmpty()) {
+                ElementsCodelistResult(localElements, isSuccess = true)
             } else {
-                val remoteStations = stationRemoteDataSource.getStations()
-                stationLocalDataSource.insertStations(remoteStations)
-                StationsResult(remoteStations, isSuccess = true)
+                val remoteElements = stationRemoteDataSource.getElementsCodelist()
+                stationLocalDataSource.insertCodelist(remoteElements)
+                ElementsCodelistResult(remoteElements, isSuccess = true)
             }
         } catch (t: Throwable) {
             Log.e("StationRepository", "Error fetching stations: ${t.message}")
-            StationsResult(emptyList(), isSuccess = false)
+            ElementsCodelistResult(emptyList(), isSuccess = false)
         }
     }
 

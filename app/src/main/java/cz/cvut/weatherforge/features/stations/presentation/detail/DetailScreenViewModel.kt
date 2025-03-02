@@ -3,6 +3,7 @@ package cz.cvut.weatherforge.features.stations.presentation.detail
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cz.cvut.weatherforge.features.stations.data.StationRepository
+import cz.cvut.weatherforge.features.stations.data.model.ElementCodelistItem
 import cz.cvut.weatherforge.features.stations.data.model.Station
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,9 +18,18 @@ class DetailScreenViewModel(
 
     data class DetailScreenState(
         val station: Station? = null,
-        val selectedTabIndex: Int = 0 // Add selected tab index
+        val selectedTabIndex: Int = 0,
+        val elementCodelist: List<ElementCodelistItem> = emptyList(),
     )
 
+    init {
+        viewModelScope.launch {
+            val elementCodelistResult = repository.getElementsCodelist()
+            if(elementCodelistResult.isSuccess){
+                _screenStateStream.update { it.copy(elementCodelist = elementCodelistResult.elements) }
+            }
+        }
+    }
     fun loadStation(stationId: String) {
         viewModelScope.launch {
             val station = repository.getStation(stationId)
@@ -32,3 +42,6 @@ class DetailScreenViewModel(
     }
 }
 
+fun elementAbbreviationToNameUnitPair(abbreviation: String, codelist: List<ElementCodelistItem>): ElementCodelistItem? {
+    return codelist.find { item -> item.abbreviation == abbreviation }
+}

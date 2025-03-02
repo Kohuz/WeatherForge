@@ -10,5 +10,10 @@ data class StationResult(
     val isSuccess: Boolean
 )
 
+data class ElementsCodelistResult(
+    val elements: List<ElementCodelistItem>,
+    val isSuccess: Boolean
+)
+
 
 

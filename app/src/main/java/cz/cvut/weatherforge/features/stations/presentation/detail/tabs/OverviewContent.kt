@@ -20,6 +20,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cz.cvut.weatherforge.R
 import cz.cvut.weatherforge.features.stations.data.model.Station
 import cz.cvut.weatherforge.features.stations.presentation.detail.DetailScreenViewModel
+import cz.cvut.weatherforge.features.stations.presentation.detail.elementAbbreviationToNameUnitPair
 import cz.cvut.weatherforge.features.stations.presentation.list.FilterChangeButtons
 import cz.cvut.weatherforge.features.stations.presentation.list.ResultCard
 import cz.cvut.weatherforge.features.stations.presentation.list.ResultHeading
@@ -42,7 +43,15 @@ fun OverviewContent(station: Station, viewModel: DetailScreenViewModel) {
        )
         InfoCard(
             title = stringResource(R.string.detail_current_state),
-            items = station.stationLatestMeasurements.map { measurement -> measurement.element to measurement.value.toString() }
+            items = station.stationLatestMeasurements.mapNotNull { measurement ->
+                val elementInfo = elementAbbreviationToNameUnitPair(measurement.element, screenState.elementCodelist)
+                if (elementInfo != null) {
+                    val valueWithUnit = "${measurement.value} ${elementInfo.unit}"
+                    elementInfo.name to valueWithUnit
+                } else {
+                    null
+                }
+            }
         )
        
         

@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "elementCodelist")
 data class DbElementCodelistItem (
-    @PrimaryKey val id: String,
+    @PrimaryKey
     val abbreviation: String,
     val name: String,
     val unit: String

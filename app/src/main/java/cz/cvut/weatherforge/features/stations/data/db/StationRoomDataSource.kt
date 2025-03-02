@@ -1,6 +1,7 @@
 package com.kozubek.livesport.features.sportEntries.data.db
 
 import com.kozubek.livesport.features.sportEntries.data.StationLocalDataSource
+import cz.cvut.weatherforge.features.stations.data.db.DbElementCodelistItem
 
 import cz.cvut.weatherforge.features.stations.data.db.DbStation
 import cz.cvut.weatherforge.features.stations.data.model.ElementCodelistItem
@@ -25,11 +26,11 @@ class StationRoomDataSource(private val stationDao: StationDao, private val elem
     }
 
     override suspend fun insertCodelist(codelistItems: List<ElementCodelistItem>) {
-        elementCodelistDao.insertElements(codelistItems)
+        elementCodelistDao.insertElements(codelistItems.map { it.toDb() })
     }
 
     override suspend fun getElements(): List<ElementCodelistItem> {
-        return elementCodelistDao.getElements()
+        return elementCodelistDao.getElements().map { it.toElementCodelistItem() }
     }
 
     private fun DbStation.toStation(): Station {
@@ -49,7 +50,7 @@ class StationRoomDataSource(private val stationDao: StationDao, private val elem
 
     private fun Station.toDb(): DbStation {
         return DbStation(
-            id = this.stationId, // Assuming 'stationId' is the primary key
+            id = this.stationId,
             stationId = this.stationId,
             code = this.code,
             startDate = this.startDate,
@@ -58,6 +59,22 @@ class StationRoomDataSource(private val stationDao: StationDao, private val elem
             longitude = this.longitude,
             latitude = this.latitude,
             elevation = this.elevation
+        )
+    }
+
+    private fun DbElementCodelistItem.toElementCodelistItem(): ElementCodelistItem {
+        return ElementCodelistItem(
+            abbreviation = this.abbreviation,
+            unit = this.unit,
+            name = this.name
+        )
+    }
+
+    private fun ElementCodelistItem.toDb(): DbElementCodelistItem {
+        return DbElementCodelistItem(
+            abbreviation = this.abbreviation,
+            name = this.name,
+            unit = this.unit
         )
     }
 }
