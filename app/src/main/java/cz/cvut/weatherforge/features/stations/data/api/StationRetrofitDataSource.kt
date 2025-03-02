@@ -1,5 +1,6 @@
 package cz.cvut.weatherforge.features.stations.data.api
 
+import cz.cvut.weatherforge.features.stations.data.model.ElementCodelistItem
 import cz.cvut.weatherforge.features.stations.data.model.Station
 
 class StationRetrofitDataSource(private val apiDescription: StationApiDescription):
@@ -14,4 +15,9 @@ class StationRetrofitDataSource(private val apiDescription: StationApiDescriptio
         return apiDescription.getClosest(lat, long, count)
 
     }
+
+    override suspend fun getElementsCodelist(): List<ElementCodelistItem> {
+        return apiDescription.getElementsCodelist()
+    }
+
 }

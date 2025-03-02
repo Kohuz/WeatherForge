@@ -14,3 +14,10 @@ data class StationElement(
     val height: Double?,
     val schedule: String
 )
+
+@Serializable
+data class ElementCodelistItem(
+    val abbreviation: String,
+    val name: String,
+    val unit: String
+)

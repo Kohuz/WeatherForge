@@ -8,15 +8,15 @@ import cz.cvut.weatherforge.features.stations.data.db.DbStation
 @Dao
 interface StationDao {
     @Query("SELECT * FROM station")
-    suspend fun getSportEntries(): List<DbStation>
+    suspend fun getStations(): List<DbStation>
 
     @Query("SELECT * FROM station WHERE stationId = :stationId")
-    suspend fun getSportEntry(stationId: String): DbStation?
+    suspend fun getStation(stationId: String): DbStation?
 
     @Insert
-    suspend fun insert(stations: List<DbStation>)
+    suspend fun insertStations(stations: List<DbStation>)
 
     @Query("DELETE FROM station")
-    suspend fun deleteAll()
+    suspend fun deleteStations()
 
 }

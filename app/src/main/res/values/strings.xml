@@ -3,5 +3,10 @@
     <string name="nearest_station">Nejbližší stanice</string>
     <string name="station_near">Stanice poblíž</string>
     <string name="weather_at_nearest">Počasí na nejbližší stanici</string>
+    <string name="detail_information_about_station">Informace o stanici</string>
+    <string name="detail_current_state">Aktuální stav</string>
+    <string name="detail_location">Lokace</string>
+    <string name="detail_elevation">Nadmořská výška</string>
+    <string name="detail_coordinates">Souřadnice</string>
 
 </resources>

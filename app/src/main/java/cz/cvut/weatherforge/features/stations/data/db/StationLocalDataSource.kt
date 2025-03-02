@@ -1,5 +1,6 @@
 package com.kozubek.livesport.features.sportEntries.data
 
+import cz.cvut.weatherforge.features.stations.data.model.ElementCodelistItem
 import cz.cvut.weatherforge.features.stations.data.model.Station
 
 interface StationLocalDataSource {
@@ -7,7 +8,12 @@ interface StationLocalDataSource {
 
         suspend fun getStation(stationId: String): Station?
 
-        suspend fun insert(stations: List<Station>)
+        suspend fun insertStations(stations: List<Station>)
 
-        suspend fun deleteAll()
+        suspend fun deleteStations()
+
+        suspend fun insertCodelist(codelistItems: List<ElementCodelistItem>)
+
+        suspend fun getElements(): List<ElementCodelistItem>
+
 }

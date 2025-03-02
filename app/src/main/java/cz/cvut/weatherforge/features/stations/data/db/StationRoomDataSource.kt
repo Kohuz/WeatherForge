@@ -3,24 +3,33 @@ package com.kozubek.livesport.features.sportEntries.data.db
 import com.kozubek.livesport.features.sportEntries.data.StationLocalDataSource
 
 import cz.cvut.weatherforge.features.stations.data.db.DbStation
+import cz.cvut.weatherforge.features.stations.data.model.ElementCodelistItem
 import cz.cvut.weatherforge.features.stations.data.model.Station
 
-class StationRoomDataSource(private val stationDao: StationDao) : StationLocalDataSource {
+class StationRoomDataSource(private val stationDao: StationDao, private val elementCodelistDao: ElementCodelistDao) : StationLocalDataSource {
 
     override suspend fun getStations(): List<Station> {
-        return stationDao.getSportEntries().map { it.toStation() }
+        return stationDao.getStations().map { it.toStation() }
     }
 
     override suspend fun getStation(stationId: String): Station? {
-        return stationDao.getSportEntry(stationId)?.toStation()
+        return stationDao.getStation(stationId)?.toStation()
     }
 
-    override suspend fun insert(stations: List<Station>) {
-        stationDao.insert(stations.map { it.toDb() })
+    override suspend fun insertStations(stations: List<Station>) {
+        stationDao.insertStations(stations.map { it.toDb() })
     }
 
-    override suspend fun deleteAll() {
-        stationDao.deleteAll()
+    override suspend fun deleteStations() {
+        stationDao.deleteStations()
+    }
+
+    override suspend fun insertCodelist(codelistItems: List<ElementCodelistItem>) {
+        elementCodelistDao.insertElements(codelistItems)
+    }
+
+    override suspend fun getElements(): List<ElementCodelistItem> {
+        return elementCodelistDao.getElements()
     }
 
     private fun DbStation.toStation(): Station {
