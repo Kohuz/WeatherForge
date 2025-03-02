@@ -1,18 +1,18 @@
 package cz.cvut.weatherforge.features.home.presentation
 
-import SwipeableWeatherCard
-import WeatherCard
+import InfoCard
 import WeatherCardData
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -68,9 +68,8 @@ fun HomeScreen(viewModel: HomeScreenViewModel = koinViewModel()) {
                 topBar = {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 16.dp)
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
                             modifier = Modifier.padding(8.dp),
@@ -86,19 +85,28 @@ fun HomeScreen(viewModel: HomeScreenViewModel = koinViewModel()) {
                         }
                     }
                 }
-            ) { paddingValues ->
-                Box(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
-                    Text("Inside box")
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp)
-                    ) {Log.d("HomeScreen", "Column is rendering") // Debugging
-                        Text("Inside Column")
+            ) {
+                paddingValues ->
+                    Box(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp)
+                        ) {
+//                            SwipeableWeatherCard(weatherData = screenState.weatherData)
+                            if(screenState.closestStation != null) {
+                                screenState.closestStation?.stationLatestMeasurements?.let {
+                                    InfoCard(
+                                        title = stringResource(R.string.weather_at_nearest),
+                                        it.map { measurement -> measurement.element to measurement.value.toString() })
+                                }
+                            }
 
-                        SwipeableWeatherCard(weatherData = screenState.weatherData)
+                            InfoCard(title = stringResource(R.string.station_near), screenState.nearbyStations)
+                        }
                     }
-                }
+
+//
             }
         }
         true -> {

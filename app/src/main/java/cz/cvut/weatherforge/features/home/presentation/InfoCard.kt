@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import cz.cvut.weatherforge.ui.theme.AppTypography
@@ -33,7 +32,7 @@ fun SwipeableWeatherCard(
             state = pagerState,
             modifier = Modifier.fillMaxWidth()
         ) { page ->
-            WeatherCard(
+            InfoCard(
                 title = weatherData[page].title,
                 items = weatherData[page].items
             )
@@ -51,7 +50,7 @@ fun SwipeableWeatherCard(
 }
 
 @Composable
-fun WeatherCard(
+fun InfoCard(
     title: String,
     items: List<Pair<String, String>>,
     modifier: Modifier = Modifier

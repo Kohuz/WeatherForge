@@ -1,6 +1,5 @@
 package cz.cvut.weatherforge.features.stations.presentation.detail
 
-import WeatherCard
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding

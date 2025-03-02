@@ -1,7 +1,8 @@
-package cz.cvut.weatherforge.features.measurements.data.model
+package cz.cvut.weatherforge.features.record.data.model
 
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
+
 
 @Serializable
 data class StationRecord(

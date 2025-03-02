@@ -1,6 +1,5 @@
 package cz.cvut.weatherforge.features.home.presentation
 
-import WeatherCardData
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
@@ -9,7 +8,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.model.LatLng
-import cz.cvut.weatherforge.features.measurements.data.model.StationRecord
+import cz.cvut.weatherforge.features.measurements.data.model.MeasurementLatest
+import cz.cvut.weatherforge.features.record.data.model.StationRecord
 import cz.cvut.weatherforge.features.stations.data.StationRepository
 import cz.cvut.weatherforge.features.stations.data.model.Station
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +23,8 @@ class HomeScreenViewModel(private val repository: StationRepository) : ViewModel
 
     data class HomeScreenState(
         val closestStation: Station? = null,
-        val weatherData: List<WeatherCardData> = emptyList(),
+        val nearbyStations: List<Pair<String, String>> = emptyList(),
+        val actualMeasurements: List<MeasurementLatest> = emptyList(),
         val todayRecords: List<StationRecord> = emptyList(),
         val longTermRecords: List<StationRecord> = emptyList(),
         val loading: Boolean = false,
@@ -55,15 +56,18 @@ class HomeScreenViewModel(private val repository: StationRepository) : ViewModel
                 // Fetch nearby stations
                 val nearbyStationsResult = repository.getNearbyStations(userLocation.latitude.toFloat(), userLocation.longitude.toFloat())
                 if (nearbyStationsResult.isSuccess) {
+                    val nearbyStationsWithDistance = nearbyStationsResult.stations.drop(1) .map { station ->
+                        val distance = pythagoreanDistance(
+                            userLocation.latitude,
+                            userLocation.longitude,
+                            station.latitude,
+                            station.longitude
+                        ) * 111.32 // kilometer per degree
+                        station.location to "%.2f km".format(distance)
+                    }
+
                     _screenStateStream.update { state ->
-                        val weatherData = nearbyStationsResult.stations.map { station ->
-                            mapStationToWeatherCardData(
-                                station = station,
-                                userLat = userLocation.latitude,
-                                userLon = userLocation.longitude
-                            )
-                        }
-                        state.copy(weatherData = weatherData)
+                        state.copy(nearbyStations = nearbyStationsWithDistance)
                     }
                 }
             }

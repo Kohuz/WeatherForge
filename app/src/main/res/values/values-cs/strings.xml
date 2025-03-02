@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="nearest_station">Nejbližší stanice</string>
+    <string name="station_near">Stanice poblíž</string>
+    <string name="weather_at_nearest">Počasí na nejbližší stanici</string>
+
 </resources>
