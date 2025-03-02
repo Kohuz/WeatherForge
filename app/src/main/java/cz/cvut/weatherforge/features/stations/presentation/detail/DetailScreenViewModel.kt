@@ -1,6 +1,5 @@
 package cz.cvut.weatherforge.features.stations.presentation.detail
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cz.cvut.weatherforge.features.stations.data.StationRepository

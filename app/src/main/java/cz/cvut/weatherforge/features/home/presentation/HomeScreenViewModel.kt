@@ -9,6 +9,8 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.model.LatLng
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementLatest
+import cz.cvut.weatherforge.features.record.data.RecordRepository
+import cz.cvut.weatherforge.features.record.data.model.RecordStats
 import cz.cvut.weatherforge.features.record.data.model.StationRecord
 import cz.cvut.weatherforge.features.stations.data.StationRepository
 import cz.cvut.weatherforge.features.stations.data.model.Station
@@ -17,7 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class HomeScreenViewModel(private val repository: StationRepository) : ViewModel() {
+class HomeScreenViewModel(private val stationRepository: StationRepository, private val recordRepository: RecordRepository) : ViewModel() {
     private val _screenStateStream = MutableStateFlow(HomeScreenState())
     val screenStateStream get() = _screenStateStream.asStateFlow()
 
@@ -26,7 +28,7 @@ class HomeScreenViewModel(private val repository: StationRepository) : ViewModel
         val nearbyStations: List<Pair<String, String>> = emptyList(),
         val actualMeasurements: List<MeasurementLatest> = emptyList(),
         val todayRecords: List<StationRecord> = emptyList(),
-        val longTermRecords: List<StationRecord> = emptyList(),
+        val longTermRecords: List<RecordStats> = emptyList(),
         val loading: Boolean = false,
         val successful: Boolean = true,
         val userLocation: LatLng? = null
@@ -46,15 +48,25 @@ class HomeScreenViewModel(private val repository: StationRepository) : ViewModel
 
             if (userLocation != null) {
                 // Fetch the closest station
-                val closestStationResult = repository.getClosestStation(userLocation.latitude.toFloat(), userLocation.longitude.toFloat())
+                val closestStationResult = stationRepository.getClosestStation(userLocation.latitude.toFloat(), userLocation.longitude.toFloat())
                 if (closestStationResult.isSuccess) {
                     _screenStateStream.update { state ->
                         state.copy(closestStation = closestStationResult.station)
                     }
+                    if(closestStationResult.station != null) {
+                        val statsResult = recordRepository.getAllTimeStationRecords(
+                            closestStationResult.station.stationId)
+
+                        if(statsResult.isSuccess)
+                            _screenStateStream.update { state ->
+                                state.copy(longTermRecords = statsResult.stats)
+                            }
+                    }
+
                 }
 
                 // Fetch nearby stations
-                val nearbyStationsResult = repository.getNearbyStations(userLocation.latitude.toFloat(), userLocation.longitude.toFloat())
+                val nearbyStationsResult = stationRepository.getNearbyStations(userLocation.latitude.toFloat(), userLocation.longitude.toFloat())
                 if (nearbyStationsResult.isSuccess) {
                     val nearbyStationsWithDistance = nearbyStationsResult.stations.drop(1) .map { station ->
                         val distance = pythagoreanDistance(

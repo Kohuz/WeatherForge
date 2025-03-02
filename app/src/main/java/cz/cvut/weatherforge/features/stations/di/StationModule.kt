@@ -12,9 +12,6 @@ import cz.cvut.weatherforge.features.stations.presentation.list.ListScreenViewMo
 import cz.cvut.weatherforge.features.stations.presentation.map.MapScreenViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.dsl.*
-import org.koin.core.module.dsl.singleOf
-import org.koin.androidx.viewmodel.ext.android.viewModel
-
 import org.koin.dsl.module
 
 import retrofit2.Retrofit

@@ -3,15 +3,13 @@ package cz.cvut.weatherforge.features.stations.presentation.map
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.model.LatLng
-import cz.cvut.weatherforge.features.stations.data.model.Station
 import cz.cvut.weatherforge.features.stations.data.StationRepository
+import cz.cvut.weatherforge.features.stations.data.model.Station
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
