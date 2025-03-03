@@ -44,6 +44,7 @@ fun DetailScreen(
 
     LaunchedEffect(stationId) {
         viewModel.loadStation(stationId)
+        viewModel.loadRecords()
     }
 
     if (station != null) {

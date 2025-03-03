@@ -27,7 +27,7 @@ val stationModule = module {
     singleOf(::StationRepository)
     viewModel { ListScreenViewModel(get()) }
     viewModel { MapScreenViewModel(get())}
-    viewModel { DetailScreenViewModel(get())}
+    viewModel { DetailScreenViewModel(get(), get())}
 
 
 }

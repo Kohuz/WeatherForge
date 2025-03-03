@@ -25,6 +25,18 @@ class StationRoomDataSource(private val stationDao: StationDao, private val elem
         stationDao.deleteStations()
     }
 
+    override suspend fun getFavorites(): List<Station> {
+        return stationDao.getFavorites().map { it.toStation() }
+    }
+
+    override suspend fun makeFavorite(stationId: String): Station? {
+        return stationDao.makeFavorite(stationId)?.toStation()
+    }
+
+    override suspend fun removeFavorite(stationId: String): Station? {
+        return stationDao.removeFavorite(stationId)?.toStation()
+    }
+
     override suspend fun insertCodelist(codelistItems: List<ElementCodelistItem>) {
         elementCodelistDao.insertElements(codelistItems.map { it.toDb() })
     }
@@ -58,7 +70,8 @@ class StationRoomDataSource(private val stationDao: StationDao, private val elem
             location = this.location,
             longitude = this.longitude,
             latitude = this.latitude,
-            elevation = this.elevation
+            elevation = this.elevation,
+            favorite = false
         )
     }
 

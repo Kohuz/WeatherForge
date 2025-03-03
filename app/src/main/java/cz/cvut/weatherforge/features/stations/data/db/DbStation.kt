@@ -15,4 +15,5 @@ data class DbStation(
     val longitude: Double,
     val latitude: Double,
     val elevation: Double,
+    val favorite: Boolean
 )

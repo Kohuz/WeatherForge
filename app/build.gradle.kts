@@ -77,6 +77,8 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(libs.accompanist.pager)
     implementation(libs.accompanist.pager.indicators)
+    implementation(libs.mpandroidchart)
+
 }
 
 secrets {

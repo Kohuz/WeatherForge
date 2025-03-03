@@ -12,6 +12,12 @@ interface StationLocalDataSource {
 
         suspend fun deleteStations()
 
+        suspend fun getFavorites(): List<Station>
+
+        suspend fun makeFavorite(stationId: String): Station?
+
+        suspend fun removeFavorite(stationId: String): Station?
+
         suspend fun insertCodelist(codelistItems: List<ElementCodelistItem>)
 
         suspend fun getElements(): List<ElementCodelistItem>
