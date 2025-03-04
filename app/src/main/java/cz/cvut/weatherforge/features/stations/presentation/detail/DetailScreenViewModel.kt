@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.LocalDate
+import java.time.format.DateTimeFormatter
 
 class DetailScreenViewModel(
     private val stationRepository: StationRepository, private val recordRepository: RecordRepository
@@ -27,7 +29,11 @@ class DetailScreenViewModel(
         val allTimeRecords: List<RecordStats> = emptyList(),
         val selectedResolutionIndex: Int = 0,
         val expanded: Boolean = false,
-        val selectedElement: ElementCodelistItem? = null
+        val selectedElement: ElementCodelistItem? = null,
+        val fromDate: LocalDate? = null,
+        val toDate: LocalDate? = null,
+        val showFromDatePicker: Boolean = false,
+        val showToDatePicker: Boolean = false,
     )
 
     init {
@@ -69,6 +75,24 @@ class DetailScreenViewModel(
 
     fun selectElement(element: ElementCodelistItem) {
         _screenStateStream.update { it.copy(selectedElement = element) }
+    }
+
+    fun showFromDatePicker(show: Boolean) {
+        _screenStateStream.update { it.copy(showFromDatePicker = show) }
+    }
+
+    fun showToDatePicker(show: Boolean) {
+        _screenStateStream.update { it.copy(showToDatePicker = show) }
+    }
+
+    // Set the fromDate
+    fun setFromDate(date: LocalDate) {
+        _screenStateStream.update { it.copy(fromDate = date) }
+    }
+
+    // Set the toDate
+    fun setToDate(date: LocalDate) {
+        _screenStateStream.update { it.copy(toDate = date) }
     }
 }
 

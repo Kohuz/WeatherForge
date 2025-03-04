@@ -1,5 +1,6 @@
 package cz.cvut.weatherforge.features.stations.presentation.detail.tabs
 
+import DatePickerDialog
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,6 +30,20 @@ fun GraphContent(station: Station, viewModel: DetailScreenViewModel) {
     val selectedResolution = screenState.selectedResolutionIndex
     val resolutions = listOf("Denně", "Měsíčně", "Ročně")
 
+    // Show/hide date pickers
+//    if (screenState.showFromDatePicker) {
+//        DatePickerDialog(
+//            onDismiss = { viewModel.showFromDatePicker(false) },
+//            onDateSelected = { date -> viewModel.setFromDate(date) }
+//        )
+//    }
+//
+//    if (screenState.showToDatePicker) {
+//        DatePickerDialog(
+//            onDismiss = { viewModel.showToDatePicker(false) },
+//            onDateSelected = { date -> viewModel.setToDate(date) }
+//        )
+//    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -71,27 +86,61 @@ fun GraphContent(station: Station, viewModel: DetailScreenViewModel) {
             }
         }
 
-        // Radio buttons for resolution selection
-        resolutions.forEachIndexed { index, resolution ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .selectable(
+        // Date Selectors for fromDate and toDate
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // From Date Selector
+//            OutlinedButton(
+//                onClick = { viewModel.showFromDatePicker(true) },
+//                modifier = Modifier
+//                    .weight(1f)
+//                    .padding(end = 8.dp)
+//            ) {
+//                Text(text = screenState.fromDate ?: "Select From Date")
+//            }
+//
+//            // To Date Selector
+//            OutlinedButton(
+//                onClick = { viewModel.showToDatePicker(true) },
+//                modifier = Modifier
+//                    .weight(1f)
+//                    .padding(start = 8.dp)
+//            ) {
+//                Text(text = screenState.toDate ?: "Select To Date")
+//            }
+        }
+
+        // Radio buttons for selecting resolution
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            resolutions.forEachIndexed { index, resolution ->
+                Row(
+                    modifier = Modifier
+                        .selectable(
+                            selected = (index == selectedResolution),
+                            onClick = { viewModel.selectResolution(index) },
+                            role = Role.RadioButton
+                        )
+                        .padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
                         selected = (index == selectedResolution),
-                        onClick = { viewModel.selectResolution(index) },
-                        role = Role.RadioButton
+                        onClick = { viewModel.selectResolution(index) }
                     )
-                    .padding(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                RadioButton(
-                    selected = (index == selectedResolution),
-                    onClick = { viewModel.selectResolution(index) }
-                )
-                Text(
-                    text = resolution,
-                    modifier = Modifier.padding(start = 16.dp)
-                )
+                    Text(
+                        text = resolution,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
             }
         }
     }

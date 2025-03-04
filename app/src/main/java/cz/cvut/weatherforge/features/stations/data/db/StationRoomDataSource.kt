@@ -29,12 +29,12 @@ class StationRoomDataSource(private val stationDao: StationDao, private val elem
         return stationDao.getFavorites().map { it.toStation() }
     }
 
-    override suspend fun makeFavorite(stationId: String): Station? {
-        return stationDao.makeFavorite(stationId)?.toStation()
+    override suspend fun makeFavorite(stationId: String) {
+        return stationDao.makeFavorite(stationId)
     }
 
-    override suspend fun removeFavorite(stationId: String): Station? {
-        return stationDao.removeFavorite(stationId)?.toStation()
+    override suspend fun removeFavorite(stationId: String){
+        return stationDao.removeFavorite(stationId)
     }
 
     override suspend fun insertCodelist(codelistItems: List<ElementCodelistItem>) {
