@@ -13,10 +13,12 @@ import java.time.ZoneId
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerDialog(
+    resolution: String, // "Denně", "Měsíčně", "Ročně"
     onDismiss: () -> Unit,
     onDateSelected: (LocalDate) -> Unit
 ) {
-    val datePickerState = rememberDatePickerState()
+    val initialDateMillis = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = initialDateMillis)
     val selectedDate = datePickerState.selectedDateMillis?.let {
         Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
     }
@@ -26,7 +28,15 @@ fun DatePickerDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    selectedDate?.let { onDateSelected(it) }
+                    selectedDate?.let { date ->
+                        // Adjust the selected date based on the resolution
+                        val adjustedDate = when (resolution) {
+                            "Měsíčně" -> date.withDayOfMonth(1) // Set to the first day of the month
+                            "Ročně" -> date.withDayOfMonth(1).withMonth(1) // Set to the first day of the year
+                            else -> date // Daily resolution, no adjustment needed
+                        }
+                        onDateSelected(adjustedDate)
+                    }
                     onDismiss()
                 }
             ) {

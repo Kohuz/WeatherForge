@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cz.cvut.weatherforge.features.record.data.RecordRepository
 import cz.cvut.weatherforge.features.record.data.model.RecordStats
-import cz.cvut.weatherforge.features.record.data.model.StatsResult
 import cz.cvut.weatherforge.features.stations.data.StationRepository
 import cz.cvut.weatherforge.features.stations.data.model.ElementCodelistItem
 import cz.cvut.weatherforge.features.stations.data.model.Station
@@ -14,7 +13,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.LocalDate
-import java.time.format.DateTimeFormatter
 
 class DetailScreenViewModel(
     private val stationRepository: StationRepository, private val recordRepository: RecordRepository
@@ -85,15 +83,15 @@ class DetailScreenViewModel(
         _screenStateStream.update { it.copy(showToDatePicker = show) }
     }
 
-    // Set the fromDate
-    fun setFromDate(date: LocalDate) {
-        _screenStateStream.update { it.copy(fromDate = date) }
-    }
-
-    // Set the toDate
-    fun setToDate(date: LocalDate) {
-        _screenStateStream.update { it.copy(toDate = date) }
-    }
+//    // Set the fromDate
+//    fun setFromDate(date: java.time.LocalDate) {
+//        _screenStateStream.update { it.copy(fromDate = date) }
+//    }
+//
+//    // Set the toDate
+//    fun setToDate(date: java.time.LocalDate) {
+//        _screenStateStream.update { it.copy(toDate = date) }
+//    }
 }
 
 fun elementAbbreviationToNameUnitPair(abbreviation: String, codelist: List<ElementCodelistItem>): ElementCodelistItem? {

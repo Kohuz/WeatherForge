@@ -30,9 +30,10 @@ fun GraphContent(station: Station, viewModel: DetailScreenViewModel) {
     val selectedResolution = screenState.selectedResolutionIndex
     val resolutions = listOf("Denně", "Měsíčně", "Ročně")
 
-    // Show/hide date pickers
+//    // Show/hide date pickers
 //    if (screenState.showFromDatePicker) {
 //        DatePickerDialog(
+//            resolution = resolutions[selectedResolution],
 //            onDismiss = { viewModel.showFromDatePicker(false) },
 //            onDateSelected = { date -> viewModel.setFromDate(date) }
 //        )
@@ -40,6 +41,7 @@ fun GraphContent(station: Station, viewModel: DetailScreenViewModel) {
 //
 //    if (screenState.showToDatePicker) {
 //        DatePickerDialog(
+//            resolution = resolutions[selectedResolution],
 //            onDismiss = { viewModel.showToDatePicker(false) },
 //            onDateSelected = { date -> viewModel.setToDate(date) }
 //        )
