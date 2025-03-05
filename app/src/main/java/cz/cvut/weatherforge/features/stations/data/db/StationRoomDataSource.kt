@@ -33,7 +33,7 @@ class StationRoomDataSource(private val stationDao: StationDao, private val elem
         return stationDao.makeFavorite(stationId)
     }
 
-    override suspend fun removeFavorite(stationId: String) {
+    override suspend fun removeFavorite(stationId: String){
         return stationDao.removeFavorite(stationId)
     }
 
