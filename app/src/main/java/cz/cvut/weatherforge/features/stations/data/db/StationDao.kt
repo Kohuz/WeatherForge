@@ -14,10 +14,10 @@ interface StationDao {
     suspend fun getStation(stationId: String): DbStation?
 
     @Query("UPDATE station SET favorite = 1 WHERE stationId = :stationId")
-    suspend fun makeFavorite(stationId: String): DbStation?
+    suspend fun makeFavorite(stationId: String)
 
     @Query("UPDATE station SET favorite = 0 WHERE stationId = :stationId")
-    suspend fun removeFavorite(stationId: String): DbStation?
+    suspend fun removeFavorite(stationId: String)
 
     @Query("SELECT * FROM station WHERE favorite = 1")
     suspend fun getFavorites(): List<DbStation>
