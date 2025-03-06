@@ -91,26 +91,40 @@ class HomeScreenViewModel(private val stationRepository: StationRepository, priv
         }
     }
 
+    private val defaultLocation = LatLng(50.0755, 14.4378) // Default to Prague, for example
+
     fun fetchUserLocation(context: Context, fusedLocationClient: FusedLocationProviderClient) {
-        // Check if the location permission is granted
         if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             try {
-                // Fetch the last known location
                 fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                    location?.let {
-                        // Update the user's location in the state
-                        val userLatLng = LatLng(it.latitude, it.longitude)
-                        _screenStateStream.update { state ->
-                            state.copy(userLocation = userLatLng)
-                        }
-                        loadInfo()
+                    val userLatLng = location?.let {
+                        LatLng(it.latitude, it.longitude)
+                    } ?: defaultLocation // Use default location if location is null
+
+                    _screenStateStream.update { state ->
+                        state.copy(userLocation = userLatLng)
                     }
+                    loadInfo()
+                }.addOnFailureListener { e ->
+                    Log.e("locc", "Failed to fetch location: ${e.localizedMessage}")
+                    _screenStateStream.update { state ->
+                        state.copy(userLocation = defaultLocation)
+                    }
+                    loadInfo()
                 }
             } catch (e: SecurityException) {
-                Log.e("location", "Permission for location access was revoked: ${e.localizedMessage}")
+                Log.w("locc", "Permission for location access was revoked: ${e.localizedMessage}")
+                _screenStateStream.update { state ->
+                    state.copy(userLocation = defaultLocation)
+                }
+                loadInfo()
             }
         } else {
-            Log.e("location", "Location permission is not granted.")
+            Log.e("locc", "Location permission is not granted.")
+            _screenStateStream.update { state ->
+                state.copy(userLocation = defaultLocation)
+            }
+            loadInfo()
         }
     }
 }

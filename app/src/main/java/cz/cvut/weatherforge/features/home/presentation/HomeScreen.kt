@@ -54,9 +54,11 @@ fun HomeScreen(viewModel: HomeScreenViewModel = koinViewModel()) {
     LaunchedEffect(Unit) {
         when (PackageManager.PERMISSION_GRANTED) {
             ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) -> {
+                // Permission already granted, fetch location
                 viewModel.fetchUserLocation(context, fusedLocationClient)
             }
             else -> {
+                // Request permission
                 permissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
             }
         }

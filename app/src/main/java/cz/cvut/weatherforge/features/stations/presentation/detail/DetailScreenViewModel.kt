@@ -2,6 +2,9 @@ package cz.cvut.weatherforge.features.stations.presentation.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cz.cvut.weatherforge.features.measurements.data.model.MeasurementDaily
+import cz.cvut.weatherforge.features.measurements.data.model.MeasurementMonthly
+import cz.cvut.weatherforge.features.measurements.data.model.MeasurementYearly
 import cz.cvut.weatherforge.features.record.data.RecordRepository
 import cz.cvut.weatherforge.features.record.data.model.RecordStats
 import cz.cvut.weatherforge.features.stations.data.StationRepository
@@ -12,7 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.datetime.LocalDate
+import java.time.LocalDate
 
 class DetailScreenViewModel(
     private val stationRepository: StationRepository, private val recordRepository: RecordRepository
@@ -32,6 +35,9 @@ class DetailScreenViewModel(
         val toDate: LocalDate? = null,
         val showFromDatePicker: Boolean = false,
         val showToDatePicker: Boolean = false,
+        val dailyMeasurements: List<MeasurementDaily> = emptyList(),
+        val monthlyMeasurements: List<MeasurementMonthly> = emptyList(),
+        val yearlyMeasurements: List<MeasurementYearly> = emptyList()
     )
 
     init {
@@ -67,6 +73,25 @@ class DetailScreenViewModel(
         }
     }
 
+    fun fetchDailyMeasurements(stationId: String, dateFrom: String, dateTo: String, element: String?) {
+        viewModelScope.launch {
+            _screenStateStream.update {  }
+            _dailyMeasurements.value = measurementRepository.getDailyMeasurements(stationId, dateFrom, dateTo, element)
+        }
+    }
+
+    fun fetchMonthlyMeasurements(stationId: String, dateFrom: String, dateTo: String, element: String?) {
+        viewModelScope.launch {
+            _monthlyMeasurements.value = measurementRepository.getMonthlyMeasurements(stationId, dateFrom, dateTo, element)
+        }
+    }
+
+    fun fetchYearlyMeasurements(stationId: String, dateFrom: String, dateTo: String, element: String?) {
+        viewModelScope.launch {
+            _yearlyMeasurements.value = measurementRepository.getYearlyMeasurements(stationId, dateFrom, dateTo, element)
+        }
+    }
+
     fun toggleDropdown(expanded: Boolean) {
         _screenStateStream.update { it.copy(expanded = expanded) }
     }
@@ -83,15 +108,15 @@ class DetailScreenViewModel(
         _screenStateStream.update { it.copy(showToDatePicker = show) }
     }
 
-//    // Set the fromDate
-//    fun setFromDate(date: java.time.LocalDate) {
-//        _screenStateStream.update { it.copy(fromDate = date) }
-//    }
-//
-//    // Set the toDate
-//    fun setToDate(date: java.time.LocalDate) {
-//        _screenStateStream.update { it.copy(toDate = date) }
-//    }
+    // Set the fromDate
+    fun setFromDate(date: java.time.LocalDate) {
+        _screenStateStream.update { it.copy(fromDate = date) }
+    }
+
+    // Set the toDate
+    fun setToDate(date: java.time.LocalDate) {
+        _screenStateStream.update { it.copy(toDate = date) }
+    }
 }
 
 fun elementAbbreviationToNameUnitPair(abbreviation: String, codelist: List<ElementCodelistItem>): ElementCodelistItem? {

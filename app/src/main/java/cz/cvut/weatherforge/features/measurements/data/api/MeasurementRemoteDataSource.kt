@@ -1,13 +1,49 @@
-//package cz.cvut.weatherforge.features.measurements.data.api
-//
-//import cz.cvut.weatherforge.features.stations.data.model.ElementCodelistItem
-//import cz.cvut.weatherforge.features.stations.data.model.Station
-//
-//interface MeasurementRemoteDataSource {
-//    suspend fun getStations(): List<Station>
-//    suspend fun getClosest(lat: Float, long: Float, count: Int): List<Station>
-//    suspend fun getStation(stationId: String): Station?
-//    suspend fun getElementsCodelist(): List<ElementCodelistItem>
-//
-//
-//}
+package cz.cvut.weatherforge.features.measurements.data.api
+
+import cz.cvut.weatherforge.features.measurements.data.model.MeasurementDaily
+import cz.cvut.weatherforge.features.measurements.data.model.MeasurementMonthly
+import cz.cvut.weatherforge.features.measurements.data.model.MeasurementYearly
+import cz.cvut.weatherforge.features.record.data.model.ValueStats
+
+interface MeasurementRemoteDataSource {
+    suspend fun getMeasurementsDaily(
+        stationId: String,
+        dateFrom: String,
+        dateTo: String,
+        element: String
+    ): List<MeasurementDaily>
+
+    suspend fun getMeasurementsMonthly(
+        stationId: String,
+        dateFrom: String,
+        dateTo: String,
+        element: String
+    ): List<MeasurementMonthly>
+
+    suspend fun getMeasurementsYearly(
+        stationId: String,
+        dateFrom: String,
+        dateTo: String,
+        element: String
+    ): List<MeasurementYearly>
+
+    suspend fun getStatsDayLongTerm(
+        stationId: String,
+        date: String
+    ): ValueStats
+
+    suspend fun getMeasurementsDayAndMonth(
+        stationId: String,
+        date: String
+    ): List<MeasurementDaily>
+
+    suspend fun getMeasurementsMonth(
+        stationId: String,
+        date: String
+    ): List<MeasurementMonthly>
+
+    suspend fun getStatsDay(
+        stationId: String,
+        date: String
+    ): List<MeasurementDaily>
+}

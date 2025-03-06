@@ -8,3 +8,10 @@ data class RecordStats(
     val lowest: StationRecord?,
     val average: Double?
 )
+
+@Serializable
+data class ValueStats(
+    val highest: Double?,
+    val lowest: Double?,
+    val average: Double?
+)

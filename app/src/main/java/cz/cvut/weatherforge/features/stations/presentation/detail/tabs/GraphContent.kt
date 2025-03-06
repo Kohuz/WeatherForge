@@ -14,6 +14,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,22 +31,37 @@ fun GraphContent(station: Station, viewModel: DetailScreenViewModel) {
     val selectedResolution = screenState.selectedResolutionIndex
     val resolutions = listOf("Denně", "Měsíčně", "Ročně")
 
-//    // Show/hide date pickers
-//    if (screenState.showFromDatePicker) {
-//        DatePickerDialog(
-//            resolution = resolutions[selectedResolution],
-//            onDismiss = { viewModel.showFromDatePicker(false) },
-//            onDateSelected = { date -> viewModel.setFromDate(date) }
-//        )
-//    }
-//
-//    if (screenState.showToDatePicker) {
-//        DatePickerDialog(
-//            resolution = resolutions[selectedResolution],
-//            onDismiss = { viewModel.showToDatePicker(false) },
-//            onDateSelected = { date -> viewModel.setToDate(date) }
-//        )
-//    }
+    // Show/hide date pickers
+    if (screenState.showFromDatePicker) {
+        DatePickerDialog(
+            resolution = resolutions[selectedResolution],
+            onDismiss = { viewModel.showFromDatePicker(false) },
+            onDateSelected = { date -> viewModel.setFromDate(date) }
+        )
+    }
+
+    if (screenState.showToDatePicker) {
+        DatePickerDialog(
+            resolution = resolutions[selectedResolution],
+            onDismiss = { viewModel.showToDatePicker(false) },
+            onDateSelected = { date -> viewModel.setToDate(date) }
+        )
+    }
+
+    LaunchedEffect(selectedResolution) {
+        when (resolutions[selectedResolution]) {
+            "Denně" -> viewModel.fetchDailyMeasurements(station.id, screenState.fromDate, screenState.toDate, screenState.selectedElement?.code)
+            "Měsíčně" -> viewModel.fetchMonthlyMeasurements(station.id, screenState.fromDate, screenState.toDate, screenState.selectedElement?.code)
+            "Ročně" -> viewModel.fetchYearlyMeasurements(station.id, screenState.fromDate, screenState.toDate, screenState.selectedElement?.code)
+        }
+    }
+
+    // Display the chart
+    when (resolutions[selectedResolution]) {
+        "Denně" -> DailyChart(screenState.dailyMeasurements)
+        "Měsíčně" -> MonthlyChart(screenState.monthlyMeasurements)
+        "Ročně" -> YearlyChart(screenState.yearlyMeasurements)
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -96,24 +112,24 @@ fun GraphContent(station: Station, viewModel: DetailScreenViewModel) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             // From Date Selector
-//            OutlinedButton(
-//                onClick = { viewModel.showFromDatePicker(true) },
-//                modifier = Modifier
-//                    .weight(1f)
-//                    .padding(end = 8.dp)
-//            ) {
-//                Text(text = screenState.fromDate ?: "Select From Date")
-//            }
-//
-//            // To Date Selector
-//            OutlinedButton(
-//                onClick = { viewModel.showToDatePicker(true) },
-//                modifier = Modifier
-//                    .weight(1f)
-//                    .padding(start = 8.dp)
-//            ) {
-//                Text(text = screenState.toDate ?: "Select To Date")
-//            }
+            OutlinedButton(
+                onClick = { viewModel.showFromDatePicker(true) },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 8.dp)
+            ) {
+                Text(text = if (screenState.fromDate != null) screenState.fromDate.toString() else "Select From Date")
+            }
+
+            // To Date Selector
+            OutlinedButton(
+                onClick = { viewModel.showToDatePicker(true) },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 8.dp)
+            ) {
+                Text(text = if (screenState.toDate != null) screenState.toDate.toString() else "Select To Date")
+            }
         }
 
         // Radio buttons for selecting resolution
