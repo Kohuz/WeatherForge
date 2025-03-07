@@ -35,15 +35,41 @@ fun LineChartComposable(entries: List<Entry>, labels: List<String>) {
                     color = Color.BLUE
                     valueTextColor = Color.BLACK
                     lineWidth = 2f
+                    setCircleColor(Color.RED)
+                    circleRadius = 4f
+                    setDrawCircleHole(false)
+                    mode = LineDataSet.Mode.CUBIC_BEZIER
+                    setDrawValues(true)
+                    valueTextSize = 10f
                 }
                 val lineData = LineData(dataSet)
                 data = lineData
 
-                // Set X-axis labels
+                // Configure X-axis
                 xAxis.valueFormatter = IndexAxisValueFormatter(labels)
                 xAxis.position = XAxis.XAxisPosition.BOTTOM
                 xAxis.granularity = 1f
-                xAxis.setDrawGridLines(false)
+                xAxis.setDrawGridLines(true)
+                xAxis.gridColor = Color.LTGRAY
+                xAxis.gridLineWidth = 0.5f
+                xAxis.textSize = 12f
+                xAxis.textColor = Color.BLACK
+                xAxis.setLabelRotationAngle(-45f)
+                xAxis.setAvoidFirstLastClipping(true)
+
+                // Configure Y-axis
+                axisLeft.isEnabled = true
+                axisLeft.textSize = 12f
+                axisLeft.textColor = Color.BLACK
+                axisLeft.setDrawGridLines(true)
+                axisLeft.gridColor = Color.LTGRAY
+                axisLeft.gridLineWidth = 0.5f
+                axisRight.isEnabled = false
+
+                // Configure legend
+                legend.isEnabled = true
+                legend.textSize = 12f
+                legend.textColor = Color.BLACK
 
                 // Refresh the chart
                 invalidate()
@@ -54,7 +80,6 @@ fun LineChartComposable(entries: List<Entry>, labels: List<String>) {
             .height(300.dp)
     )
 }
-
 fun transformDailyToEntries(measurements: List<MeasurementDaily>): List<Entry> {
     return measurements.mapIndexed { index, measurement ->
         Entry(

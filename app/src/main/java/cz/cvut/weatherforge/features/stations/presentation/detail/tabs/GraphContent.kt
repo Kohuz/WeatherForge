@@ -54,7 +54,7 @@ fun GraphContent(station: Station,
         )
     }
 
-    LaunchedEffect(selectedResolution) {
+    LaunchedEffect(selectedResolution, graphContentState.fromDate, graphContentState.toDate, graphContentState.selectedElement) {
         if(graphContentState.selectedElement != null && graphContentState.fromDate != null && graphContentState.toDate != null) {
             when (resolutions[selectedResolution]) {
 
