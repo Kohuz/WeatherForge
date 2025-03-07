@@ -2,6 +2,7 @@ package cz.cvut.weatherforge.features.stations.presentation.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cz.cvut.weatherforge.features.measurements.data.MeasurementRepository
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementDaily
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementMonthly
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementYearly
@@ -18,8 +19,8 @@ import kotlinx.coroutines.runBlocking
 import java.time.LocalDate
 
 class DetailScreenViewModel(
-    private val stationRepository: StationRepository, private val recordRepository: RecordRepository
-) : ViewModel() {
+    private val stationRepository: StationRepository, private val recordRepository: RecordRepository,
+    private val measurementRepository: MeasurementRepository) : ViewModel() {
     private val _screenStateStream = MutableStateFlow(DetailScreenState())
     val screenStateStream get() = _screenStateStream.asStateFlow()
 
@@ -28,13 +29,6 @@ class DetailScreenViewModel(
         val selectedTabIndex: Int = 0,
         val elementCodelist: List<ElementCodelistItem> = emptyList(),
         val allTimeRecords: List<RecordStats> = emptyList(),
-        val selectedResolutionIndex: Int = 0,
-        val expanded: Boolean = false,
-        val selectedElement: ElementCodelistItem? = null,
-        val fromDate: LocalDate? = null,
-        val toDate: LocalDate? = null,
-        val showFromDatePicker: Boolean = false,
-        val showToDatePicker: Boolean = false,
         val dailyMeasurements: List<MeasurementDaily> = emptyList(),
         val monthlyMeasurements: List<MeasurementMonthly> = emptyList(),
         val yearlyMeasurements: List<MeasurementYearly> = emptyList()
@@ -59,10 +53,6 @@ class DetailScreenViewModel(
         _screenStateStream.update { it.copy(selectedTabIndex = index) }
     }
 
-    fun selectResolution(resolutionIndex: Int) {
-        _screenStateStream.update { it.copy(selectedResolutionIndex = resolutionIndex) }
-    }
-
     fun loadRecords() {
         viewModelScope.launch {
             val allTimeRecordsResult =
@@ -73,49 +63,31 @@ class DetailScreenViewModel(
         }
     }
 
-    fun fetchDailyMeasurements(stationId: String, dateFrom: String, dateTo: String, element: String?) {
+    fun fetchDailyMeasurements(stationId: String, dateFrom: String, dateTo: String, element: String) {
         viewModelScope.launch {
-            _screenStateStream.update {  }
-            _dailyMeasurements.value = measurementRepository.getDailyMeasurements(stationId, dateFrom, dateTo, element)
+            val dailyMeasurementsResult = measurementRepository.getDailyMeasurements(stationId,dateFrom, dateTo, element)
+            if (dailyMeasurementsResult.isSuccess) {
+                _screenStateStream.update { it.copy(dailyMeasurements = dailyMeasurementsResult.measurements) }
+            }
         }
     }
 
-    fun fetchMonthlyMeasurements(stationId: String, dateFrom: String, dateTo: String, element: String?) {
+    fun fetchMonthlyMeasurements(stationId: String, dateFrom: String, dateTo: String, element: String) {
         viewModelScope.launch {
-            _monthlyMeasurements.value = measurementRepository.getMonthlyMeasurements(stationId, dateFrom, dateTo, element)
+            val monthlyMeasurementsResult = measurementRepository.getMonthlyMeasurements(stationId,dateFrom, dateTo, element)
+            if (monthlyMeasurementsResult.isSuccess) {
+                _screenStateStream.update { it.copy(monthlyMeasurements = monthlyMeasurementsResult.measurements) }
+            }
         }
     }
 
-    fun fetchYearlyMeasurements(stationId: String, dateFrom: String, dateTo: String, element: String?) {
+    fun fetchYearlyMeasurements(stationId: String, dateFrom: String, dateTo: String, element: String) {
         viewModelScope.launch {
-            _yearlyMeasurements.value = measurementRepository.getYearlyMeasurements(stationId, dateFrom, dateTo, element)
+            val yearlyMeasurementsResult = measurementRepository.getYearlyMeasurements(stationId,dateFrom, dateTo, element)
+            if (yearlyMeasurementsResult.isSuccess) {
+                _screenStateStream.update { it.copy(yearlyMeasurements = yearlyMeasurementsResult.measurements) }
+            }
         }
-    }
-
-    fun toggleDropdown(expanded: Boolean) {
-        _screenStateStream.update { it.copy(expanded = expanded) }
-    }
-
-    fun selectElement(element: ElementCodelistItem) {
-        _screenStateStream.update { it.copy(selectedElement = element) }
-    }
-
-    fun showFromDatePicker(show: Boolean) {
-        _screenStateStream.update { it.copy(showFromDatePicker = show) }
-    }
-
-    fun showToDatePicker(show: Boolean) {
-        _screenStateStream.update { it.copy(showToDatePicker = show) }
-    }
-
-    // Set the fromDate
-    fun setFromDate(date: java.time.LocalDate) {
-        _screenStateStream.update { it.copy(fromDate = date) }
-    }
-
-    // Set the toDate
-    fun setToDate(date: java.time.LocalDate) {
-        _screenStateStream.update { it.copy(toDate = date) }
     }
 }
 

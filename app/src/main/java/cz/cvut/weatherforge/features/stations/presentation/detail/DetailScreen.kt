@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -19,12 +18,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import cz.cvut.weatherforge.features.stations.data.model.Station
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.GraphContent
+import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.GraphContentViewModel
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.HistoryContent
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.OverviewContent
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.TableContent
@@ -35,16 +31,18 @@ import org.koin.androidx.compose.koinViewModel
 fun DetailScreen(
     stationId: String,
     navigateUp: () -> Unit,
-    viewModel: DetailScreenViewModel = koinViewModel()
+    detailScreenViewModel: DetailScreenViewModel = koinViewModel(),
+    graphContentViewModel: GraphContentViewModel = koinViewModel()
+
 ) {
-    val screenState by viewModel.screenStateStream.collectAsStateWithLifecycle()
+    val screenState by detailScreenViewModel.screenStateStream.collectAsStateWithLifecycle()
     val station = screenState.station
     val selectedTabIndex = screenState.selectedTabIndex
     val tabs = listOf("Přehled", "Graf", "Tabulka", "Dnešek v historii") //TODO: Localize
 
     LaunchedEffect(stationId) {
-        viewModel.loadStation(stationId)
-        viewModel.loadRecords()
+        detailScreenViewModel.loadStation(stationId)
+        detailScreenViewModel.loadRecords()
     }
 
     if (station != null) {
@@ -75,17 +73,17 @@ fun DetailScreen(
                         Tab(
                             text = { Text(title) },
                             selected = selectedTabIndex == index,
-                            onClick = { viewModel.selectTab(index) }
+                            onClick = { detailScreenViewModel.selectTab(index) }
                         )
                     }
                 }
 
                 // Display content based on the selected tab
                 when (selectedTabIndex) {
-                    0 -> OverviewContent(station, viewModel)
-                    1 -> GraphContent(station, viewModel)
-                    2 -> TableContent(station, viewModel)
-                    3 -> HistoryContent(station, viewModel)
+                    0 -> OverviewContent(station, detailScreenViewModel)
+                    1 -> GraphContent(station, detailScreenViewModel,graphContentViewModel)
+                    2 -> TableContent(station, detailScreenViewModel)
+                    3 -> HistoryContent(station, detailScreenViewModel)
                 }
             }
         }

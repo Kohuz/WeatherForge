@@ -1,4 +1,4 @@
-package cz.cvut.weatherforge.features.stations.presentation.detail.tabs
+package cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart
 
 
 import android.graphics.Color

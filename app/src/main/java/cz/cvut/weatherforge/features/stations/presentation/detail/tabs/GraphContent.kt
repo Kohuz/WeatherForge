@@ -23,44 +23,70 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cz.cvut.weatherforge.features.stations.data.model.Station
 import cz.cvut.weatherforge.features.stations.presentation.detail.DetailScreenViewModel
+import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.DailyChart
+import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.MonthlyChart
+import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.YearlyChart
 
 @Composable
-fun GraphContent(station: Station, viewModel: DetailScreenViewModel) {
-    val screenState by viewModel.screenStateStream.collectAsStateWithLifecycle()
+fun GraphContent(station: Station,
+                 detailScreenViewModel: DetailScreenViewModel,
+                 graphContentViewModel: GraphContentViewModel) {
+    val detailScreenState by detailScreenViewModel.screenStateStream.collectAsStateWithLifecycle()
+    val graphContentState by graphContentViewModel.graphContentStateStream.collectAsStateWithLifecycle()
 
-    val selectedResolution = screenState.selectedResolutionIndex
+    val selectedResolution = graphContentState.selectedResolutionIndex
     val resolutions = listOf("Denně", "Měsíčně", "Ročně")
 
     // Show/hide date pickers
-    if (screenState.showFromDatePicker) {
+    if (graphContentState.showFromDatePicker) {
         DatePickerDialog(
             resolution = resolutions[selectedResolution],
-            onDismiss = { viewModel.showFromDatePicker(false) },
-            onDateSelected = { date -> viewModel.setFromDate(date) }
+            onDismiss = { graphContentViewModel.showFromDatePicker(false) },
+            onDateSelected = { date -> graphContentViewModel.setFromDate(date) }
         )
     }
 
-    if (screenState.showToDatePicker) {
+    if (graphContentState.showToDatePicker) {
         DatePickerDialog(
             resolution = resolutions[selectedResolution],
-            onDismiss = { viewModel.showToDatePicker(false) },
-            onDateSelected = { date -> viewModel.setToDate(date) }
+            onDismiss = { graphContentViewModel.showToDatePicker(false) },
+            onDateSelected = { date -> graphContentViewModel.setToDate(date) }
         )
     }
 
     LaunchedEffect(selectedResolution) {
-        when (resolutions[selectedResolution]) {
-            "Denně" -> viewModel.fetchDailyMeasurements(station.id, screenState.fromDate, screenState.toDate, screenState.selectedElement?.code)
-            "Měsíčně" -> viewModel.fetchMonthlyMeasurements(station.id, screenState.fromDate, screenState.toDate, screenState.selectedElement?.code)
-            "Ročně" -> viewModel.fetchYearlyMeasurements(station.id, screenState.fromDate, screenState.toDate, screenState.selectedElement?.code)
+        if(graphContentState.selectedElement != null && graphContentState.fromDate != null && graphContentState.toDate != null) {
+            when (resolutions[selectedResolution]) {
+
+                "Denně" -> detailScreenViewModel.fetchDailyMeasurements(
+                    station.stationId,
+                    graphContentState.fromDate.toString(),
+                    graphContentState.toDate.toString(),
+                    graphContentState.selectedElement!!.abbreviation
+                )
+
+                "Měsíčně" -> detailScreenViewModel.fetchMonthlyMeasurements(
+                    station.stationId,
+                    graphContentState.fromDate.toString(),
+                    graphContentState.toDate.toString(),
+                    graphContentState.selectedElement!!.abbreviation
+                )
+
+                "Ročně" -> detailScreenViewModel.fetchYearlyMeasurements(
+                    station.stationId,
+                    graphContentState.fromDate.toString(),
+                    graphContentState.toDate.toString(),
+                    graphContentState.selectedElement!!.abbreviation
+                )
+            }
         }
     }
 
     // Display the chart
     when (resolutions[selectedResolution]) {
-        "Denně" -> DailyChart(screenState.dailyMeasurements)
-        "Měsíčně" -> MonthlyChart(screenState.monthlyMeasurements)
-        "Ročně" -> YearlyChart(screenState.yearlyMeasurements)
+        "Denně" -> DailyChart(detailScreenState.dailyMeasurements)
+        "Měsíčně" -> MonthlyChart(detailScreenState.monthlyMeasurements)
+        "Ročně" -> YearlyChart(detailScreenState.yearlyMeasurements)
     }
     Column(
         modifier = Modifier
@@ -75,26 +101,26 @@ fun GraphContent(station: Station, viewModel: DetailScreenViewModel) {
         ) {
             // Button to toggle dropdown visibility
             OutlinedButton(
-                onClick = { viewModel.toggleDropdown(!screenState.expanded) },
+                onClick = { graphContentViewModel.toggleDropdown(!graphContentState.expanded) },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = screenState.selectedElement?.name ?: "Select Station Element",
+                    text = graphContentState.selectedElement?.name ?: "Select Station Element",
                     modifier = Modifier.padding(8.dp)
                 )
             }
 
             // Dropdown menu
             DropdownMenu(
-                expanded = screenState.expanded,
-                onDismissRequest = { viewModel.toggleDropdown(false) },
+                expanded = graphContentState.expanded,
+                onDismissRequest = { graphContentViewModel.toggleDropdown(false) },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                screenState.elementCodelist.forEach { element ->
+                detailScreenState.elementCodelist.forEach { element ->
                     DropdownMenuItem(
                         onClick = {
-                            viewModel.selectElement(element)
-                            viewModel.toggleDropdown(false)
+                            graphContentViewModel.selectElement(element)
+                            graphContentViewModel.toggleDropdown(false)
                         },
                         text = {
                             Text(text = element.name)
@@ -113,22 +139,22 @@ fun GraphContent(station: Station, viewModel: DetailScreenViewModel) {
         ) {
             // From Date Selector
             OutlinedButton(
-                onClick = { viewModel.showFromDatePicker(true) },
+                onClick = { graphContentViewModel.showFromDatePicker(true) },
                 modifier = Modifier
                     .weight(1f)
                     .padding(end = 8.dp)
             ) {
-                Text(text = if (screenState.fromDate != null) screenState.fromDate.toString() else "Select From Date")
+                Text(text = if (graphContentState.fromDate != null) graphContentState.fromDate.toString() else "Select From Date")
             }
 
             // To Date Selector
             OutlinedButton(
-                onClick = { viewModel.showToDatePicker(true) },
+                onClick = { graphContentViewModel.showToDatePicker(true) },
                 modifier = Modifier
                     .weight(1f)
                     .padding(start = 8.dp)
             ) {
-                Text(text = if (screenState.toDate != null) screenState.toDate.toString() else "Select To Date")
+                Text(text = if (graphContentState.toDate != null) graphContentState.toDate.toString() else "Select To Date")
             }
         }
 
@@ -144,7 +170,7 @@ fun GraphContent(station: Station, viewModel: DetailScreenViewModel) {
                     modifier = Modifier
                         .selectable(
                             selected = (index == selectedResolution),
-                            onClick = { viewModel.selectResolution(index) },
+                            onClick = { graphContentViewModel.selectResolution(index) },
                             role = Role.RadioButton
                         )
                         .padding(8.dp),
@@ -152,7 +178,7 @@ fun GraphContent(station: Station, viewModel: DetailScreenViewModel) {
                 ) {
                     RadioButton(
                         selected = (index == selectedResolution),
-                        onClick = { viewModel.selectResolution(index) }
+                        onClick = { graphContentViewModel.selectResolution(index) }
                     )
                     Text(
                         text = resolution,
