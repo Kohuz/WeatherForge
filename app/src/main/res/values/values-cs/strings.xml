@@ -8,5 +8,8 @@
     <string name="detail_location">Lokace</string>
     <string name="detail_elevation">Nadmořská výška</string>
     <string name="detail_coordinates">Souřadnice</string>
+    <string name="detail_start_of_measurement">Počátek měření</string>
+    <string name="detail_measurement_started_on">Měření této veličiny začalo</string>
+
 
 </resources>

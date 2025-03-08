@@ -18,19 +18,25 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import cz.cvut.weatherforge.R
+import cz.cvut.weatherforge.R.*
 import cz.cvut.weatherforge.features.stations.data.model.Station
 import cz.cvut.weatherforge.features.stations.presentation.detail.DetailScreenViewModel
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.DailyChart
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.MonthlyChart
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.YearlyChart
+import kotlinx.datetime.toJavaLocalDate
 
 @Composable
-fun GraphContent(station: Station,
-                 detailScreenViewModel: DetailScreenViewModel,
-                 graphContentViewModel: GraphContentViewModel) {
+fun GraphContent(
+    station: Station,
+    detailScreenViewModel: DetailScreenViewModel,
+    graphContentViewModel: GraphContentViewModel
+) {
     val detailScreenState by detailScreenViewModel.screenStateStream.collectAsStateWithLifecycle()
     val graphContentState by graphContentViewModel.graphContentStateStream.collectAsStateWithLifecycle()
 
@@ -38,40 +44,33 @@ fun GraphContent(station: Station,
     val resolutions = listOf("Denně", "Měsíčně", "Ročně")
 
     // Show/hide date pickers
-    if (graphContentState.showFromDatePicker) {
+    if (graphContentState.showDateRangePicker) {
         DatePickerDialog(
             resolution = resolutions[selectedResolution],
-            onDismiss = { graphContentViewModel.showFromDatePicker(false) },
-            onDateSelected = { date -> graphContentViewModel.setFromDate(date) }
+            onDismiss = { graphContentViewModel.showDateRangePicker(false) },
+            onDateRangeSelected = { fromDate, toDate ->
+                graphContentViewModel.setFromDate(fromDate)
+                graphContentViewModel.setToDate(toDate)
+            }
         )
     }
 
-    if (graphContentState.showToDatePicker) {
-        DatePickerDialog(
-            resolution = resolutions[selectedResolution],
-            onDismiss = { graphContentViewModel.showToDatePicker(false) },
-            onDateSelected = { date -> graphContentViewModel.setToDate(date) }
-        )
-    }
-
+    // Fetch data when all parameters are available
     LaunchedEffect(selectedResolution, graphContentState.fromDate, graphContentState.toDate, graphContentState.selectedElement) {
-        if(graphContentState.selectedElement != null && graphContentState.fromDate != null && graphContentState.toDate != null) {
+        if (graphContentState.selectedElement != null && graphContentState.fromDate != null && graphContentState.toDate != null) {
             when (resolutions[selectedResolution]) {
-
                 "Denně" -> detailScreenViewModel.fetchDailyMeasurements(
                     station.stationId,
                     graphContentState.fromDate.toString(),
                     graphContentState.toDate.toString(),
                     graphContentState.selectedElement!!.abbreviation
                 )
-
                 "Měsíčně" -> detailScreenViewModel.fetchMonthlyMeasurements(
                     station.stationId,
                     graphContentState.fromDate.toString(),
                     graphContentState.toDate.toString(),
                     graphContentState.selectedElement!!.abbreviation
                 )
-
                 "Ročně" -> detailScreenViewModel.fetchYearlyMeasurements(
                     station.stationId,
                     graphContentState.fromDate.toString(),
@@ -82,12 +81,6 @@ fun GraphContent(station: Station,
         }
     }
 
-    // Display the chart
-    when (resolutions[selectedResolution]) {
-        "Denně" -> DailyChart(detailScreenState.dailyMeasurements)
-        "Měsíčně" -> MonthlyChart(detailScreenState.monthlyMeasurements)
-        "Ročně" -> YearlyChart(detailScreenState.yearlyMeasurements)
-    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -120,6 +113,13 @@ fun GraphContent(station: Station,
                     DropdownMenuItem(
                         onClick = {
                             graphContentViewModel.selectElement(element)
+                            // Set the fromDate to the beginDate of the selected element
+                            val beginDate = station.stationElements
+                                .find { it.elementAbbreviation == element.abbreviation }
+                                ?.beginDate
+                            if (beginDate != null) {
+                                graphContentViewModel.setFromDate(beginDate.date.toJavaLocalDate())
+                            }
                             graphContentViewModel.toggleDropdown(false)
                         },
                         text = {
@@ -130,32 +130,37 @@ fun GraphContent(station: Station,
             }
         }
 
-        // Date Selectors for fromDate and toDate
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // From Date Selector
-            OutlinedButton(
-                onClick = { graphContentViewModel.showFromDatePicker(true) },
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 8.dp)
-            ) {
-                Text(text = if (graphContentState.fromDate != null) graphContentState.fromDate.toString() else "Select From Date")
-            }
+        // Show date selectors only if an element is selected
+        if (graphContentState.selectedElement != null) {
+            // Date Selectors for fromDate and toDate
+                val beginDate = station.stationElements
+                    .find { it.elementAbbreviation == graphContentState.selectedElement!!.abbreviation }
+                    ?.beginDate
 
-            // To Date Selector
-            OutlinedButton(
-                onClick = { graphContentViewModel.showToDatePicker(true) },
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 8.dp)
-            ) {
-                Text(text = if (graphContentState.toDate != null) graphContentState.toDate.toString() else "Select To Date")
+            if (beginDate != null) {
+                Text(
+                    text = "${stringResource(R.string.detail_measurement_started_on)}: ${beginDate.date}",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                )
             }
+                // Date Range Selector
+                OutlinedButton(
+                    onClick = { graphContentViewModel.showDateRangePicker(true) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                ) {
+                    Text(
+                        text = if (graphContentState.fromDate != null && graphContentState.toDate != null) {
+                            "${graphContentState.fromDate} - ${graphContentState.toDate}"
+                        } else {
+                            "Select Date Range"
+                        }
+                    )
+                }
+
         }
 
         // Radio buttons for selecting resolution
@@ -185,6 +190,15 @@ fun GraphContent(station: Station,
                         modifier = Modifier.padding(start = 8.dp)
                     )
                 }
+            }
+        }
+
+        // Display the chart
+        if (graphContentState.selectedElement != null && graphContentState.fromDate != null && graphContentState.toDate != null) {
+            when (resolutions[selectedResolution]) {
+                "Denně" -> DailyChart(detailScreenState.dailyMeasurements)
+                "Měsíčně" -> MonthlyChart(detailScreenState.monthlyMeasurements)
+                "Ročně" -> YearlyChart(detailScreenState.yearlyMeasurements)
             }
         }
     }

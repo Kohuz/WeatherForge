@@ -37,9 +37,10 @@ fun OverviewContent(station: Station, viewModel: DetailScreenViewModel) {
            title = stringResource(R.string.detail_information_about_station),
            items = listOf(
                Pair(stringResource(R.string.detail_location), station.location),
+               Pair(stringResource(R.string.detail_start_of_measurement), station.startDate.toString()),
                Pair(stringResource(R.string.detail_elevation), station.elevation.toString()),
-               Pair(stringResource(R.string.detail_coordinates), String.format("%.4f, %.4f", station.latitude, station.longitude)
-           )),
+               Pair(stringResource(R.string.detail_coordinates), String.format("%.4f, %.4f", station.latitude, station.longitude)),
+           ),
        )
         InfoCard(
             title = stringResource(R.string.detail_current_state),

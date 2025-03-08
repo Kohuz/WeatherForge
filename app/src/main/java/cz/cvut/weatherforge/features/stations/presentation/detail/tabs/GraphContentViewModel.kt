@@ -26,8 +26,9 @@ class GraphContentViewModel(
         val selectedElement: ElementCodelistItem? = null,
         val fromDate: LocalDate? = null,
         val toDate: LocalDate? = null,
-        val showFromDatePicker: Boolean = false,
-        val showToDatePicker: Boolean = false,
+//        val showFromDatePicker: Boolean = false,
+//        val showToDatePicker: Boolean = false,
+        val showDateRangePicker: Boolean = false,
     )
 
     fun selectResolution(resolutionIndex: Int) {
@@ -42,13 +43,17 @@ class GraphContentViewModel(
         _graphContentStateStream.update { it.copy(selectedElement = element) }
     }
 
-    fun showFromDatePicker(show: Boolean) {
-        _graphContentStateStream.update { it.copy(showFromDatePicker = show) }
+    fun showDateRangePicker(show: Boolean) {
+        _graphContentStateStream.update { it.copy(showDateRangePicker = show) }
     }
 
-    fun showToDatePicker(show: Boolean) {
-        _graphContentStateStream.update { it.copy(showToDatePicker = show) }
-    }
+//    fun showFromDatePicker(show: Boolean) {
+//        _graphContentStateStream.update { it.copy(showFromDatePicker = show) }
+//    }
+//
+//    fun showToDatePicker(show: Boolean) {
+//        _graphContentStateStream.update { it.copy(showToDatePicker = show) }
+//    }
 
     fun setFromDate(date: LocalDate) {
         _graphContentStateStream.update { it.copy(fromDate = date) }

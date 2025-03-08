@@ -75,6 +75,28 @@ fun LineChartComposable(entries: List<Entry>, labels: List<String>) {
                 invalidate()
             }
         },
+        update = { lineChart ->
+            // Update the chart data
+            val dataSet = LineDataSet(entries, "Measurements").apply {
+                color = Color.BLUE
+                valueTextColor = Color.BLACK
+                lineWidth = 2f
+                setCircleColor(Color.RED)
+                circleRadius = 4f
+                setDrawCircleHole(false)
+                mode = LineDataSet.Mode.CUBIC_BEZIER
+                setDrawValues(true)
+                valueTextSize = 10f
+            }
+            val lineData = LineData(dataSet)
+            lineChart.data = lineData
+
+            // Update X-axis labels
+            lineChart.xAxis.valueFormatter = IndexAxisValueFormatter(labels)
+
+            // Refresh the chart
+            lineChart.invalidate()
+        },
         modifier = Modifier
             .fillMaxWidth()
             .height(300.dp)
