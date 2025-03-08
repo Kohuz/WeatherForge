@@ -26,8 +26,6 @@ class GraphContentViewModel(
         val selectedElement: ElementCodelistItem? = null,
         val fromDate: LocalDate? = null,
         val toDate: LocalDate? = null,
-//        val showFromDatePicker: Boolean = false,
-//        val showToDatePicker: Boolean = false,
         val showDateRangePicker: Boolean = false,
     )
 

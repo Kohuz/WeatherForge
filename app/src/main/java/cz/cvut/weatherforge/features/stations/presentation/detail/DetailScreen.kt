@@ -22,6 +22,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.GraphContent
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.GraphContentViewModel
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.HistoryContent
+import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.HistoryContentViewModel
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.OverviewContent
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.TableContent
 import org.koin.androidx.compose.koinViewModel
@@ -32,7 +33,8 @@ fun DetailScreen(
     stationId: String,
     navigateUp: () -> Unit,
     detailScreenViewModel: DetailScreenViewModel = koinViewModel(),
-    graphContentViewModel: GraphContentViewModel = koinViewModel()
+    graphContentViewModel: GraphContentViewModel = koinViewModel(),
+    historyContentViewModel: HistoryContentViewModel = koinViewModel()
 
 ) {
     val screenState by detailScreenViewModel.screenStateStream.collectAsStateWithLifecycle()
@@ -83,7 +85,7 @@ fun DetailScreen(
                     0 -> OverviewContent(station, detailScreenViewModel)
                     1 -> GraphContent(station, detailScreenViewModel,graphContentViewModel)
                     2 -> TableContent(station, detailScreenViewModel)
-                    3 -> HistoryContent(station, detailScreenViewModel)
+                    3 -> HistoryContent(stationId, historyContentViewModel)
                 }
             }
         }
