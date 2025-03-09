@@ -19,7 +19,9 @@ class HistoryContentViewModel(
 
     data class HistoryContentState(
         val selectedDate: LocalDate? = null, // The selected date for fetching data
+        val selectedDate2: LocalDate? = null, // The second selected date for fetching data
         val showDatePicker: Boolean = false, // Whether to show the date picker dialog
+        val showDatePicker2: Boolean = false, // Whether to show the date picker dialog
         val dailyStats: ValueStatsResult? = null, // Result for daily stats (long term)
         val dailyAndMonthlyMeasurements: MeasurementDailyResult? = null, // Result for daily and monthly measurements
         val monthlyMeasurements: MeasurementMonthlyResult? = null, // Result for monthly measurements
@@ -42,18 +44,28 @@ class HistoryContentViewModel(
         _state.update { it.copy(showDatePicker = show) }
     }
 
+    fun setSelectedDate2(date: LocalDate) {
+        _state.update { it.copy(selectedDate2 = date) }
+    }
+
+    fun showDatePicker2(show: Boolean) {
+        _state.update { it.copy(showDatePicker2 = show) }
+    }
     // Function to fetch all data
     fun fetchAllData(stationId: String) {
         _state.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
-            try { // Replace with the actual station ID
-                val date = _state.value.selectedDate.toString()
+            try {
+                val date1 = _state.value.selectedDate?.toString() ?: java.time.LocalDate.now().toString()
+                val date2 = _state.value.selectedDate2?.toString() ?:java.time.LocalDate.now().toString()
 
-                // Fetch all data in parallel
-                val dailyStats = repository.getStatsDayLongTerm(stationId, date)
-                val dailyAndMonthlyMeasurements = repository.getMeasurementsDayAndMonth(stationId, date)
-                val monthlyMeasurements = repository.getMeasurementsMonth(stationId, date)
-                val statsDay = repository.getStatsDay(stationId, date)
+                // Fetch data using the first date
+                val dailyStats = repository.getStatsDayLongTerm(stationId, date2)
+                val dailyAndMonthlyMeasurements = repository.getMeasurementsDayAndMonth(stationId, date1)
+
+                // Fetch data using the second date
+                val monthlyMeasurements = repository.getMeasurementsMonth(stationId, date2)
+                val statsDay = repository.getStatsDay(stationId, date2)
 
                 // Update the state with the fetched data
                 _state.update {
@@ -70,4 +82,5 @@ class HistoryContentViewModel(
             }
         }
     }
+
 }

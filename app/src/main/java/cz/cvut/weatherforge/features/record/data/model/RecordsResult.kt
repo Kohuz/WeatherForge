@@ -5,10 +5,7 @@ data class StatsResult(
     val isSuccess: Boolean
 )
 
-data class RecordsResult(
-    val records: List<Pair<StationRecord, StationRecord>>,
-    val isSuccess: Boolean
-)
+
 
 
 
