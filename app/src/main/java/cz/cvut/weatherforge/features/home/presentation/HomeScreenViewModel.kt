@@ -13,6 +13,7 @@ import cz.cvut.weatherforge.features.record.data.RecordRepository
 import cz.cvut.weatherforge.features.record.data.model.RecordStats
 import cz.cvut.weatherforge.features.record.data.model.StationRecord
 import cz.cvut.weatherforge.features.stations.data.StationRepository
+import cz.cvut.weatherforge.features.stations.data.model.ElementCodelistItem
 import cz.cvut.weatherforge.features.stations.data.model.Station
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,6 +27,7 @@ class HomeScreenViewModel(private val stationRepository: StationRepository, priv
     data class HomeScreenState(
         val closestStation: Station? = null,
         val nearbyStations: List<Pair<String, String>> = emptyList(),
+        val elementCodelist: List<ElementCodelistItem> = emptyList(),
         val actualMeasurements: List<MeasurementLatest> = emptyList(),
         val todayRecords: List<StationRecord> = emptyList(),
         val longTermRecords: List<RecordStats> = emptyList(),
@@ -33,6 +35,15 @@ class HomeScreenViewModel(private val stationRepository: StationRepository, priv
         val successful: Boolean = true,
         val userLocation: LatLng? = null
     )
+
+    init {
+        viewModelScope.launch {
+            val elementCodelistResult = stationRepository.getElementsCodelist()
+            if(elementCodelistResult.isSuccess){
+                _screenStateStream.update { it.copy(elementCodelist = elementCodelistResult.elements) }
+            }
+        }
+    }
 
     fun loadInfo() {
         viewModelScope.launch {

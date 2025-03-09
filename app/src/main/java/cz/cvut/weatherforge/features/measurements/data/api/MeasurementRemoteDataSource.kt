@@ -30,7 +30,7 @@ interface MeasurementRemoteDataSource {
     suspend fun getStatsDayLongTerm(
         stationId: String,
         date: String
-    ): ValueStats
+    ): List<ValueStats>
 
     suspend fun getMeasurementsDayAndMonth(
         stationId: String,

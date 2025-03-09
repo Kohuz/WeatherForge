@@ -11,6 +11,7 @@ data class RecordStats(
 
 @Serializable
 data class ValueStats(
+    val element: String,
     val highest: Double?,
     val lowest: Double?,
     val average: Double?

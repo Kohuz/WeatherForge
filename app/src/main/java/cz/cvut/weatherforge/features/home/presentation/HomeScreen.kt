@@ -29,6 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.location.LocationServices
 import cz.cvut.weatherforge.R
 import cz.cvut.weatherforge.features.stations.data.model.Station
+import cz.cvut.weatherforge.features.stations.presentation.detail.elementAbbreviationToNameUnitPair
 import cz.cvut.weatherforge.ui.theme.AppTypography
 import org.koin.androidx.compose.koinViewModel
 import kotlin.math.pow
@@ -100,9 +101,25 @@ fun HomeScreen(viewModel: HomeScreenViewModel = koinViewModel()) {
                                 screenState.closestStation?.stationLatestMeasurements?.let {
                                     InfoCard(
                                         title = stringResource(R.string.weather_at_nearest),
-                                        it.map { measurement -> measurement.element to measurement.value.toString() })
+                                        items= it.mapNotNull { measurement ->
+                                            val elementInfo = elementAbbreviationToNameUnitPair(
+                                                measurement.element,
+                                                screenState.elementCodelist
+                                            )
+                                            if (elementInfo != null) {
+                                                val valueWithUnit =
+                                                    "${measurement.value} ${elementInfo.unit}"
+                                                elementInfo.name to valueWithUnit
+                                            } else {
+                                                null
+                                            }
+                                        })
+                                            //it.map { measurement -> measurement.element to measurement.value.toString() })
+
+
                                 }
                             }
+
 
                             InfoCard(title = stringResource(R.string.station_near), screenState.nearbyStations)
                         }

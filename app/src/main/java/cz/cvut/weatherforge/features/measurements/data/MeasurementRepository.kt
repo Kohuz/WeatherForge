@@ -70,7 +70,7 @@ class MeasurementRepository(
             ValueStatsResult(valueStats, isSuccess = true)
         } catch (t: Throwable) {
             Log.v("api", t.toString())
-            ValueStatsResult(null, isSuccess = false)
+            ValueStatsResult(emptyList(), isSuccess = false)
         }
     }
 

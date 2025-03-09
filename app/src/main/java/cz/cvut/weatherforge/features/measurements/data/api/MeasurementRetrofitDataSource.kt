@@ -41,7 +41,7 @@ class MeasurementRetrofitDataSource(
     override suspend fun getStatsDayLongTerm(
         stationId: String,
         date: String
-    ): ValueStats {
+    ): List<ValueStats> {
         return apiDescription.getStatsDayLongTerm(stationId, date)
     }
 

@@ -20,6 +20,6 @@ data class MeasurementYearlyResult(
 )
 
 data class ValueStatsResult(
-    val valueStats: ValueStats?,
+    val valueStats: List<ValueStats>,
     val isSuccess: Boolean
 )

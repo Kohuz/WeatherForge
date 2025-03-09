@@ -38,7 +38,7 @@ interface MeasurementApiDescription {
     suspend fun getStatsDayLongTerm(
         @Path("stationId") stationId: String,
         @Query("date") date: String
-    ): ValueStats
+    ): List<ValueStats>
 
     @GET("/measurements/{stationId}/measurementsDayAndMonth")
     suspend fun getMeasurementsDayAndMonth(
