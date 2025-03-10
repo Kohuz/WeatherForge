@@ -85,7 +85,7 @@ fun OverviewContent(station: Station, viewModel: DetailScreenViewModel) {
                         )
                         if (elementInfo != null) {
                             val valueWithUnit =
-                                "${record.lowest?.value} ${elementInfo.unit}"
+                                "${record.lowest?.value} ${elementInfo.unit}\n ${record.lowest?.recordDate.toString()} "
                             elementInfo.name to valueWithUnit
                         } else {
                             null
