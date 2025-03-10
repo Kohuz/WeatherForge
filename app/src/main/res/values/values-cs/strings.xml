@@ -10,9 +10,14 @@
     <string name="average">Průměr</string>
     <string name="station_near">Stanice poblíž</string>
     <string name="weather_at_nearest">Počasí na nejbližší stanici</string>
+    <string name="records_at_station">Rekordy na stanici</string>
+    <string name="records">Rekordy celkem</string>
+    <string name="detail_end_of_measurement">Konec měření</string>
+    <string name="detail_active">Aktivní</string>
     <string name="detail_information_about_station">Informace o stanici</string>
     <string name="detail_current_state">Aktuální stav</string>
     <string name="detail_location">Lokace</string>
+    <string name="detail_code">Kód</string>
     <string name="detail_elevation">Nadmořská výška</string>
     <string name="detail_coordinates">Souřadnice</string>
     <string name="detail_start_of_measurement">Počátek měření</string>

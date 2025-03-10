@@ -56,7 +56,10 @@ class HomeScreenViewModel(private val stationRepository: StationRepository, priv
             if (userLocation != null) {
                 fetchClosestStation(userLocation)
                 fetchNearbyStations(userLocation)
+
             }
+
+            fetchAllTimeRecords()
 
             setLoadingState(false)
         }
@@ -71,22 +74,22 @@ class HomeScreenViewModel(private val stationRepository: StationRepository, priv
         if (closestStationResult.isSuccess) {
             updateClosestStation(closestStationResult.station)
             closestStationResult.station?.let { station ->
-                fetchAllTimeRecords(station.stationId)
+                fetchTodayAllTimeStationRecords(station.stationId)
             }
         }
     }
 
-    private suspend fun updateClosestStation(station: Station?) {
+    private fun updateClosestStation(station: Station?) {
         _screenStateStream.update { state ->
             state.copy(closestStation = station)
         }
     }
 
-    private suspend fun fetchAllTimeRecords(stationId: String) {
+    private suspend fun fetchTodayAllTimeStationRecords(stationId: String) {
         val statsResult = recordRepository.getAllTimeStationRecords(stationId)
         if (statsResult.isSuccess) {
             _screenStateStream.update { state ->
-                state.copy(allTimeRecords = statsResult.stats)
+                state.copy(alltimeStationRecords = statsResult.stats)
             }
         }
     }
@@ -106,6 +109,16 @@ class HomeScreenViewModel(private val stationRepository: StationRepository, priv
         }
     }
 
+    private fun fetchAllTimeRecords() {
+        viewModelScope.launch {
+            val allTimeRecordsResult = recordRepository.getAllTimeRecords()
+            if (allTimeRecordsResult.isSuccess) {
+                _screenStateStream.update { state ->
+                    state.copy(allTimeRecords = allTimeRecordsResult.stats)
+                }
+            }
+        }
+    }
     private fun calculateDistancesForNearbyStations(
         stations: List<Station>,
         userLocation: LatLng

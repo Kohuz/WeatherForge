@@ -29,6 +29,8 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.location.LocationServices
 import cz.cvut.weatherforge.R
+import cz.cvut.weatherforge.features.measurements.data.model.MeasurementLatest
+import cz.cvut.weatherforge.features.stations.data.model.ElementCodelistItem
 import cz.cvut.weatherforge.features.stations.data.model.Station
 import cz.cvut.weatherforge.features.stations.presentation.detail.elementAbbreviationToNameUnitPair
 import cz.cvut.weatherforge.ui.theme.AppTypography
@@ -97,58 +99,130 @@ fun HomeScreen(viewModel: HomeScreenViewModel = koinViewModel()) {
                                 .fillMaxSize()
                                 .padding(16.dp)
                         ) {
-                            if(screenState.closestStation != null) {
+                            if (screenState.closestStation != null) {
                                 screenState.closestStation?.stationLatestMeasurements?.let {
-                                    InfoCard(
+                                    CurrentWeatherMeasurementsInfoCard(
                                         title = stringResource(R.string.weather_at_nearest),
-                                        items= it.mapNotNull { measurement ->
+                                        measurements = it,
+                                        elementCodelist = screenState.elementCodelist
+                                    )
+                                }
+                            }
+
+
+                            InfoCard(
+                                title = stringResource(R.string.station_near),
+                                screenState.nearbyStations //MAKE IT CLICKABLE AND NAVIGATE TO THE STATION ID
+                            )
+
+                            if (screenState.allTimeRecords.isNotEmpty() && screenState.alltimeStationRecords.isNotEmpty()) {
+                                val allTimeRecordData = InfoCardData(
+                                    title = stringResource(R.string.records),
+                                    items = screenState.allTimeRecords.mapNotNull { record ->
+                                        if(record.element == "TMA" ||
+                                            record.element == "Fmax" ||
+                                            record.element == "SVH" ||
+                                            record.element == "SNO" ||
+                                            record.element == "SCE") {
                                             val elementInfo = elementAbbreviationToNameUnitPair(
-                                                measurement.element,
+                                                record.element,
                                                 screenState.elementCodelist
                                             )
                                             if (elementInfo != null) {
                                                 val valueWithUnit =
-                                                    "${measurement.value} ${elementInfo.unit}"
+                                                    "${record.highest?.value} ${elementInfo.unit}"
                                                 elementInfo.name to valueWithUnit
                                             } else {
                                                 null
                                             }
-                                        })
+                                        }
+                                        else if(record.element == "TMI") {
+                                            val elementInfo = elementAbbreviationToNameUnitPair(
+                                                record.element,
+                                                screenState.elementCodelist
+                                            )
+                                            if (elementInfo != null) {
+                                                val valueWithUnit =
+                                                    "${record.lowest?.value} ${elementInfo.unit}"
+                                                elementInfo.name to valueWithUnit
+                                            } else {
+                                                null
+                                            }
+                                        }
+                                        else {
+                                            val elementInfo = elementAbbreviationToNameUnitPair(
+                                                record.element,
+                                                screenState.elementCodelist
+                                            )
+                                            if (elementInfo != null) {
+                                                val valueWithUnit =
+                                                    "${String.format("%.2f", record.average)} ${elementInfo.unit}"
+                                                elementInfo.name to valueWithUnit
+                                            } else {
+                                                null
+                                            }
+                                        }
+
+                                    }
+                                )
 
 
-                                }
+                                val allTimeStationData = InfoCardData(
+                                    title = stringResource(R.string.records_at_station),
+                                    items = screenState.alltimeStationRecords.mapNotNull { record ->
+                                        if(record.element == "TMA" ||
+                                            record.element == "Fmax" ||
+                                            record.element == "SVH" ||
+                                            record.element == "SNO" ||
+                                            record.element == "SCE") {
+                                            val elementInfo = elementAbbreviationToNameUnitPair(
+                                                record.element,
+                                                screenState.elementCodelist
+                                            )
+                                            if (elementInfo != null) {
+                                                val valueWithUnit =
+                                                    "${record.highest?.value} ${elementInfo.unit}"
+                                                elementInfo.name to valueWithUnit
+                                            } else {
+                                                null
+                                            }
+                                        }
+                                        else if(record.element == "TMI") {
+                                            val elementInfo = elementAbbreviationToNameUnitPair(
+                                                record.element,
+                                                screenState.elementCodelist
+                                            )
+                                            if (elementInfo != null) {
+                                                val valueWithUnit =
+                                                    "${record.lowest?.value} ${elementInfo.unit}"
+                                                elementInfo.name to valueWithUnit
+                                            } else {
+                                                null
+                                            }
+                                        }
+                                        else {
+                                            val elementInfo = elementAbbreviationToNameUnitPair(
+                                                record.element,
+                                                screenState.elementCodelist
+                                            )
+                                            if (elementInfo != null) {
+                                                val valueWithUnit =
+                                                    "${record.average} ${elementInfo.unit}"
+                                                elementInfo.name to valueWithUnit
+                                            } else {
+                                                null
+                                            }
+                                        }
+
+                                    }
+                                )
+                                SwipeableInfoCard(
+                                    infoCards = listOf(allTimeStationData,allTimeRecordData)
+                                )
+
                             }
-
-
-                            InfoCard(title = stringResource(R.string.station_near), screenState.nearbyStations)
                         }
                     }
-
-
-                if (screenState.closestStation != null) {
-                    screenState.closestStation?.stationLatestMeasurements?.let { measurements ->
-                        val infoCardData = InfoCardData(
-                            title = stringResource(R.string.weather_at_nearest),
-                            items = measurements.mapNotNull { measurement ->
-                                val elementInfo = elementAbbreviationToNameUnitPair(
-                                    measurement.element,
-                                    screenState.elementCodelist
-                                )
-                                if (elementInfo != null) {
-                                    val valueWithUnit = "${measurement.value} ${elementInfo.unit}"
-                                    elementInfo.name to valueWithUnit
-                                } else {
-                                    null
-                                }
-                            }
-                        )
-
-                        SwipeableInfoCard(
-                            infoCards = listOf(infoCardData, infoCardData)
-                        )
-                    }
-                }
-
 
 
             }
@@ -172,3 +246,27 @@ fun pythagoreanDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double):
 }
 
 
+@Composable
+fun CurrentWeatherMeasurementsInfoCard(
+    title: String,
+    measurements: List<MeasurementLatest>,
+    elementCodelist: List<ElementCodelistItem>,
+    modifier: Modifier = Modifier
+) {
+    InfoCard(
+        title = title,
+        items = measurements.mapNotNull { measurement ->
+            val elementInfo = elementAbbreviationToNameUnitPair(
+                measurement.element,
+                elementCodelist
+            )
+            if (elementInfo != null) {
+                val valueWithUnit = "${measurement.value} ${elementInfo.unit}"
+                elementInfo.name to valueWithUnit
+            } else {
+                null
+            }
+        },
+        modifier = modifier
+    )
+}

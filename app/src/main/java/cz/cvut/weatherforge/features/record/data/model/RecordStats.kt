@@ -6,7 +6,8 @@ import kotlinx.serialization.Serializable
 data class RecordStats(
     val highest: StationRecord?,
     val lowest: StationRecord?,
-    val average: Double?
+    val average: Double?,
+    val element: String,
 )
 
 @Serializable

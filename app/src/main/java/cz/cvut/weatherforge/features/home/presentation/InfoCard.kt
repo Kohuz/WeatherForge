@@ -1,4 +1,5 @@
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -53,6 +54,8 @@ fun SwipeableInfoCard(
 fun InfoCard(
     title: String,
     items: List<Pair<String, String>>,
+    isClickable: Boolean = false, // Add this parameter
+    onClick: (String) -> Unit = {}, // Add this parameter (default empty lambda)
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -75,7 +78,12 @@ fun InfoCard(
             )
             Spacer(modifier = Modifier.height(8.dp))
             items.forEach { (label, value) ->
-                WeatherInfoRow(label = label, value = value)
+                WeatherInfoRow(
+                    label = label,
+                    value = value,
+                    isClickable = isClickable, // Pass the boolean to WeatherInfoRow
+                    onClick = { onClick(label) } // Pass the onClick lambda
+                )
                 Spacer(modifier = Modifier.height(4.dp))
             }
         }
@@ -83,9 +91,22 @@ fun InfoCard(
 }
 
 @Composable
-fun WeatherInfoRow(label: String, value: String) {
+fun WeatherInfoRow(
+    label: String,
+    value: String,
+    isClickable: Boolean = false, // Add this parameter
+    onClick: () -> Unit = {} // Add this parameter (default empty lambda)
+) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(
+                if (isClickable) {
+                    Modifier.clickable { onClick() } // Apply clickable modifier conditionally
+                } else {
+                    Modifier
+                }
+            ),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(text = label, style = AppTypography.bodyMedium)
