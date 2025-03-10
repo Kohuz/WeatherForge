@@ -2,6 +2,7 @@ package cz.cvut.weatherforge.features.home.presentation
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.location.Location
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
@@ -29,8 +30,10 @@ class HomeScreenViewModel(private val stationRepository: StationRepository, priv
         val nearbyStations: List<Pair<String, String>> = emptyList(),
         val elementCodelist: List<ElementCodelistItem> = emptyList(),
         val actualMeasurements: List<MeasurementLatest> = emptyList(),
-        val todayRecords: List<StationRecord> = emptyList(),
-        val longTermRecords: List<RecordStats> = emptyList(),
+        val todayStationRecords: List<StationRecord> = emptyList(),
+        val todayAlltimeRecords: List<StationRecord> = emptyList(),
+        val alltimeStationRecords: List<RecordStats> = emptyList(),
+        val allTimeRecords: List<RecordStats> = emptyList(),
         val loading: Boolean = false,
         val successful: Boolean = true,
         val userLocation: LatLng? = null
@@ -47,58 +50,86 @@ class HomeScreenViewModel(private val stationRepository: StationRepository, priv
 
     fun loadInfo() {
         viewModelScope.launch {
-            _screenStateStream.update { state ->
-                state.copy(loading = true)
-            }
-
-            // Fetch the user's location
-            //fetchUserLocation(context, fusedLocationClient)
-
-            // Get the user's location from the state
+            setLoadingState(true)
             val userLocation = _screenStateStream.value.userLocation
 
             if (userLocation != null) {
-                // Fetch the closest station
-                val closestStationResult = stationRepository.getClosestStation(userLocation.latitude.toFloat(), userLocation.longitude.toFloat())
-                if (closestStationResult.isSuccess) {
-                    _screenStateStream.update { state ->
-                        state.copy(closestStation = closestStationResult.station)
-                    }
-                    if(closestStationResult.station != null) {
-                        val statsResult = recordRepository.getAllTimeStationRecords(
-                            closestStationResult.station.stationId)
-
-                        if(statsResult.isSuccess)
-                            _screenStateStream.update { state ->
-                                state.copy(longTermRecords = statsResult.stats)
-                            }
-                    }
-
-                }
-
-                // Fetch nearby stations
-                val nearbyStationsResult = stationRepository.getNearbyStations(userLocation.latitude.toFloat(), userLocation.longitude.toFloat())
-                if (nearbyStationsResult.isSuccess) {
-                    val nearbyStationsWithDistance = nearbyStationsResult.stations.drop(1) .map { station ->
-                        val distance = pythagoreanDistance(
-                            userLocation.latitude,
-                            userLocation.longitude,
-                            station.latitude,
-                            station.longitude
-                        ) * 111.32 // kilometer per degree
-                        station.location to "%.2f km".format(distance)
-                    }
-
-                    _screenStateStream.update { state ->
-                        state.copy(nearbyStations = nearbyStationsWithDistance)
-                    }
-                }
+                fetchClosestStation(userLocation)
+                fetchNearbyStations(userLocation)
             }
 
-            // Update loading state
+            setLoadingState(false)
+        }
+    }
+
+    private suspend fun fetchClosestStation(userLocation: LatLng) {
+        val closestStationResult = stationRepository.getClosestStation(
+            userLocation.latitude.toFloat(),
+            userLocation.longitude.toFloat()
+        )
+
+        if (closestStationResult.isSuccess) {
+            updateClosestStation(closestStationResult.station)
+            closestStationResult.station?.let { station ->
+                fetchAllTimeRecords(station.stationId)
+            }
+        }
+    }
+
+    private suspend fun updateClosestStation(station: Station?) {
+        _screenStateStream.update { state ->
+            state.copy(closestStation = station)
+        }
+    }
+
+    private suspend fun fetchAllTimeRecords(stationId: String) {
+        val statsResult = recordRepository.getAllTimeStationRecords(stationId)
+        if (statsResult.isSuccess) {
             _screenStateStream.update { state ->
-                state.copy(loading = false)
+                state.copy(allTimeRecords = statsResult.stats)
             }
+        }
+    }
+
+    private suspend fun fetchNearbyStations(userLocation: LatLng) {
+        val nearbyStationsResult = stationRepository.getNearbyStations(
+            userLocation.latitude.toFloat(),
+            userLocation.longitude.toFloat()
+        )
+
+        if (nearbyStationsResult.isSuccess) {
+            val nearbyStationsWithDistance = calculateDistancesForNearbyStations(
+                nearbyStationsResult.stations,
+                userLocation
+            )
+            updateNearbyStations(nearbyStationsWithDistance)
+        }
+    }
+
+    private fun calculateDistancesForNearbyStations(
+        stations: List<Station>,
+        userLocation: LatLng
+    ): List<Pair<String, String>> {
+        return stations.drop(1).map { station ->
+            val distance = pythagoreanDistance(
+                userLocation.latitude,
+                userLocation.longitude,
+                station.latitude,
+                station.longitude
+            ) * 111.32 // kilometer per degree
+            station.location to "%.2f km".format(distance)
+        }
+    }
+
+    private suspend fun updateNearbyStations(nearbyStations: List<Pair<String, String>>) {
+        _screenStateStream.update { state ->
+            state.copy(nearbyStations = nearbyStations)
+        }
+    }
+
+    private suspend fun setLoadingState(isLoading: Boolean) {
+        _screenStateStream.update { state ->
+            state.copy(loading = isLoading)
         }
     }
 

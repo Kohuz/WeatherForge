@@ -1,10 +1,10 @@
 package cz.cvut.weatherforge.features.stations.presentation.detail.tabs
 
 import androidx.compose.runtime.Composable
-import cz.cvut.weatherforge.features.stations.data.model.Station
-import cz.cvut.weatherforge.features.stations.presentation.detail.DetailScreenViewModel
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -12,11 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import cz.cvut.weatherforge.R
 import cz.cvut.weatherforge.features.stations.presentation.detail.DayMonthPickerDialog
 import kotlinx.datetime.toKotlinLocalDate
-import java.time.LocalDate
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -27,47 +25,36 @@ fun HistoryContent(
 ) {
     val state by viewModel.historyContentState.collectAsStateWithLifecycle()
 
-    // Fetch data automatically when the selectedDate or selectedDate2 changes
-    LaunchedEffect(state.selectedDate, state.selectedDate2) {
-        viewModel.fetchAllData(stationId)
+    LaunchedEffect(state.selectedDate, state.selectedDayMonthDate) {
+        viewModel.fetchConcreteDayData(stationId)
+    }
+
+    LaunchedEffect(state.selectedDayMonthDate) {
+        viewModel.fetchLongTermStats(stationId)
     }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
+            .verticalScroll(rememberScrollState())
+
     ) {
-        // First Date Picker (Full Date)
-        OutlinedButton(
-            onClick = { viewModel.showDatePicker(true) },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Select Date 1: ${state.selectedDate ?: "No date selected"}")
-        }
 
-        // Show the first date picker dialog if needed
-        if (state.showDatePicker) {
-            DatePickerDialog(
-                onDismiss = { viewModel.showDatePicker(false) },
-                onDateSelected = { date -> viewModel.setSelectedDate(date) }
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         // Second Date Picker (Day and Month Only)
         OutlinedButton(
-            onClick = { viewModel.showDatePicker2(true) },
+            onClick = { viewModel.showDayMonthDatePicker(true) },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Select Day and Month: ${state.selectedDate2?.toString() ?: "No date selected"}")
+            Text("Select Day and Month: ${state.selectedDayMonthDate?.toString() ?: "No date selected"}")
         }
 
         // Show the custom day and month picker dialog if needed
-        if (state.showDatePicker2) {
+        if (state.showDayMonthPicker) {
             DayMonthPickerDialog(
-                onDismiss = { viewModel.showDatePicker2(false) },
-                onDateSelected = { date -> viewModel.setSelectedDate2(date.toKotlinLocalDate()) }
+                onDismiss = { viewModel.showDayMonthDatePicker(false) },
+                onDateSelected = { date -> viewModel.setSelectedDayMonthDate(date.toKotlinLocalDate()) }
             )
         }
 
@@ -117,5 +104,20 @@ fun HistoryContent(
                 }
             }
         }
+        OutlinedButton(
+            onClick = { viewModel.showDatePicker(true) },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Select Date 1: ${state.selectedDate ?: "No date selected"}")
+        }
+
+        if (state.showDatePicker) {
+            DatePickerDialog(
+                onDismiss = { viewModel.showDatePicker(false) },
+                onDateSelected = { date -> viewModel.setSelectedDate(date) }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }

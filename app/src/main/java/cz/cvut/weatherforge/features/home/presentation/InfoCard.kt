@@ -20,21 +20,21 @@ import cz.cvut.weatherforge.ui.theme.AppTypography
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun SwipeableWeatherCard(
-    weatherData: List<WeatherCardData>,
+fun SwipeableInfoCard(
+    infoCards: List<InfoCardData>,
     modifier: Modifier = Modifier
 ) {
     val pagerState = rememberPagerState()
 
     Column(modifier = modifier) {
         HorizontalPager(
-            count = weatherData.size,
+            count = infoCards.size,
             state = pagerState,
             modifier = Modifier.fillMaxWidth()
         ) { page ->
             InfoCard(
-                title = weatherData[page].title,
-                items = weatherData[page].items
+                title = infoCards[page].title,
+                items = infoCards[page].items
             )
         }
         Spacer(modifier = Modifier.height(8.dp))
@@ -93,7 +93,7 @@ fun WeatherInfoRow(label: String, value: String) {
     }
 }
 
-data class WeatherCardData(
+data class InfoCardData(
     val title: String,
     val items: List<Pair<String, String>>
 )

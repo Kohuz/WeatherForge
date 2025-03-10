@@ -1,7 +1,8 @@
 package cz.cvut.weatherforge.features.home.presentation
 
 import InfoCard
-import WeatherCardData
+import InfoCardData
+import SwipeableInfoCard
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -96,7 +97,6 @@ fun HomeScreen(viewModel: HomeScreenViewModel = koinViewModel()) {
                                 .fillMaxSize()
                                 .padding(16.dp)
                         ) {
-//                            SwipeableWeatherCard(weatherData = screenState.weatherData)
                             if(screenState.closestStation != null) {
                                 screenState.closestStation?.stationLatestMeasurements?.let {
                                     InfoCard(
@@ -114,7 +114,6 @@ fun HomeScreen(viewModel: HomeScreenViewModel = koinViewModel()) {
                                                 null
                                             }
                                         })
-                                            //it.map { measurement -> measurement.element to measurement.value.toString() })
 
 
                                 }
@@ -125,7 +124,33 @@ fun HomeScreen(viewModel: HomeScreenViewModel = koinViewModel()) {
                         }
                     }
 
-//
+
+                if (screenState.closestStation != null) {
+                    screenState.closestStation?.stationLatestMeasurements?.let { measurements ->
+                        val infoCardData = InfoCardData(
+                            title = stringResource(R.string.weather_at_nearest),
+                            items = measurements.mapNotNull { measurement ->
+                                val elementInfo = elementAbbreviationToNameUnitPair(
+                                    measurement.element,
+                                    screenState.elementCodelist
+                                )
+                                if (elementInfo != null) {
+                                    val valueWithUnit = "${measurement.value} ${elementInfo.unit}"
+                                    elementInfo.name to valueWithUnit
+                                } else {
+                                    null
+                                }
+                            }
+                        )
+
+                        SwipeableInfoCard(
+                            infoCards = listOf(infoCardData, infoCardData)
+                        )
+                    }
+                }
+
+
+
             }
         }
         true -> {
@@ -138,24 +163,6 @@ fun HomeScreen(viewModel: HomeScreenViewModel = koinViewModel()) {
         }
     }
 }
-
-
-fun mapStationToWeatherCardData(
-    station: Station,
-    userLat: Double,
-    userLon: Double
-): WeatherCardData {
-    val distanceDegrees = pythagoreanDistance(userLat, userLon, station.latitude, station.longitude)
-    val distanceKm = distanceDegrees * 111.32
-
-    return WeatherCardData(
-        title = station.location,
-        items = listOf(
-            "Distance" to "%.2f km".format(distanceKm)
-        )
-    )
-}
-
 
 
 fun pythagoreanDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
