@@ -18,6 +18,8 @@
     <string name="detail_current_state">Aktuální stav</string>
     <string name="detail_location">Lokace</string>
     <string name="detail_code">Kód</string>
+    <string name="detail_select_station_element">Vyberte veličinu</string>
+
     <string name="detail_elevation">Nadmořská výška</string>
     <string name="detail_coordinates">Souřadnice</string>
     <string name="detail_start_of_measurement">Počátek měření</string>

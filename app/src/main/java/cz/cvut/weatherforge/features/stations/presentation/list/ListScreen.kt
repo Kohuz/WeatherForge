@@ -17,7 +17,9 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -42,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cz.cvut.weatherforge.features.stations.data.model.Station
+import cz.cvut.weatherforge.features.stations.data.model.isActive
 import org.koin.androidx.compose.koinViewModel
 
 
@@ -166,7 +169,12 @@ fun ResultCard(station: Station, onClick: () -> Unit) {
             fontWeight = FontWeight.Bold,
             fontSize = 15.sp
         )
-    }
+        if (station.isActive()) {
+            Icon(
+                imageVector = Icons.Outlined.CheckCircle,
+                contentDescription = "Active Station"
+            )
+        }    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

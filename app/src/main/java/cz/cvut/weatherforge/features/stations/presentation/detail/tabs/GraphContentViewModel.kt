@@ -27,6 +27,7 @@ class GraphContentViewModel(
         val fromDate: LocalDate? = null,
         val toDate: LocalDate? = null,
         val showDateRangePicker: Boolean = false,
+        val selectedAggregationType: String = "AVG"
     )
 
     fun selectResolution(resolutionIndex: Int) {
@@ -45,19 +46,14 @@ class GraphContentViewModel(
         _graphContentStateStream.update { it.copy(showDateRangePicker = show) }
     }
 
-//    fun showFromDatePicker(show: Boolean) {
-//        _graphContentStateStream.update { it.copy(showFromDatePicker = show) }
-//    }
-//
-//    fun showToDatePicker(show: Boolean) {
-//        _graphContentStateStream.update { it.copy(showToDatePicker = show) }
-//    }
-
     fun setFromDate(date: LocalDate) {
         _graphContentStateStream.update { it.copy(fromDate = date) }
     }
 
     fun setToDate(date: LocalDate) {
         _graphContentStateStream.update { it.copy(toDate = date) }
+    }
+    fun selectAggregationType(type: String) {
+        _graphContentStateStream.update { it.copy(selectedAggregationType = type) }
     }
 }

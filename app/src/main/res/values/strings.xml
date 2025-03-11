@@ -23,6 +23,8 @@
     <string name="detail_code">Kód</string>
     <string name="detail_end_of_measurement">Konec měření</string>
     <string name="detail_active">Aktivní</string>
+    <string name="detail_select_station_element">Vyberte veličinu</string>
+
 
     <string name="detail_start_of_measurement">Počátek měření</string>
     <string name="detail_measurement_started_on">Měření této veličiny začalo</string>

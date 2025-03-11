@@ -15,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cz.cvut.weatherforge.R
+import cz.cvut.weatherforge.features.home.presentation.CurrentWeatherMeasurementsInfoCard
 import cz.cvut.weatherforge.features.stations.data.model.Station
 import cz.cvut.weatherforge.features.stations.data.model.isActive
 import cz.cvut.weatherforge.features.stations.presentation.detail.DetailScreenViewModel
@@ -29,33 +30,52 @@ fun OverviewContent(station: Station, viewModel: DetailScreenViewModel) {
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-       InfoCard(
-           title = stringResource(R.string.detail_information_about_station),
-           items = listOf(
-               Pair(stringResource(R.string.detail_location), station.location),
-               Pair(stringResource(R.string.detail_start_of_measurement), station.startDate.toString()),
-               Pair(stringResource(R.string.detail_elevation), station.elevation.toString()),
-               Pair(stringResource(R.string.detail_coordinates), String.format("%.4f, %.4f", station.latitude, station.longitude)),
-               Pair(stringResource(R.string.detail_code), station.code),
-               if (!station.isActive()) {
-                   Pair(stringResource(R.string.detail_end_of_measurement), station.endDate.toString())
-               } else {
-                   Pair(stringResource(R.string.detail_active), "")
-               }
-           )
-       )
         InfoCard(
-            title = stringResource(R.string.detail_current_state),
-            items = station.stationLatestMeasurements.mapNotNull { measurement ->
-                val elementInfo = elementAbbreviationToNameUnitPair(measurement.element, screenState.elementCodelist)
-                if (elementInfo != null) {
-                    val valueWithUnit = "${measurement.value} ${elementInfo.unit}"
-                    elementInfo.name to valueWithUnit
+            title = stringResource(R.string.detail_information_about_station),
+            items = listOf(
+                Pair(stringResource(R.string.detail_location), station.location),
+                Pair(
+                    stringResource(R.string.detail_start_of_measurement),
+                    station.startDate.toString()
+                ),
+                Pair(stringResource(R.string.detail_elevation), station.elevation.toString()),
+                Pair(
+                    stringResource(R.string.detail_coordinates),
+                    String.format("%.4f, %.4f", station.latitude, station.longitude)
+                ),
+                Pair(stringResource(R.string.detail_code), station.code),
+                if (!station.isActive()) {
+                    Pair(
+                        stringResource(R.string.detail_end_of_measurement),
+                        station.endDate.toString()
+                    )
                 } else {
-                    null
+                    Pair(stringResource(R.string.detail_active), "")
                 }
-            }
+            )
         )
+//        InfoCard(
+//            title = stringResource(R.string.detail_current_state),
+//            items = station.stationLatestMeasurements.mapNotNull { measurement ->
+//                val elementInfo = elementAbbreviationToNameUnitPair(measurement.element, screenState.elementCodelist)
+//                if (elementInfo != null) {
+//                    val valueWithUnit = "${measurement.value} ${elementInfo.unit}"
+//                    elementInfo.name to valueWithUnit
+//                } else {
+//                    null
+//                }
+//            }
+//        )
+
+        if (screenState.station != null && station.isActive() && station.stationLatestMeasurements.isNotEmpty()) {
+            CurrentWeatherMeasurementsInfoCard(
+                title = stringResource(R.string.detail_current_state),
+                measurements = station.stationLatestMeasurements,
+                elementCodelist = screenState.elementCodelist
+            )
+        }
+
+
 
         if (screenState.allTimeRecords.isNotEmpty()) {
             val allTimeRecordData = InfoCardData(

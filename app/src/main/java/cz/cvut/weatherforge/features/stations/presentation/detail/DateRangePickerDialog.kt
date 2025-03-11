@@ -20,6 +20,7 @@ import java.time.ZoneId
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.Month
 import java.time.YearMonth
 import java.time.format.TextStyle
@@ -28,9 +29,10 @@ import java.util.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerDialog(
-    resolution: String, // "Denně", "Měsíčně", "Ročně"
+    resolution: String,
     onDismiss: () -> Unit,
-    onDateRangeSelected: (LocalDate, LocalDate) -> Unit // Callback for date range selection
+    onDateRangeSelected: (LocalDate, LocalDate) -> Unit, // Callback for date range selection
+    minimumDate: LocalDateTime?
 ) {
     // State for the date range picker
     val dateRangePickerState = rememberDateRangePickerState()
@@ -121,7 +123,7 @@ fun DatePickerDialog(
             ) {
                 // Year Dropdown
                 var expandedYear by remember { mutableStateOf(false) }
-                val years = (1900..LocalDate.now().year).toList()
+                val years = ((minimumDate?.year ?: 1950)..LocalDate.now().year).toList()
                 Box(modifier = Modifier.weight(1f)) {
                     OutlinedButton(
                         onClick = { expandedYear = true },
