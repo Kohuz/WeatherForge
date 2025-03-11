@@ -47,19 +47,27 @@ fun GraphContent(
     val aggregationTypes = listOf("MIN", "MAX", "AVG")
     val selectedAggregationType = graphContentState.selectedAggregationType
 
-
-
     // Show/hide date pickers
-    if (graphContentState.showDateRangePicker) {
+    if (graphContentState.showFromDatePicker) {
         DatePickerDialog(
             minimumDate = station.stationElements
                 .find { it.elementAbbreviation == graphContentState.selectedElement!!.abbreviation }
-                ?.beginDate,
+                ?.beginDate?.date?.toJavaLocalDate(),
             resolution = resolutions[selectedResolution],
-            onDismiss = { graphContentViewModel.showDateRangePicker(false) },
-            onDateRangeSelected = { fromDate, toDate ->
-                graphContentViewModel.setFromDate(fromDate)
-                graphContentViewModel.setToDate(toDate)
+            onDismiss = { graphContentViewModel.showFromDatePicker(false) },
+            onDateSelected = { date ->
+                graphContentViewModel.setFromDate(date)
+            }
+        )
+    }
+
+    if (graphContentState.showToDatePicker) {
+        DatePickerDialog(
+            minimumDate = graphContentState.fromDate, // Ensure toDate is after fromDate
+            resolution = resolutions[selectedResolution],
+            onDismiss = { graphContentViewModel.showToDatePicker(false) },
+            onDateSelected = { date ->
+                graphContentViewModel.setToDate(date)
             }
         )
     }
@@ -142,9 +150,9 @@ fun GraphContent(
         // Show date selectors only if an element is selected
         if (graphContentState.selectedElement != null) {
             // Date Selectors for fromDate and toDate
-                val beginDate = station.stationElements
-                    .find { it.elementAbbreviation == graphContentState.selectedElement!!.abbreviation }
-                    ?.beginDate
+            val beginDate = station.stationElements
+                .find { it.elementAbbreviation == graphContentState.selectedElement!!.abbreviation }
+                ?.beginDate
 
             if (beginDate != null) {
                 Text(
@@ -154,22 +162,30 @@ fun GraphContent(
                         .padding(vertical = 8.dp)
                 )
             }
-                // Date Range Selector
-                OutlinedButton(
-                    onClick = { graphContentViewModel.showDateRangePicker(true) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                ) {
-                    Text(
-                        text = if (graphContentState.fromDate != null && graphContentState.toDate != null) {
-                            "${graphContentState.fromDate} - ${graphContentState.toDate}"
-                        } else {
-                            "Select Date Range"
-                        }
-                    )
-                }
 
+            // From Date Selector
+            OutlinedButton(
+                onClick = { graphContentViewModel.showFromDatePicker(true) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            ) {
+                Text(
+                    text = graphContentState.fromDate?.toString() ?: "Select From Date"
+                )
+            }
+
+            // To Date Selector
+            OutlinedButton(
+                onClick = { graphContentViewModel.showToDatePicker(true) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            ) {
+                Text(
+                    text = graphContentState.toDate?.toString() ?: "Select To Date"
+                )
+            }
         }
 
         // Radio buttons for selecting resolution
@@ -202,97 +218,60 @@ fun GraphContent(
             }
         }
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)
-        ) {
-            // Existing UI elements (dropdown, date selectors, etc.)...
-
-            // Radio buttons for selecting resolution
+        if (resolutions[selectedResolution] == "Měsíčně" || resolutions[selectedResolution] == "Ročně") {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                resolutions.forEachIndexed { index, resolution ->
+                aggregationTypes.forEach { type ->
                     Row(
                         modifier = Modifier
                             .selectable(
-                                selected = (index == selectedResolution),
-                                onClick = { graphContentViewModel.selectResolution(index) },
+                                selected = (type == selectedAggregationType),
+                                onClick = { graphContentViewModel.selectAggregationType(type) },
                                 role = Role.RadioButton
                             )
                             .padding(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         RadioButton(
-                            selected = (index == selectedResolution),
-                            onClick = { graphContentViewModel.selectResolution(index) }
+                            selected = (type == selectedAggregationType),
+                            onClick = { graphContentViewModel.selectAggregationType(type) }
                         )
                         Text(
-                            text = resolution,
+                            text = type,
                             modifier = Modifier.padding(start = 8.dp)
                         )
                     }
                 }
             }
+        }
 
-            if (resolutions[selectedResolution] == "Měsíčně" || resolutions[selectedResolution] == "Ročně") {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    aggregationTypes.forEach { type ->
-                        Row(
-                            modifier = Modifier
-                                .selectable(
-                                    selected = (type == selectedAggregationType),
-                                    onClick = { graphContentViewModel.selectAggregationType(type) },
-                                    role = Role.RadioButton
-                                )
-                                .padding(8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            RadioButton(
-                                selected = (type == selectedAggregationType),
-                                onClick = { graphContentViewModel.selectAggregationType(type) }
-                            )
-                            Text(
-                                text = type,
-                                modifier = Modifier.padding(start = 8.dp)
-                            )
-                        }
-                    }
+        // Display the chart
+        if (graphContentState.selectedElement != null && graphContentState.fromDate != null && graphContentState.toDate != null) {
+            when (resolutions[selectedResolution]) {
+                "Denně" -> DailyChart(detailScreenState.dailyMeasurements)
+                "Měsíčně" -> {
+                    val filteredMeasurements = filterMeasurementsMonthly(
+                        detailScreenState.monthlyMeasurements,
+                        graphContentState.selectedAggregationType
+                    )
+                    MonthlyChart(filteredMeasurements)
+                }
+                "Ročně" -> {
+                    val filteredMeasurements = filterMeasurementsYearly(
+                        detailScreenState.yearlyMeasurements,
+                        graphContentState.selectedAggregationType
+                    )
+                    YearlyChart(filteredMeasurements)
                 }
             }
-
-            // Display the chart
-            if (graphContentState.selectedElement != null && graphContentState.fromDate != null && graphContentState.toDate != null) {
-                when (resolutions[selectedResolution]) {
-                    "Denně" -> DailyChart(detailScreenState.dailyMeasurements)
-                    "Měsíčně" -> {
-                        val filteredMeasurements = filterMeasurementsMonthly(
-                            detailScreenState.monthlyMeasurements,
-                            graphContentState.selectedAggregationType
-                        )
-                        MonthlyChart(filteredMeasurements)
-                    }
-                    "Ročně" -> {
-                        val filteredMeasurements = filterMeasurementsYearly(
-                            detailScreenState.yearlyMeasurements,
-                            graphContentState.selectedAggregationType
-                        )
-                        YearlyChart(filteredMeasurements)
-                    }
-                }
-            }
+        }
     }
-       }
 }
+
 
 private fun filterMeasurementsMonthly(
     measurements: List<MeasurementMonthly>,
