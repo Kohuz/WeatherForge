@@ -41,6 +41,9 @@ fun LineChartComposable(entries: List<Entry>, labels: List<String>) {
                     mode = LineDataSet.Mode.CUBIC_BEZIER
                     setDrawValues(true)
                     valueTextSize = 10f
+
+                    setDrawCircles(entries.size <= 10)
+
                 }
                 val lineData = LineData(dataSet)
                 data = lineData

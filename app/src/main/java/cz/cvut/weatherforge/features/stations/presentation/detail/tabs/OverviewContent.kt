@@ -50,7 +50,7 @@ fun OverviewContent(station: Station, viewModel: DetailScreenViewModel) {
                         station.endDate.toString()
                     )
                 } else {
-                    Pair(stringResource(R.string.detail_active), "")
+                   Pair("", "")
                 }
             )
         )

@@ -1,11 +1,40 @@
 <resources>
     <string name="app_name">Weather forge</string>
-    <string name="temperature">Teplota</string>
-    <string name="precipitation">Srážky</string>
-    <string name="wind">Vítr</string>
-    <string name="snow">Sníh</string>
     <string name="min">Minimum</string>
     <string name="max">Maximum</string>
+        <!-- Date Picker Strings -->
+        <string name="select_day_month">Vyberte den a měsíc: %s</string>
+        <string name="select_date">Vyberte datum: %s</string>
+        <string name="no_date_selected">Není vybráno datum</string>
+
+        <!-- Error Message -->
+        <string name="error_message">Chyba: %s</string>
+
+        <!-- Weather Statistics -->
+        <string name="weather_statistics">Statistika počasí</string>
+
+        <!-- Temperature -->
+        <string name="temperature">Teplota</string>
+        <string name="min_temperature">Min: %s °C</string>
+        <string name="max_temperature">Max: %s °C</string>
+        <string name="avg_temperature">Průměr: %s °C</string>
+
+        <!-- Precipitation -->
+        <string name="precipitation">Srážky</string>
+        <string name="max_precipitation">Max: %s mm</string>
+        <string name="avg_precipitation">Průměr: %s mm</string>
+
+        <!-- Wind -->
+        <string name="wind">Vítr</string>
+        <string name="max_wind">Max: %s m/s</string>
+        <string name="avg_wind">Průměr: %s m/s</string>
+
+        <!-- Snow -->
+        <string name="snow">Sníh</string>
+        <string name="max_snow">Max sněhu: %s cm</string>
+        <string name="max_new_snow">Max nového sněhu: %s cm</string>
+        <string name="avg_snow">Průměr sněhu: %s cm</string>
+        <string name="avg_new_snow">Průměr nového sněhu: %s cm</string>
     <string name="average">Průměr</string>
 
     <string name="nearest_station">Nejbližší stanice</string>

@@ -63,7 +63,7 @@ fun GraphContent(
 
     if (graphContentState.showToDatePicker) {
         DatePickerDialog(
-            minimumDate = graphContentState.fromDate, // Ensure toDate is after fromDate
+            minimumDate = graphContentState.fromDate,
             resolution = resolutions[selectedResolution],
             onDismiss = { graphContentViewModel.showToDatePicker(false) },
             onDateSelected = { date ->

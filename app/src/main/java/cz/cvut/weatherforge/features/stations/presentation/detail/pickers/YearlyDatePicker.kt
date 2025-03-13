@@ -64,7 +64,7 @@ fun YearlyDatePicker(
                 }
 
                 // Year List
-                val years = (1900..LocalDate.now().year).toList()
+                val years = ((minimumDate?.year ?: 1950)..LocalDate.now().year).toList()
                 LazyColumn(modifier = Modifier.height(200.dp)) {
                     items(years.size) { index ->
                         val year = years[index]

@@ -174,7 +174,8 @@ fun ResultCard(station: Station, onClick: () -> Unit) {
                 imageVector = Icons.Outlined.CheckCircle,
                 contentDescription = "Active Station"
             )
-        }    }
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

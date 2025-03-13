@@ -58,6 +58,8 @@ class HistoryContentViewModel(
                     _state.value.selectedDayMonthDate?.toString() ?: java.time.LocalDate.now()
                         .toString()
 
+                _state.update { it.copy(selectedDayMonthDate = LocalDate.parse(date)) }
+
                 // Fetch data using the first date
                 val dailyStats = repository.getStatsDayLongTerm(stationId, date)
 

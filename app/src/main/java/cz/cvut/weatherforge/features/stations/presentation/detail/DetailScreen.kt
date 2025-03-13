@@ -85,7 +85,7 @@ fun DetailScreen(
                     0 -> OverviewContent(station, detailScreenViewModel)
                     1 -> GraphContent(station, detailScreenViewModel,graphContentViewModel)
                     2 -> TableContent(station, detailScreenViewModel)
-                    3 -> HistoryContent(stationId, historyContentViewModel)
+                    3 -> HistoryContent(stationId, historyContentViewModel, detailScreenViewModel)
                 }
             }
         }

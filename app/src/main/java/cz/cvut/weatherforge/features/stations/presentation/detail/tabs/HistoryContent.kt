@@ -14,110 +14,168 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cz.cvut.weatherforge.R
 import cz.cvut.weatherforge.features.stations.presentation.detail.DayMonthPickerDialog
+import cz.cvut.weatherforge.features.stations.presentation.detail.DetailScreenViewModel
+import cz.cvut.weatherforge.features.stations.presentation.detail.pickers.DailyDatePicker
+import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toKotlinLocalDate
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryContent(
     stationId: String,
-    viewModel: HistoryContentViewModel
+    historyContentViewModel: HistoryContentViewModel,
+    detailViewModel: DetailScreenViewModel
 ) {
-    val state by viewModel.historyContentState.collectAsStateWithLifecycle()
+    val historyContentState by historyContentViewModel.historyContentState.collectAsStateWithLifecycle()
+    val detailState by detailViewModel.screenStateStream.collectAsStateWithLifecycle()
 
-    LaunchedEffect(state.selectedDate, state.selectedDayMonthDate) {
-        viewModel.fetchConcreteDayData(stationId)
+
+    LaunchedEffect(historyContentState.selectedDate, historyContentState.selectedDayMonthDate) {
+        historyContentViewModel.fetchConcreteDayData(stationId)
     }
 
-    LaunchedEffect(state.selectedDayMonthDate) {
-        viewModel.fetchLongTermStats(stationId)
+    LaunchedEffect(historyContentState.selectedDayMonthDate) {
+        historyContentViewModel.fetchLongTermStats(stationId)
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .verticalScroll(rememberScrollState())
-
-    ) {
-
-
-        // Second Date Picker (Day and Month Only)
-        OutlinedButton(
-            onClick = { viewModel.showDayMonthDatePicker(true) },
-            modifier = Modifier.fillMaxWidth()
+    if (historyContentState.isLoading) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
-            Text("Select Day and Month: ${state.selectedDayMonthDate?.toString() ?: "No date selected"}")
+            CircularProgressIndicator()
         }
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            // Date Picker for Day and Month
+            OutlinedButton(
+                onClick = { historyContentViewModel.showDayMonthDatePicker(true) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = stringResource(
+                        R.string.select_day_month,
+                        historyContentState.selectedDayMonthDate?.toString() ?: stringResource(R.string.no_date_selected)
+                    )
+                )
+            }
 
-        // Show the custom day and month picker dialog if needed
-        if (state.showDayMonthPicker) {
-            DayMonthPickerDialog(
-                onDismiss = { viewModel.showDayMonthDatePicker(false) },
-                onDateSelected = { date -> viewModel.setSelectedDayMonthDate(date.toKotlinLocalDate()) }
-            )
-        }
+            if (historyContentState.showDayMonthPicker) {
+                DayMonthPickerDialog(
+                    onDismiss = { historyContentViewModel.showDayMonthDatePicker(false) },
+                    onDateSelected = { date -> historyContentViewModel.setSelectedDayMonthDate(date.toKotlinLocalDate()) }
+                )
+            }
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        // Display loading state
-        if (state.isLoading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-        }
+            // Display error message
+            if (historyContentState.error != null) {
+                Text(
+                    text = stringResource(R.string.error_message, historyContentState.error ?: ""),
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            }
 
-        // Display error message
-        if (state.error != null) {
-            Text(
-                text = "Error: ${state.error}",
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-        }
-
-        // Display data
-        if (state.dailyStats != null) {
-            Column(Modifier.fillMaxWidth()) {
-                Row(Modifier.fillMaxWidth()) {
-                    Column {
-                        Text(stringResource(R.string.temperature))
-                        Text("${stringResource(R.string.min)}: ${state.dailyStats!!.valueStats.find { it.element == "TMI" }?.lowest}")
-                        Text("${stringResource(R.string.max)}: ${state.dailyStats!!.valueStats.find { it.element == "TMA" }?.highest}")
-                        Text("${stringResource(R.string.average)}: ${state.dailyStats!!.valueStats.find { it.element == "T" }?.average?.let { String.format("%.1f", it) }}")
-                    }
-                    Column {
-                        Text(stringResource(R.string.precipitation))
-                        Text("${stringResource(R.string.max)}: ${state.dailyStats!!.valueStats.find { it.element == "TMA" }?.highest}")
-                        Text("${stringResource(R.string.average)}: ${state.dailyStats!!.valueStats.find { it.element == "T" }?.average?.let { String.format("%.1f", it) }}")
-                    }
-                }
-                Row(Modifier.fillMaxWidth()) {
-                    Column {
-                        Text(stringResource(R.string.wind))
-                        Text("${stringResource(R.string.max)}: ${state.dailyStats!!.valueStats.find { it.element == "FMAX" }?.highest}")
-                        Text("${stringResource(R.string.average)}: ${state.dailyStats!!.valueStats.find { it.element == "F" }?.average?.let { String.format("%.1f", it) }}")
-                    }
-                    Column {
-                        Text(stringResource(R.string.snow))
-                        Text("${stringResource(R.string.max)}: ${state.dailyStats!!.valueStats.find { it.element == "TMA" }?.highest}")
-                        Text("${stringResource(R.string.average)}: ${state.dailyStats!!.valueStats.find { it.element == "T" }?.average?.let { String.format("%.1f", it) }}")
+            // Display data in Cards
+            if (historyContentState.dailyStats != null) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.weather_statistics),
+                            style = MaterialTheme.typography.titleLarge,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column {
+                                Text(
+                                    text = stringResource(R.string.temperature),
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                                Text(stringResource(R.string.min_temperature, historyContentState.dailyStats!!.valueStats.find { it.element == "TMI" }?.lowest ?: "--"))
+                                Text(stringResource(R.string.max_temperature, historyContentState.dailyStats!!.valueStats.find { it.element == "TMA" }?.highest ?: "--"))
+                                Text(stringResource(R.string.avg_temperature, historyContentState.dailyStats!!.valueStats.find { it.element == "T" }?.average?.let { String.format("%.1f", it) } ?: "--"))
+                            }
+                            Column {
+                                Text(
+                                    text = stringResource(R.string.precipitation),
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                                Text(stringResource(R.string.max_precipitation, historyContentState.dailyStats!!.valueStats.find { it.element == "SVH" }?.highest ?: "--"))
+                                Text(stringResource(R.string.avg_precipitation, historyContentState.dailyStats!!.valueStats.find { it.element == "SVH" }?.average?.let { String.format("%.1f", it) } ?: "--"))
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column {
+                                Text(
+                                    text = stringResource(R.string.wind),
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                                Text(stringResource(R.string.max_wind, historyContentState.dailyStats!!.valueStats.find { it.element == "FMAX" }?.highest ?: "--"))
+                                Text(stringResource(R.string.avg_wind, historyContentState.dailyStats!!.valueStats.find { it.element == "F" }?.average?.let { String.format("%.1f", it) } ?: "--"))
+                            }
+                            Column {
+                                Text(
+                                    text = stringResource(R.string.snow),
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                                Text(stringResource(R.string.max_snow, historyContentState.dailyStats!!.valueStats.find { it.element == "SCE" }?.highest ?: "--"))
+                                Text(stringResource(R.string.max_new_snow, historyContentState.dailyStats!!.valueStats.find { it.element == "SNO" }?.highest?.let { String.format("%.1f", it) } ?: "--"))
+                                Text(stringResource(R.string.avg_snow, historyContentState.dailyStats!!.valueStats.find { it.element == "SCE" }?.average?.let { String.format("%.1f", it) } ?: "--"))
+                                Text(stringResource(R.string.avg_new_snow, historyContentState.dailyStats!!.valueStats.find { it.element == "SNO" }?.average?.let { String.format("%.1f", it) } ?: "--"))
+                            }
+                        }
                     }
                 }
             }
-        }
-        OutlinedButton(
-            onClick = { viewModel.showDatePicker(true) },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Select Date 1: ${state.selectedDate ?: "No date selected"}")
-        }
 
-        if (state.showDatePicker) {
-            DatePickerDialog(
-                onDismiss = { viewModel.showDatePicker(false) },
-                onDateSelected = { date -> viewModel.setSelectedDate(date) }
-            )
-        }
+            // Date Picker for Full Date
+            OutlinedButton(
+                onClick = { historyContentViewModel.showDatePicker(true) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = stringResource(
+                        R.string.select_date,
+                        historyContentState.selectedDate?.toString() ?: stringResource(R.string.no_date_selected)
+                    )
+                )
+            }
 
-        Spacer(modifier = Modifier.height(16.dp))
+            if (historyContentState.showDatePicker) {
+                DailyDatePicker(
+                    minimumDate = detailState.station?.startDate?.date?.toJavaLocalDate(),
+                    onDismiss = { historyContentViewModel.showDatePicker(false) },
+                    onDateSelected = { date ->
+                        historyContentViewModel.setSelectedDate(date.toKotlinLocalDate())
+                    }
+                )
+
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+        }
     }
 }
