@@ -18,6 +18,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cz.cvut.weatherforge.R
 import cz.cvut.weatherforge.features.stations.presentation.detail.DetailScreenViewModel
 import cz.cvut.weatherforge.features.stations.presentation.detail.pickers.DailyDatePicker
+import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.DailyChart
+import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.MonthlyChart
+import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.YearlyChart
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toKotlinLocalDate
 
@@ -45,38 +48,8 @@ fun HistoryContent(
         historyContentViewModel.fetchLongTermStats(stationId)
     }
 
-    LaunchedEffect(selectedResolution, historyContentState.selectedLongTermDate) {
-        if (historyContentState.selectedLongTermDate != null) {
-            when (resolutions[selectedResolution]) {
-                "Denně" -> historyContentState.f(
-                    station.stationId,
-                    graphContentState.fromDate.toString(),
-                    graphContentState.toDate.toString(),
-                    graphContentState.selectedElement!!.abbreviation
-                )
-                "Měsíčně" -> detailScreenViewModel.fetchMonthlyMeasurements(
-                    station.stationId,
-                    graphContentState.fromDate.toString(),
-                    graphContentState.toDate.toString(),
-                    graphContentState.selectedElement!!.abbreviation
-                )
-                "Ročně" -> detailScreenViewModel.fetchYearlyMeasurements(
-                    station.stationId,
-                    graphContentState.fromDate.toString(),
-                    graphContentState.toDate.toString(),
-                    graphContentState.selectedElement!!.abbreviation
-                )
-            }
-        }
-    }
-    if (historyContentState.isLoading) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
-        }
-    } else {
+
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -108,34 +81,7 @@ fun HistoryContent(
 
 
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            resolutions.forEachIndexed { index, resolution ->
-                Row(
-                    modifier = Modifier
-                        .selectable(
-                            selected = (index == selectedResolution),
-                            onClick = { historyContentViewModel.selectResolution(index) },
-                            role = Role.RadioButton
-                        )
-                        .padding(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    RadioButton(
-                        selected = (index == selectedResolution),
-                        onClick = { historyContentViewModel.selectResolution(index) }
-                    )
-                    Text(
-                        text = resolution,
-                        modifier = Modifier.padding(start = 8.dp)
-                    )
-                }
-            }
-        }
+
 
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -214,6 +160,115 @@ fun HistoryContent(
                     }
                 }
             }
+            else {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                resolutions.forEachIndexed { index, resolution ->
+                    Row(
+                        modifier = Modifier
+                            .selectable(
+                                selected = (index == selectedResolution),
+                                onClick = { historyContentViewModel.selectResolution(index) },
+                                role = Role.RadioButton
+                            )
+                            .padding(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = (index == selectedResolution),
+                            onClick = { historyContentViewModel.selectResolution(index) }
+                        )
+                        Text(
+                            text = resolution,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
+                }
+            }
+
+            OutlinedButton(
+                onClick = { historyContentViewModel.toggleDropdown(!historyContentState.dropdownExpanded) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = historyContentState.selectedElement?.name ?: stringResource(R.string.detail_select_station_element),
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+            DropdownMenu(
+                expanded = historyContentState.dropdownExpanded,
+                onDismissRequest = { historyContentViewModel.toggleDropdown(false) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                detailState.elementCodelist.forEach { element ->
+                    DropdownMenuItem(
+                        onClick = {
+                            historyContentViewModel.selectElement(element)
+                            // Set the fromDate to the beginDate of the selected element
+                            val beginDate = detailState.station?.stationElements
+                                ?.find { it.elementAbbreviation == element.abbreviation }
+                                ?.beginDate
+
+                            historyContentViewModel.toggleDropdown(false)
+                        },
+                        text = {
+                            Text(text = element.name)
+                        }
+                    )
+                }
+            }
+
+            if (historyContentState.selectedElement != null && historyContentState.selectedLongTermDate != null) {
+                // Fetch measurements based on the selected resolution
+                LaunchedEffect(historyContentState.selectedElement, historyContentState.selectedLongTermDate, selectedResolution) {
+                    when (resolutions[selectedResolution]) {
+                        "Denně" -> {
+                            historyContentViewModel.fetchDailyMeasurements(
+                                stationId = stationId,
+                                element = historyContentState.selectedElement!!.abbreviation,
+                                date = historyContentState.selectedLongTermDate!!
+                            )
+                        }
+                        "Měsíčně" -> {
+                            historyContentViewModel.fetchMonthlyMeasurements(
+                                stationId = stationId,
+                                element = historyContentState.selectedElement!!.abbreviation,
+                                date = historyContentState.selectedLongTermDate!!
+                            )
+                        }
+                    }
+                }
+
+                // Display the chart based on the selected resolution
+                when (resolutions[selectedResolution]) {
+                    "Denně" -> {
+                        if (historyContentState.dailyAndMonthlyMeasurements != null) {
+                            DailyChart(historyContentState.dailyAndMonthlyMeasurements!!.measurements)
+                        } else {
+                            CircularProgressIndicator()
+                        }
+                    }
+                    "Měsíčně" -> {
+                        if (historyContentState.monthlyMeasurements != null) {
+                            MonthlyChart(historyContentState.monthlyMeasurements!!.measurements)
+                        } else {
+                            CircularProgressIndicator()
+                        }
+                    }
+                }
+            }
 
             // Date Picker for Full Date
             OutlinedButton(
@@ -227,6 +282,8 @@ fun HistoryContent(
                     )
                 )
             }
+
+
 
             if (historyContentState.showDatePicker) {
                 DailyDatePicker(
@@ -242,4 +299,4 @@ fun HistoryContent(
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
-}
+

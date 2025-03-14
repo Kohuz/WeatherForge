@@ -6,6 +6,7 @@ import cz.cvut.weatherforge.features.measurements.data.MeasurementRepository
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementDailyResult
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementMonthlyResult
 import cz.cvut.weatherforge.features.measurements.data.model.ValueStatsResult
+import cz.cvut.weatherforge.features.stations.data.model.ElementCodelistItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -17,17 +18,20 @@ class HistoryContentViewModel(
 ) : ViewModel() {
 
     data class HistoryContentState(
-        val selectedDate: LocalDate? = null, // The selected date for fetching data
+        val selectedDate: LocalDate? = null,
         val selectedLongTermDate: LocalDate? = null, // Long term date
         val selectedResolutionIndex: Int = 0,
-        val showDatePicker: Boolean = false, // Whether to show the date picker dialog
-        val showLongTermDatePicker: Boolean = false, // Whether to show the date picker dialog
-        val dailyStats: ValueStatsResult? = null, // Result for daily stats (long term)
-        val dailyAndMonthlyMeasurements: MeasurementDailyResult? = null, // Result for daily and monthly measurements
-        val monthlyMeasurements: MeasurementMonthlyResult? = null, // Result for monthly measurements
-        val statsDay: MeasurementDailyResult? = null, // Result for daily stats
-        val isLoading: Boolean = false, // Whether data is being fetched
-        val error: String? = null // Error message, if any
+        val dropdownExpanded: Boolean = false,
+        val selectedElement: ElementCodelistItem? = null,
+
+        val showDatePicker: Boolean = false,
+        val showLongTermDatePicker: Boolean = false,
+        val dailyStats: ValueStatsResult? = null,
+        val dailyAndMonthlyMeasurements: MeasurementDailyResult? = null,
+        val monthlyMeasurements: MeasurementMonthlyResult? = null,
+        val statsDay: MeasurementDailyResult? = null,
+        val isLoading: Boolean = false,
+        val error: String? = null
     )
 
     // State for the HistoryContent
@@ -37,6 +41,10 @@ class HistoryContentViewModel(
 
     fun selectResolution(resolutionIndex: Int) {
         _state.update { it.copy(selectedResolutionIndex = resolutionIndex) }
+    }
+
+    fun toggleDropdown(expanded: Boolean) {
+        _state.update { it.copy(dropdownExpanded = expanded) }
     }
 
     // Function to update the selected date and fetch data
@@ -56,6 +64,10 @@ class HistoryContentViewModel(
     fun showLongTermDatePicker(show: Boolean) {
         _state.update { it.copy(showLongTermDatePicker = show) }
     }
+
+    fun selectElement(element: ElementCodelistItem) {
+        _state.update { it.copy(selectedElement = element) }
+    }
     fun fetchLongTermStats(stationId: String) {
         _state.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
@@ -70,13 +82,11 @@ class HistoryContentViewModel(
                 val dailyStats = repository.getStatsDayLongTerm(stationId, date)
 
                 // Fetch data using the second date
-                val monthlyMeasurements = repository.getMeasurementsMonth(stationId, date)
 
                 // Update the state with the fetched data
                 _state.update {
                     it.copy(
                         dailyStats = dailyStats,
-                        monthlyMeasurements = monthlyMeasurements,
                         isLoading = false
                     )
                 }
@@ -85,11 +95,7 @@ class HistoryContentViewModel(
             } catch (t: Throwable) {
                 _state.update { it.copy(error = t.message, isLoading = false) }
             }
-
-
-
-
-
+            
         }
         }
         // Function to fetch all data
@@ -116,4 +122,70 @@ class HistoryContentViewModel(
             }
         }
     }
-}
+
+    // In HistoryContentViewModel.kt
+
+    fun fetchDailyMeasurements(stationId: String, element: String, date: LocalDate) {
+        viewModelScope.launch {
+            // Set loading state
+            _state.update { it.copy(isLoading = true, error = null)}
+
+            try {
+                // Fetch daily measurements from the repository
+                val dailyMeasurements = repository.getMeasurementsDayAndMonth(stationId, date.toString(), element)
+
+                // Update state with the fetched data
+                _state.update {
+                    it.copy(
+                        dailyAndMonthlyMeasurements = dailyMeasurements,
+                        isLoading = false,
+                        error = null
+                    )
+                }
+
+            } catch (e: Exception) {
+                // Handle errors and update state
+                _state.update {
+                    it.copy(
+                        error = e.message ?: "Failed to fetch daily measurements",
+                        isLoading = false
+                    )
+                }
+
+            }
+        }
+    }
+
+    fun fetchMonthlyMeasurements(stationId: String, element: String, date: LocalDate) {
+        viewModelScope.launch {
+            // Set loading state
+            _state.update { it.copy(isLoading = true, error = null) }
+            // Set loading state
+
+            try {
+                // Fetch monthly measurements from the repository
+                val monthlyMeasurements = repository.getMeasurementsMonth(stationId, date.toString(),element)
+
+
+
+                // Update state with the fetched data
+                _state.update {
+                    it.copy(
+                        monthlyMeasurements = monthlyMeasurements,
+                        isLoading = false,
+                        error = null
+                    )
+                }
+
+            } catch (e: Exception) {
+                // Handle errors and update state
+
+                _state.update {
+                    it.copy(
+                        error = e.message ?: "Failed to fetch monthly measurements",
+                        isLoading = false
+                    )}
+
+            }
+        }
+    }}

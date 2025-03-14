@@ -47,16 +47,18 @@ class MeasurementRetrofitDataSource(
 
     override suspend fun getMeasurementsDayAndMonth(
         stationId: String,
-        date: String
+        date: String,
+        element: String
     ): List<MeasurementDaily> {
-        return apiDescription.getMeasurementsDayAndMonth(stationId, date)
+        return apiDescription.getMeasurementsDayAndMonth(stationId, date, element)
     }
 
     override suspend fun getMeasurementsMonth(
         stationId: String,
-        date: String
+        date: String,
+        element: String
     ): List<MeasurementMonthly> {
-        return apiDescription.getMeasurementsMonth(stationId, date)
+        return apiDescription.getMeasurementsMonth(stationId, date, element)
     }
 
     override suspend fun getStatsDay(

@@ -34,12 +34,14 @@ interface MeasurementRemoteDataSource {
 
     suspend fun getMeasurementsDayAndMonth(
         stationId: String,
-        date: String
+        date: String,
+        element: String
     ): List<MeasurementDaily>
 
     suspend fun getMeasurementsMonth(
         stationId: String,
-        date: String
+        date: String,
+        element: String
     ): List<MeasurementMonthly>
 
     suspend fun getStatsDay(

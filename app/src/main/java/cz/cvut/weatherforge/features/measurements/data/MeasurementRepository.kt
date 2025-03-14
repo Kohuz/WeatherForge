@@ -24,7 +24,12 @@ class MeasurementRepository(
     ): MeasurementDailyResult {
         return try {
             val measurements = remoteDataSource.getMeasurementsDaily(stationId, dateFrom, dateTo, element)
-            MeasurementDailyResult(measurements.filter { it.vtype == "AVG" }, isSuccess = true)
+            val filteredMeasurements = if (element == "T" || element == "F") {
+                measurements.filter { it.vtype == "AVG" }
+            } else {
+                measurements
+            }
+            MeasurementDailyResult(filteredMeasurements, isSuccess = true)
         } catch (t: Throwable) {
             Log.v("api", t.toString())
             MeasurementDailyResult(emptyList(), isSuccess = false)
@@ -76,11 +81,19 @@ class MeasurementRepository(
 
     suspend fun getMeasurementsDayAndMonth(
         stationId: String,
-        date: String
+        date: String,
+        element: String
     ): MeasurementDailyResult {
         return try {
-            val measurements = remoteDataSource.getMeasurementsDayAndMonth(stationId, date)
-            MeasurementDailyResult(measurements.filter { it.vtype == "AVG" }, isSuccess = true)
+            val measurements = remoteDataSource.getMeasurementsDayAndMonth(stationId, date, element)
+
+            val filteredMeasurements = if (element == "T" || element == "F") {
+                measurements.filter { it.vtype == "AVG" }
+            } else {
+                measurements
+            }
+
+            MeasurementDailyResult(filteredMeasurements, isSuccess = true)
         } catch (t: Throwable) {
             Log.v("api", t.toString())
             MeasurementDailyResult(emptyList(), isSuccess = false)
@@ -89,10 +102,11 @@ class MeasurementRepository(
 
     suspend fun getMeasurementsMonth(
         stationId: String,
-        date: String
+        date: String,
+        element: String
     ): MeasurementMonthlyResult{
         return try {
-            val measurements = remoteDataSource.getMeasurementsMonth(stationId, date)
+            val measurements = remoteDataSource.getMeasurementsMonth(stationId, date, element)
             MeasurementMonthlyResult(measurements, isSuccess = true)
         } catch (t: Throwable) {
             Log.v("api", t.toString())

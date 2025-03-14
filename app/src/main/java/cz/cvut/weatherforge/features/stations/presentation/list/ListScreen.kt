@@ -2,6 +2,7 @@ package cz.cvut.weatherforge.features.stations.presentation.list
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,10 +17,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -49,57 +49,61 @@ import org.koin.androidx.compose.koinViewModel
 
 
 @Composable
-fun ListScreen(navigateToDetail: (id: String) -> Unit, viewModel: ListScreenViewModel = koinViewModel()) {
-    val screenState by viewModel.screenStateStream.collectAsStateWithLifecycle()
-    val results = screenState.results
-    val loading = screenState.loading
-    val currentFilter = screenState.currentFilter
-    val dialogOpen = screenState.dialogOpen
+    fun ListScreen(navigateToDetail: (id: String) -> Unit, viewModel: ListScreenViewModel = koinViewModel()) {
+        val screenState by viewModel.screenStateStream.collectAsStateWithLifecycle()
+        val results = screenState.results
+        val loading = screenState.loading
+        val currentFilter = screenState.currentFilter
+        val dialogOpen = screenState.dialogOpen
 
-    Scaffold(
-        topBar = {
-            TopSearchBar(
-                screenState.currentQuery,
-                viewModel::onQueryChange,
-            )
-        }
-    ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues)) {
-            when (loading) {
-                false -> {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 16.dp)
-                    ) {
-                        HorizontalDivider()
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(vertical = 6.dp)
+        Scaffold(
+            topBar = {
+                TopSearchBar(
+                    screenState.currentQuery,
+                    viewModel::onQueryChange,
+                )
+            }
+        ) { paddingValues ->
+            Box(modifier = Modifier.padding(paddingValues)) {
+                when (loading) {
+                    false -> {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
                         ) {
-                            FilterChangeButtons(
-                                onFilterChange = viewModel::onFilterChange,
-                                currentFilter = currentFilter
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(5.dp))
-                        ResultHeading()
-                        LazyColumn {
-                            items(results) { station ->
-                                ResultCard(
-                                    station = station,
-                                    onClick = {navigateToDetail(station.stationId)}
+                            HorizontalDivider()
+                            Column (
+                                modifier = Modifier.padding(vertical = 6.dp)
+                            ) {
+                                FilterChangeButtons(
+                                    onFilterChange = viewModel::onFilterChange,
+                                    currentFilter = currentFilter
                                 )
+                                SortingOptions(
+                                    sortingCriteria = screenState.sortingCriteria,
+                                    ascendingOrder = screenState.ascendingOrder,
+                                    onSortingCriteriaChange = { criteria -> viewModel.setSortingCriteria(criteria) },
+                                    onAscendingOrderChange = { order -> viewModel.setAscendingOrder(order) }
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(5.dp))
+                            ResultHeading()
+                            LazyColumn {
+                                items(results) { station ->
+                                    ResultCard(
+                                        station = station,
+                                        onClick = {navigateToDetail(station.stationId)}
+                                    )
+                                }
                             }
                         }
                     }
-                }
-                true -> {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        CircularProgressIndicator()
+                    true -> {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            CircularProgressIndicator()
                     }
                 }
             }
@@ -133,27 +137,29 @@ fun ResultHeading() {
 @Composable
 fun FilterChangeButtons(onFilterChange: (ListScreenViewModel.Filter) -> Unit,
                         currentFilter: ListScreenViewModel.Filter) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
     Button(onClick = { onFilterChange(ListScreenViewModel.Filter.Active)},
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (currentFilter == ListScreenViewModel.Filter.Active)
-                Color.Red else MaterialTheme.colorScheme.secondary)
+
     )
     {
         Text(text = "Active")
     }
     Button(onClick = { onFilterChange(ListScreenViewModel.Filter.Inactive)},
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (currentFilter == ListScreenViewModel.Filter.Inactive)
-                Color.Red else MaterialTheme.colorScheme.secondary)
+
     ){
         Text(text = "Inactive")
     }
     Button(onClick = { onFilterChange(ListScreenViewModel.Filter.All)},
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (currentFilter == ListScreenViewModel.Filter.All)
-                Color.Red else MaterialTheme.colorScheme.secondary)
+
     ){
         Text(text = "All")
+    }
     }
 }
 
@@ -171,10 +177,10 @@ fun ResultCard(station: Station, onClick: () -> Unit) {
         )
         if (station.isActive()) {
             Icon(
-                imageVector = Icons.Outlined.CheckCircle,
-                contentDescription = "Active Station"
-            )
-        }
+                imageVector = Icons.Filled.CheckCircle,
+                contentDescription = "Active Station",
+                tint = Color.Green
+            )        }
     }
 }
 
@@ -219,5 +225,71 @@ fun TopSearchBar(query: String, onQueryChange: (String) -> Unit) {
 }
 
 
+@Composable
+fun SortingOptions(
+    sortingCriteria: String,
+    ascendingOrder: Boolean,
+    onSortingCriteriaChange: (String) -> Unit,
+    onAscendingOrderChange: (Boolean) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Button for sorting by Elevation
+        Button(
+            onClick = {
+                if (sortingCriteria == "Elevation") {
+                    // Toggle order if the same button is clicked
+                    onAscendingOrderChange(!ascendingOrder)
+                } else {
+                    // Set new sorting criteria and default to ascending order
+                    onSortingCriteriaChange("Elevation")
+                    onAscendingOrderChange(true)
+                }
+            },
+
+        ) {
+            Text(text = "Elevation ${if (sortingCriteria == "Elevation") (if (ascendingOrder) "↑" else "↓") else ""}")
+        }
+
+        // Button for sorting by Begin Date
+        Button(
+            onClick = {
+                if (sortingCriteria == "Begin Date") {
+                    // Toggle order if the same button is clicked
+                    onAscendingOrderChange(!ascendingOrder)
+                } else {
+                    // Set new sorting criteria and default to ascending order
+                    onSortingCriteriaChange("Begin Date")
+                    onAscendingOrderChange(true)
+                }
+            },
+
+        ) {
+            Text(text = "Begin Date ${if (sortingCriteria == "Begin Date") (if (ascendingOrder) "↑" else "↓") else ""}")
+        }
+
+        // Button for sorting Alphabetically
+        Button(
+            onClick = {
+                if (sortingCriteria == "Alphabetical") {
+                    // Toggle order if the same button is clicked
+                    onAscendingOrderChange(!ascendingOrder)
+                } else {
+                    // Set new sorting criteria and default to ascending order
+                    onSortingCriteriaChange("Alphabetical")
+                    onAscendingOrderChange(true)
+                }
+            },
+
+        ) {
+            Text(text = "Alphabetical ${if (sortingCriteria == "Alphabetical") (if (ascendingOrder) "↑" else "↓") else ""}")
+        }
+    }
+}
 
 

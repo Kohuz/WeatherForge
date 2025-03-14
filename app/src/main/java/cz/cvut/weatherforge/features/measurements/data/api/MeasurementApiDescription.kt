@@ -43,13 +43,17 @@ interface MeasurementApiDescription {
     @GET("/measurements/{stationId}/measurementsDayAndMonth")
     suspend fun getMeasurementsDayAndMonth(
         @Path("stationId") stationId: String,
-        @Query("date") date: String
+        @Query("date") date: String,
+        @Query("element") element: String
+
     ): List<MeasurementDaily>
 
     @GET("/measurements/{stationId}/measurementsMonth")
     suspend fun getMeasurementsMonth(
         @Path("stationId") stationId: String,
-        @Query("date") date: String
+        @Query("date") date: String,
+        @Query("element") element: String
+
     ): List<MeasurementMonthly>
 
     @GET("/measurements/{stationId}/statsDay")

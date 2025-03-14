@@ -24,6 +24,8 @@ class ListScreenViewModel(private val repository: StationRepository) : ViewModel
         val successful: Boolean = true,
         val currentQuery: String = "",
         val currentFilter: Filter = Filter.All,
+        val sortingCriteria: String = "Alphabetical",
+        val ascendingOrder: Boolean = true,
         val dialogOpen: Boolean = false
     )
 
@@ -75,30 +77,75 @@ class ListScreenViewModel(private val repository: StationRepository) : ViewModel
         applyFilterAndSearch()
     }
 
+    fun setSortingCriteria(sortingCriteria: String) {
+        _screenStateStream.update { state ->
+            state.copy(sortingCriteria = sortingCriteria)
+        }
+        applyFilterAndSearch()
+    }
+
+    fun setAscendingOrder(ascendingOrder: Boolean) {
+        _screenStateStream.update { state ->
+            state.copy(ascendingOrder = ascendingOrder)
+        }
+        applyFilterAndSearch()
+    }
+
     private fun applyFilterAndSearch() {
         val currentFilter = _screenStateStream.value.currentFilter
         val currentQuery = _screenStateStream.value.currentQuery
+        val sortingCriteria = _screenStateStream.value.sortingCriteria
+        val ascendingOrder = _screenStateStream.value.ascendingOrder
 
-        // Filter by active/inactive
+        // Step 1: Filter by active/inactive
         val filteredByStatus = when (currentFilter) {
             Filter.Active -> allStations.filter { it.isActive() }
             Filter.Inactive -> allStations.filter { !it.isActive() }
             else -> allStations
         }
 
-        // Filter by search query
+        // Step 2: Filter by search query
         val filteredByQuery = if (currentQuery.isBlank()) {
             filteredByStatus
         } else {
             filteredByStatus.filter { it.location.startsWith(currentQuery, ignoreCase = true) }
         }
 
-        // Sort by location
-        val sortedResults = filteredByQuery.sortedBy { it.location }
+        // Step 3: Sort the filtered results
+        val sortedResults = when (sortingCriteria) {
+            "Elevation" -> sortStationsByElevation(filteredByQuery, ascendingOrder)
+            "Begin Date" -> sortStationsByBeginDate(filteredByQuery, ascendingOrder)
+            "Alphabetical" -> sortStationsAlphabetically(filteredByQuery, ascendingOrder)
+            else -> filteredByQuery
+        }
 
-        // Update the state
+        // Update the state with the final results
         _screenStateStream.update { state ->
             state.copy(results = sortedResults, loading = false, dialogOpen = false)
+        }
+    }
+
+    private fun sortStationsByElevation(stations: List<Station>, ascending: Boolean): List<Station> {
+        return if (ascending) {
+            stations.sortedBy { it.elevation }
+        } else {
+            stations.sortedByDescending { it.elevation }
+        }
+    }
+
+    private fun sortStationsByBeginDate(stations: List<Station>, ascending: Boolean): List<Station> {
+        return if (ascending) {
+            stations.sortedBy { it.startDate }
+        } else {
+            stations.sortedByDescending { it.startDate }
+        }
+    }
+
+    private fun sortStationsAlphabetically(stations: List<Station>, ascending: Boolean): List<Station> {
+        return if (ascending) {
+            stations.sortedBy { it.location }
+        } else {
+            stations.sortedByDescending { it.location }
         }
     }
 
