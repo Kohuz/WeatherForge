@@ -1,6 +1,6 @@
 import androidx.compose.runtime.Composable
 import cz.cvut.weatherforge.features.stations.presentation.detail.pickers.DailyDatePicker
-import cz.cvut.weatherforge.features.stations.presentation.detail.pickers.MonthlyDatePicker
+import cz.cvut.weatherforge.features.stations.presentation.detail.pickers.DayMonthlyDatePicker
 import cz.cvut.weatherforge.features.stations.presentation.detail.pickers.YearlyDatePicker
 import java.time.LocalDate
 
@@ -16,7 +16,10 @@ fun ResolutionDatePickerDialog(
             DailyDatePicker(minimumDate, onDismiss, onDateSelected)
         }
         "Měsíčně" -> {
-            MonthlyDatePicker(minimumDate, onDismiss, onDateSelected)
+            MonthYearPicker(minimumDate, onDismiss, onDateSelected)
+        }
+        "DenMěsíčně" ->{
+            DayMonthlyDatePicker(minimumDate, onDismiss, onDateSelected)
         }
         "Ročně" -> {
             YearlyDatePicker(minimumDate, onDismiss, onDateSelected)

@@ -44,7 +44,19 @@ class MeasurementRepository(
     ): MeasurementMonthlyResult {
         return try {
             val measurements = remoteDataSource.getMeasurementsMonthly(stationId, dateFrom, dateTo, element)
-            MeasurementMonthlyResult(measurements, isSuccess = true)
+
+            val filteredMeasurements = when (element) {
+                "T" -> measurements.filter { it.timeFunction == "AVG" && it.mdFunction == "AVG" }
+                "TMA" -> measurements.filter { it.mdFunction == "MAX" }
+                "TMI" -> measurements.filter { it.mdFunction == "MIN" }
+                "F" -> measurements.filter { it.timeFunction == "AVG" && it.mdFunction == "AVG" }
+                "FMAX" -> measurements.filter { it.mdFunction == "MAX" }
+                "SCE" -> measurements.filter { it.mdFunction == "GE(1)" }
+                "SNO" -> measurements.filter { it.mdFunction == "GE(1)" }
+                else -> measurements
+            }
+
+            MeasurementMonthlyResult(filteredMeasurements, isSuccess = true)
         } catch (t: Throwable) {
             Log.v("api", t.toString())
             MeasurementMonthlyResult(emptyList(), isSuccess = false)
@@ -59,7 +71,18 @@ class MeasurementRepository(
     ): MeasurementYearlyResult {
         return try {
             val measurements = remoteDataSource.getMeasurementsYearly(stationId, dateFrom, dateTo, element)
-            MeasurementYearlyResult(measurements, isSuccess = true)
+
+            val filteredMeasurements = when (element) {
+                "T" -> measurements.filter { it.timeFunction == "AVG" && it.mdFunction == "AVG" }
+                "TMA" -> measurements.filter { it.mdFunction == "MAX" }
+                "TMI" -> measurements.filter { it.mdFunction == "MIN" }
+                "F" -> measurements.filter { it.timeFunction == "AVG" && it.mdFunction == "AVG" }
+                "FMAX" -> measurements.filter { it.mdFunction == "MAX" }
+                "SCE" -> measurements.filter { it.mdFunction == "GE(1)" }
+                "SNO" -> measurements.filter { it.mdFunction == "GE(1)" }
+                else -> measurements
+            }
+            MeasurementYearlyResult(filteredMeasurements, isSuccess = true)
         } catch (t: Throwable) {
             Log.v("api", t.toString())
             MeasurementYearlyResult(emptyList(), isSuccess = false)

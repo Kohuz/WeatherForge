@@ -19,6 +19,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -253,8 +255,14 @@ fun SortingOptions(
             },
 
         ) {
-            Text(text = "Elevation ${if (sortingCriteria == "Elevation") (if (ascendingOrder) "↑" else "↓") else ""}")
-        }
+            Text(text = "Elevation")
+            if (sortingCriteria == "Elevation") {
+                Icon(
+                    imageVector = if (ascendingOrder) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = if (ascendingOrder) "Ascending" else "Descending",
+                    modifier = Modifier.padding(start = 4.dp)
+                )
+            }         }
 
         // Button for sorting by Begin Date
         Button(
@@ -270,7 +278,16 @@ fun SortingOptions(
             },
 
         ) {
-            Text(text = "Begin Date ${if (sortingCriteria == "Begin Date") (if (ascendingOrder) "↑" else "↓") else ""}")
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "Begin date")
+                if (sortingCriteria == "Begin date") {
+                    Icon(
+                        imageVector = if (ascendingOrder) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                        contentDescription = if (ascendingOrder) "Ascending" else "Descending",
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
+                }
+            }
         }
 
         // Button for sorting Alphabetically
@@ -287,7 +304,14 @@ fun SortingOptions(
             },
 
         ) {
-            Text(text = "Alphabetical ${if (sortingCriteria == "Alphabetical") (if (ascendingOrder) "↑" else "↓") else ""}")
+            Text(text = "Alphabetical")
+            if (sortingCriteria == "Alphabetical") {
+                Icon(
+                    imageVector = if (ascendingOrder) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = if (ascendingOrder) "Ascending" else "Descending",
+                    modifier = Modifier.padding(start = 4.dp)
+                )
+            }
         }
     }
 }
