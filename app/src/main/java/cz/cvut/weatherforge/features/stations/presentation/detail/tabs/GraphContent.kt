@@ -1,6 +1,6 @@
 package cz.cvut.weatherforge.features.stations.presentation.detail.tabs
 
-import DatePickerDialog
+import ResolutionDatePickerDialog
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -49,7 +49,7 @@ fun GraphContent(
 
     // Show/hide date pickers
     if (graphContentState.showFromDatePicker) {
-        DatePickerDialog(
+        ResolutionDatePickerDialog(
             minimumDate = station.stationElements
                 .find { it.elementAbbreviation == graphContentState.selectedElement!!.abbreviation }
                 ?.beginDate?.date?.toJavaLocalDate(),
@@ -62,7 +62,7 @@ fun GraphContent(
     }
 
     if (graphContentState.showToDatePicker) {
-        DatePickerDialog(
+        ResolutionDatePickerDialog(
             minimumDate = graphContentState.fromDate,
             resolution = resolutions[selectedResolution],
             onDismiss = { graphContentViewModel.showToDatePicker(false) },

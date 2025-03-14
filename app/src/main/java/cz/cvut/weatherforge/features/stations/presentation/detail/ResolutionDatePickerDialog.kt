@@ -5,7 +5,7 @@ import cz.cvut.weatherforge.features.stations.presentation.detail.pickers.Yearly
 import java.time.LocalDate
 
 @Composable
-fun DatePickerDialog(
+fun ResolutionDatePickerDialog(
     minimumDate: LocalDate?,
     resolution: String,
     onDismiss: () -> Unit,

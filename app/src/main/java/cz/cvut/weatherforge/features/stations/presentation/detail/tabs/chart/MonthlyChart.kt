@@ -8,6 +8,6 @@ import cz.cvut.weatherforge.features.measurements.data.model.MeasurementMonthly
 @Composable
 fun MonthlyChart(measurements: List<MeasurementMonthly>) {
     val entries = transformMonthlyToEntries(measurements)
-    val labels = measurements.map { it.month.toString() } // Use date as labels
+    val labels = measurements.map { it.month.toString() }
     LineChartComposable(entries, labels)
 }

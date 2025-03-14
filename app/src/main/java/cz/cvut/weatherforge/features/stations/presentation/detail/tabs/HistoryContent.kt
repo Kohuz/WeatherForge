@@ -1,19 +1,21 @@
 package cz.cvut.weatherforge.features.stations.presentation.detail.tabs
 
+import ResolutionDatePickerDialog
 import androidx.compose.runtime.Composable
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cz.cvut.weatherforge.R
-import cz.cvut.weatherforge.features.stations.presentation.detail.DayMonthPickerDialog
 import cz.cvut.weatherforge.features.stations.presentation.detail.DetailScreenViewModel
 import cz.cvut.weatherforge.features.stations.presentation.detail.pickers.DailyDatePicker
 import kotlinx.datetime.toJavaLocalDate
@@ -21,25 +23,52 @@ import kotlinx.datetime.toKotlinLocalDate
 
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryContent(
     stationId: String,
     historyContentViewModel: HistoryContentViewModel,
     detailViewModel: DetailScreenViewModel
 ) {
+
     val historyContentState by historyContentViewModel.historyContentState.collectAsStateWithLifecycle()
     val detailState by detailViewModel.screenStateStream.collectAsStateWithLifecycle()
+    val resolutions = listOf("Denně", "Měsíčně")
+    val selectedResolution = historyContentState.selectedResolutionIndex
 
 
-    LaunchedEffect(historyContentState.selectedDate, historyContentState.selectedDayMonthDate) {
+
+    LaunchedEffect(historyContentState.selectedDate) {
         historyContentViewModel.fetchConcreteDayData(stationId)
     }
 
-    LaunchedEffect(historyContentState.selectedDayMonthDate) {
+    LaunchedEffect(historyContentState.selectedLongTermDate) {
         historyContentViewModel.fetchLongTermStats(stationId)
     }
 
+    LaunchedEffect(selectedResolution, historyContentState.selectedLongTermDate) {
+        if (historyContentState.selectedLongTermDate != null) {
+            when (resolutions[selectedResolution]) {
+                "Denně" -> historyContentState.f(
+                    station.stationId,
+                    graphContentState.fromDate.toString(),
+                    graphContentState.toDate.toString(),
+                    graphContentState.selectedElement!!.abbreviation
+                )
+                "Měsíčně" -> detailScreenViewModel.fetchMonthlyMeasurements(
+                    station.stationId,
+                    graphContentState.fromDate.toString(),
+                    graphContentState.toDate.toString(),
+                    graphContentState.selectedElement!!.abbreviation
+                )
+                "Ročně" -> detailScreenViewModel.fetchYearlyMeasurements(
+                    station.stationId,
+                    graphContentState.fromDate.toString(),
+                    graphContentState.toDate.toString(),
+                    graphContentState.selectedElement!!.abbreviation
+                )
+            }
+        }
+    }
     if (historyContentState.isLoading) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -56,25 +85,60 @@ fun HistoryContent(
         ) {
             // Date Picker for Day and Month
             OutlinedButton(
-                onClick = { historyContentViewModel.showDayMonthDatePicker(true) },
+                onClick = { historyContentViewModel.showLongTermDatePicker(true) },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
                     text = stringResource(
                         R.string.select_day_month,
-                        historyContentState.selectedDayMonthDate?.toString() ?: stringResource(R.string.no_date_selected)
+                        historyContentState.selectedLongTermDate?.toString() ?: stringResource(R.string.no_date_selected)
                     )
                 )
             }
 
-            if (historyContentState.showDayMonthPicker) {
-                DayMonthPickerDialog(
-                    onDismiss = { historyContentViewModel.showDayMonthDatePicker(false) },
-                    onDateSelected = { date -> historyContentViewModel.setSelectedDayMonthDate(date.toKotlinLocalDate()) }
+            if (historyContentState.showLongTermDatePicker) {
+                ResolutionDatePickerDialog (
+                    minimumDate = historyContentState.selectedLongTermDate?.toJavaLocalDate(),
+                    resolution = resolutions[selectedResolution],
+                    onDismiss = { historyContentViewModel.showLongTermDatePicker(false) },
+                    onDateSelected = { date -> historyContentViewModel.setSelectedLongTermDate(date.toKotlinLocalDate())}
                 )
-            }
+                    }
 
-            Spacer(modifier = Modifier.height(16.dp))
+
+
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            resolutions.forEachIndexed { index, resolution ->
+                Row(
+                    modifier = Modifier
+                        .selectable(
+                            selected = (index == selectedResolution),
+                            onClick = { historyContentViewModel.selectResolution(index) },
+                            role = Role.RadioButton
+                        )
+                        .padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = (index == selectedResolution),
+                        onClick = { historyContentViewModel.selectResolution(index) }
+                    )
+                    Text(
+                        text = resolution,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+            }
+        }
+
+
+        Spacer(modifier = Modifier.height(16.dp))
 
             // Display error message
             if (historyContentState.error != null) {

@@ -18,9 +18,10 @@ class HistoryContentViewModel(
 
     data class HistoryContentState(
         val selectedDate: LocalDate? = null, // The selected date for fetching data
-        val selectedDayMonthDate: LocalDate? = null, // The second selected date for fetching data
+        val selectedLongTermDate: LocalDate? = null, // Long term date
+        val selectedResolutionIndex: Int = 0,
         val showDatePicker: Boolean = false, // Whether to show the date picker dialog
-        val showDayMonthPicker: Boolean = false, // Whether to show the date picker dialog
+        val showLongTermDatePicker: Boolean = false, // Whether to show the date picker dialog
         val dailyStats: ValueStatsResult? = null, // Result for daily stats (long term)
         val dailyAndMonthlyMeasurements: MeasurementDailyResult? = null, // Result for daily and monthly measurements
         val monthlyMeasurements: MeasurementMonthlyResult? = null, // Result for monthly measurements
@@ -33,6 +34,11 @@ class HistoryContentViewModel(
     private val _state = MutableStateFlow(HistoryContentState())
     val historyContentState get() = _state.asStateFlow()
 
+
+    fun selectResolution(resolutionIndex: Int) {
+        _state.update { it.copy(selectedResolutionIndex = resolutionIndex) }
+    }
+
     // Function to update the selected date and fetch data
     fun setSelectedDate(date: LocalDate) {
         _state.update { it.copy(selectedDate = date) }
@@ -43,69 +49,71 @@ class HistoryContentViewModel(
         _state.update { it.copy(showDatePicker = show) }
     }
 
-    fun setSelectedDayMonthDate(date: LocalDate) {
-        _state.update { it.copy(selectedDayMonthDate = date) }
+    fun setSelectedLongTermDate(date: LocalDate) {
+        _state.update { it.copy(selectedLongTermDate = date) }
     }
 
-    fun showDayMonthDatePicker(show: Boolean) {
-        _state.update { it.copy(showDayMonthPicker = show) }
+    fun showLongTermDatePicker(show: Boolean) {
+        _state.update { it.copy(showLongTermDatePicker = show) }
     }
     fun fetchLongTermStats(stationId: String) {
         _state.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
             try {
                 val date =
-                    _state.value.selectedDayMonthDate?.toString() ?: java.time.LocalDate.now()
+                    _state.value.selectedLongTermDate?.toString() ?: java.time.LocalDate.now()
                         .toString()
 
-                _state.update { it.copy(selectedDayMonthDate = LocalDate.parse(date)) }
+                _state.update { it.copy(selectedLongTermDate = LocalDate.parse(date)) }
 
                 // Fetch data using the first date
                 val dailyStats = repository.getStatsDayLongTerm(stationId, date)
 
                 // Fetch data using the second date
                 val monthlyMeasurements = repository.getMeasurementsMonth(stationId, date)
-                val statsDay = repository.getStatsDay(stationId, date)
 
                 // Update the state with the fetched data
                 _state.update {
                     it.copy(
                         dailyStats = dailyStats,
                         monthlyMeasurements = monthlyMeasurements,
-                        statsDay = statsDay,
                         isLoading = false
                     )
                 }
+
+
+            } catch (t: Throwable) {
+                _state.update { it.copy(error = t.message, isLoading = false) }
+            }
+
+
+
+
+
+        }
+        }
+        // Function to fetch all data
+    fun fetchConcreteDayData(stationId: String) {
+        _state.update { it.copy(isLoading = true, error = null) }
+        viewModelScope.launch {
+            try {
+                val date = _state.value.selectedDate?.toString() ?: java.time.LocalDate.now()
+                    .toString()
+
+                val concreteDayMeasurements =
+                    repository.getStatsDay(stationId, date)
+
+                // Update the state with the fetched data
+                _state.update {
+                    it.copy(
+                        statsDay = concreteDayMeasurements,
+                        isLoading = false
+                    )
+                }
+
             } catch (t: Throwable) {
                 _state.update { it.copy(error = t.message, isLoading = false) }
             }
         }
-        }
-        // Function to fetch all data
-        fun fetchConcreteDayData(stationId: String) {
-            _state.update { it.copy(isLoading = true, error = null) }
-            viewModelScope.launch {
-                try {
-                    val date1 = _state.value.selectedDate?.toString() ?: java.time.LocalDate.now()
-                        .toString()
-
-                    // Fetch data using the first date
-                    val dailyAndMonthlyMeasurements =
-                        repository.getMeasurementsDayAndMonth(stationId, date1)
-
-
-                    // Update the state with the fetched data
-                    _state.update {
-                        it.copy(
-                            dailyAndMonthlyMeasurements = dailyAndMonthlyMeasurements,
-                            isLoading = false
-                        )
-                    }
-                } catch (t: Throwable) {
-                    _state.update { it.copy(error = t.message, isLoading = false) }
-                }
-            }
-        }
-
-
+    }
 }
