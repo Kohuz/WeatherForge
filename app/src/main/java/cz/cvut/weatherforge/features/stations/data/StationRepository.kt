@@ -3,7 +3,6 @@ package cz.cvut.weatherforge.features.stations.data
 import android.util.Log
 import com.kozubek.livesport.features.sportEntries.data.StationLocalDataSource
 import cz.cvut.weatherforge.features.stations.data.api.StationRemoteDataSource
-import cz.cvut.weatherforge.features.stations.data.model.ElementCodelistItem
 import cz.cvut.weatherforge.features.stations.data.model.ElementsCodelistResult
 import cz.cvut.weatherforge.features.stations.data.model.StationResult
 import cz.cvut.weatherforge.features.stations.data.model.StationsResult
@@ -39,7 +38,7 @@ class StationRepository(
         }
     }
 
-    suspend fun getClosestStation(lat: Float, long: Float): StationResult {
+    suspend fun getClosestStation(lat: Double, long: Double): StationResult {
         return try {
             val stations = stationRemoteDataSource.getClosest(lat, long, 1)
             StationResult(stations.first(), isSuccess = true)
@@ -49,7 +48,7 @@ class StationRepository(
         }
     }
 
-    suspend fun getNearbyStations(lat: Float, long: Float): StationsResult {
+    suspend fun getNearbyStations(lat: Double, long: Double): StationsResult {
         return try {
             val stations = stationRemoteDataSource.getClosest(lat, long, 4)
             StationsResult(stations, isSuccess = true)

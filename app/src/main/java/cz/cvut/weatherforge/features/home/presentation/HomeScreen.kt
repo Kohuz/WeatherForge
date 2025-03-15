@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLng
 import cz.cvut.weatherforge.R
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementLatest
 import cz.cvut.weatherforge.features.stations.data.model.ElementCodelistItem
@@ -274,4 +275,18 @@ fun CurrentWeatherMeasurementsInfoCard(
         },
         modifier = modifier
     )
+}
+fun calculateDistancesForNearbyStations(
+    stations: List<Station>,
+    userLocation: LatLng
+): List<Pair<Station, Double>> {
+    return stations.drop(1).map { station ->
+        val distance = pythagoreanDistance(
+            userLocation.latitude,
+            userLocation.longitude,
+            station.latitude,
+            station.longitude
+        ) * 111.32 // Convert to kilometers
+        station to distance // Return Pair<Station, Double>
+    }
 }

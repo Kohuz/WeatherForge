@@ -2,6 +2,7 @@ package cz.cvut.weatherforge.features.stations.presentation.detail.tabs
 
 import InfoCard
 import InfoCardData
+import NearbyStationInfoCard
 import SwipeableInfoCard
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,7 +23,7 @@ import cz.cvut.weatherforge.features.stations.presentation.detail.DetailScreenVi
 import cz.cvut.weatherforge.features.stations.presentation.detail.elementAbbreviationToNameUnitPair
 
 @Composable
-fun OverviewContent(station: Station, viewModel: DetailScreenViewModel) {
+fun OverviewContent(station: Station, viewModel: DetailScreenViewModel, navigateToDetail: (id: String) -> Unit) {
     val screenState by viewModel.screenStateStream.collectAsStateWithLifecycle()
     Column(
         modifier = Modifier
@@ -54,18 +55,13 @@ fun OverviewContent(station: Station, viewModel: DetailScreenViewModel) {
                 }
             )
         )
-//        InfoCard(
-//            title = stringResource(R.string.detail_current_state),
-//            items = station.stationLatestMeasurements.mapNotNull { measurement ->
-//                val elementInfo = elementAbbreviationToNameUnitPair(measurement.element, screenState.elementCodelist)
-//                if (elementInfo != null) {
-//                    val valueWithUnit = "${measurement.value} ${elementInfo.unit}"
-//                    elementInfo.name to valueWithUnit
-//                } else {
-//                    null
-//                }
-//            }
-//        )
+
+        NearbyStationInfoCard(
+            title = stringResource(R.string.station_near),
+            screenState.nearbyStations,
+            onClick = navigateToDetail
+        )
+
 
         if (screenState.station != null && station.isActive() && station.stationLatestMeasurements.isNotEmpty()) {
             CurrentWeatherMeasurementsInfoCard(

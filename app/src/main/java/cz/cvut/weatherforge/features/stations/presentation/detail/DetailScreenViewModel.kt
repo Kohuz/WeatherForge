@@ -2,6 +2,8 @@ package cz.cvut.weatherforge.features.stations.presentation.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.maps.model.LatLng
+import cz.cvut.weatherforge.features.home.presentation.calculateDistancesForNearbyStations
 import cz.cvut.weatherforge.features.measurements.data.MeasurementRepository
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementDaily
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementMonthly
@@ -16,7 +18,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import java.time.LocalDate
 
 class DetailScreenViewModel(
     private val stationRepository: StationRepository, private val recordRepository: RecordRepository,
@@ -27,6 +28,7 @@ class DetailScreenViewModel(
     data class DetailScreenState(
         val station: Station? = null,
         val selectedTabIndex: Int = 0,
+        val nearbyStations: List<Pair<Station, Double>> = emptyList(),
         val elementCodelist: List<ElementCodelistItem> = emptyList(),
         val allTimeRecords: List<RecordStats> = emptyList(),
         val dailyMeasurements: List<MeasurementDaily> = emptyList(),
@@ -40,6 +42,13 @@ class DetailScreenViewModel(
             if(elementCodelistResult.isSuccess){
                 _screenStateStream.update { it.copy(elementCodelist = elementCodelistResult.elements) }
             }
+            if(screenStateStream.value.station != null) {
+                fetchNearbyStations(
+                    screenStateStream.value.station!!.latitude,
+                    screenStateStream.value.station!!.longitude
+                )
+            }
+
         }
     }
     fun loadStation(stationId: String) {
@@ -53,6 +62,26 @@ class DetailScreenViewModel(
         _screenStateStream.update { it.copy(selectedTabIndex = index) }
     }
 
+    private suspend fun fetchNearbyStations(latitude: Double, longitude: Double) {
+        val nearbyStationsResult = stationRepository.getNearbyStations(
+            latitude,
+            longitude
+        )
+
+        if (nearbyStationsResult.isSuccess) {
+            val nearbyStationsWithDistance = calculateDistancesForNearbyStations(
+                nearbyStationsResult.stations,
+                LatLng(latitude, longitude)
+            )
+            updateNearbyStations(nearbyStationsWithDistance)
+        }
+    }
+
+    private fun updateNearbyStations(nearbyStations: List<Pair<Station, Double>>) {
+        _screenStateStream.update { state ->
+            state.copy(nearbyStations = nearbyStations)
+        }
+    }
     fun loadRecords() {
         viewModelScope.launch {
             val allTimeRecordsResult =

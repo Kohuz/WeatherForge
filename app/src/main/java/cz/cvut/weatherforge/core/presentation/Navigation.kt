@@ -113,7 +113,10 @@ fun Navigation() {
                 if (stationId != null) {
                     DetailScreen(
                         stationId = stationId,
-                        navigateUp = { navController.navigateUp() }
+                        navigateUp = { navController.navigateUp()},
+                        navigateToDetail = { statId ->
+                            navController.navigate(Screens.Detail.createRoute(statId))
+                        }
                     )
                 }
             }

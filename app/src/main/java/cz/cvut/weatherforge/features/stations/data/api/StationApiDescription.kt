@@ -9,8 +9,8 @@ import retrofit2.http.Query
 
 interface StationApiDescription {
     @GET("stations/closest")
-    suspend fun getClosest(@Query("lat") lat: Float,
-                           @Query("long") long: Float,
+    suspend fun getClosest(@Query("lat") lat: Double,
+                           @Query("long") long: Double,
                            @Query("count") count: Int): List<Station>
     @GET("stations")
     suspend fun getStations(): List<Station>

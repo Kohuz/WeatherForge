@@ -31,6 +31,7 @@ import org.koin.androidx.compose.koinViewModel
 fun DetailScreen(
     stationId: String,
     navigateUp: () -> Unit,
+    navigateToDetail: (id: String) -> Unit,
     detailScreenViewModel: DetailScreenViewModel = koinViewModel(),
     graphContentViewModel: GraphContentViewModel = koinViewModel(),
     historyContentViewModel: HistoryContentViewModel = koinViewModel()
@@ -81,7 +82,7 @@ fun DetailScreen(
 
                 // Display content based on the selected tab
                 when (selectedTabIndex) {
-                    0 -> OverviewContent(station, detailScreenViewModel)
+                    0 -> OverviewContent(station, detailScreenViewModel, navigateToDetail)
                     1 -> GraphContent(station, detailScreenViewModel,graphContentViewModel)
                     2 -> HistoryContent(stationId, historyContentViewModel, detailScreenViewModel)
                 }

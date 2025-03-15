@@ -66,8 +66,8 @@ class HomeScreenViewModel(private val stationRepository: StationRepository, priv
 
     private suspend fun fetchClosestStation(userLocation: LatLng) {
         val closestStationResult = stationRepository.getClosestStation(
-            userLocation.latitude.toFloat(),
-            userLocation.longitude.toFloat()
+            userLocation.latitude,
+            userLocation.longitude
         )
 
         if (closestStationResult.isSuccess) {
@@ -95,8 +95,8 @@ class HomeScreenViewModel(private val stationRepository: StationRepository, priv
 
     private suspend fun fetchNearbyStations(userLocation: LatLng) {
         val nearbyStationsResult = stationRepository.getNearbyStations(
-            userLocation.latitude.toFloat(),
-            userLocation.longitude.toFloat()
+            userLocation.latitude,
+            userLocation.longitude
         )
 
         if (nearbyStationsResult.isSuccess) {
@@ -118,20 +118,7 @@ class HomeScreenViewModel(private val stationRepository: StationRepository, priv
             }
         }
     }
-    private fun calculateDistancesForNearbyStations(
-        stations: List<Station>,
-        userLocation: LatLng
-    ): List<Pair<Station, Double>> {
-        return stations.drop(1).map { station ->
-            val distance = pythagoreanDistance(
-                userLocation.latitude,
-                userLocation.longitude,
-                station.latitude,
-                station.longitude
-            ) * 111.32 // Convert to kilometers
-            station to distance // Return Pair<Station, Double>
-        }
-    }
+
 
     private suspend fun updateNearbyStations(nearbyStations: List<Pair<Station, Double>>) {
         _screenStateStream.update { state ->
