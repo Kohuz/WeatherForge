@@ -48,7 +48,11 @@ import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalPermissionsApi::class, MapsComposeExperimentalApi::class)
 @Composable
-fun MapScreen(navigateToDetail: (id: String) -> Unit, viewModel: MapScreenViewModel = koinViewModel()) {
+fun MapScreen(
+    navigateToDetail: (id: String) -> Unit,
+    stationLocation: LatLng? = null, // Nullable station location
+    viewModel: MapScreenViewModel = koinViewModel()
+) {
     // Collect the screen state from the ViewModel
     val screenState by viewModel.screenStateStream.collectAsStateWithLifecycle()
     val results = screenState.results
@@ -98,6 +102,15 @@ fun MapScreen(navigateToDetail: (id: String) -> Unit, viewModel: MapScreenViewMo
         }
     }
 
+    // Set the initial camera position to the station's location or user's location
+    LaunchedEffect(stationLocation, userLocation) {
+        val targetLocation = stationLocation ?: userLocation
+        targetLocation?.let { location ->
+            val cameraPosition = CameraPosition.fromLatLngZoom(location, 12f) // Adjust zoom level as needed
+            cameraPositionState.position = cameraPosition
+        }
+    }
+
     // Main UI layout
     Box(modifier = Modifier.fillMaxSize()) {
         // Google Map
@@ -106,11 +119,6 @@ fun MapScreen(navigateToDetail: (id: String) -> Unit, viewModel: MapScreenViewMo
             cameraPositionState = cameraPositionState,
             uiSettings = uiSettings
         ) {
-            // Update the camera position to the user's location if available
-            userLocation?.let {
-                cameraPositionState.position = CameraPosition.fromLatLngZoom(it, 8f)
-            }
-
             // Display clustered markers for stations
             Clustering(
                 items = results,
@@ -172,7 +180,6 @@ fun MapScreen(navigateToDetail: (id: String) -> Unit, viewModel: MapScreenViewMo
         }
     }
 }
-
 // Custom composable for filter buttons
 @Composable
 fun FilterButton(text: String, isSelected: Boolean, onClick: () -> Unit) {

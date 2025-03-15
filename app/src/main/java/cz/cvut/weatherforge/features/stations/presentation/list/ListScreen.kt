@@ -97,7 +97,9 @@ import org.koin.androidx.compose.koinViewModel
                                     ResultCard(
                                         station = station,
                                         onClick = {navigateToDetail(station.stationId)},
-                                        onToggleFavorite = { viewModel.toggleFavorite(station.stationId) }
+                                        onToggleFavorite = { viewModel.toggleFavorite(station.stationId) },
+                                        sortingCriteria = screenState.sortingCriteria,
+                                        currentFilter = currentFilter
                                     )
                                 }
                             }
@@ -172,7 +174,12 @@ fun FilterChangeButtons(onFilterChange: (ListScreenViewModel.Filter) -> Unit,
 }
 
 @Composable
-fun ResultCard(station: Station, onClick: () -> Unit, onToggleFavorite: () -> Unit) {
+fun ResultCard(
+    station: Station,
+    onClick: () -> Unit,
+    onToggleFavorite: () -> Unit,
+    sortingCriteria: String,
+    currentFilter: ListScreenViewModel.Filter) {
     Row(verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
@@ -183,6 +190,7 @@ fun ResultCard(station: Station, onClick: () -> Unit, onToggleFavorite: () -> Un
             fontWeight = FontWeight.Bold,
             fontSize = 15.sp
         )
+
         if (station.isActive()) {
             Icon(
                 imageVector = Icons.Filled.CheckCircle,
@@ -190,6 +198,14 @@ fun ResultCard(station: Station, onClick: () -> Unit, onToggleFavorite: () -> Un
                 tint = Color.Green
             )
         }
+       if(currentFilter == ListScreenViewModel.Filter.Inactive){
+           Text(
+               modifier = Modifier.padding(8.dp),
+               text = station.endDate.toString(),
+               fontWeight = FontWeight.Bold,
+               fontSize = 15.sp
+           )
+       }
         Icon(
             imageVector = if (station.isFavorite) Icons.Outlined.Star else Icons.Outlined.Star,
             contentDescription = "Favorite Station",

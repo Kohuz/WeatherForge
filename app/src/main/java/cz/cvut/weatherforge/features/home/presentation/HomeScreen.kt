@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -89,7 +90,9 @@ fun HomeScreen(
                         )
                         screenState.closestStation?.let {
                             Text(
-                                modifier = Modifier.padding(8.dp),
+                                modifier = Modifier.padding(8.dp).clickable {
+                                    navigateToDetail(screenState.closestStation!!.stationId)
+                                },
                                 text = screenState.closestStation!!.location,
                                 style = AppTypography.headlineMedium,
                             )
