@@ -35,7 +35,7 @@ fun HistoryContent(
 
     val historyContentState by historyContentViewModel.historyContentState.collectAsStateWithLifecycle()
     val detailState by detailViewModel.screenStateStream.collectAsStateWithLifecycle()
-    val resolutions = listOf("Denně", "Měsíčně")
+    val resolutions = listOf("Den a měsíc", "Měsíčně")
     val selectedResolution = historyContentState.selectedResolutionIndex
 
 
@@ -76,7 +76,7 @@ fun HistoryContent(
                     onDismiss = { historyContentViewModel.showLongTermDatePicker(false) },
                     onDateSelected = { date -> historyContentViewModel.setSelectedLongTermDate(date.toKotlinLocalDate())}
                 )
-                    }
+            }
 
 
 

@@ -24,7 +24,6 @@ import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.GraphCont
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.HistoryContent
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.HistoryContentViewModel
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.OverviewContent
-import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.TableContent
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,7 +39,7 @@ fun DetailScreen(
     val screenState by detailScreenViewModel.screenStateStream.collectAsStateWithLifecycle()
     val station = screenState.station
     val selectedTabIndex = screenState.selectedTabIndex
-    val tabs = listOf("Přehled", "Graf", "Tabulka", "Dnešek v historii") //TODO: Localize
+    val tabs = listOf("Přehled", "Graf", "Dnešek v historii") //TODO: Localize
 
     LaunchedEffect(stationId) {
         detailScreenViewModel.loadStation(stationId)
@@ -84,8 +83,7 @@ fun DetailScreen(
                 when (selectedTabIndex) {
                     0 -> OverviewContent(station, detailScreenViewModel)
                     1 -> GraphContent(station, detailScreenViewModel,graphContentViewModel)
-                    2 -> TableContent(station, detailScreenViewModel)
-                    3 -> HistoryContent(stationId, historyContentViewModel, detailScreenViewModel)
+                    2 -> HistoryContent(stationId, historyContentViewModel, detailScreenViewModel)
                 }
             }
         }

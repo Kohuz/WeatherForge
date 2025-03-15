@@ -43,7 +43,7 @@ fun GraphContent(
     val graphContentState by graphContentViewModel.graphContentStateStream.collectAsStateWithLifecycle()
 
     val selectedResolution = graphContentState.selectedResolutionIndex
-    val resolutions = listOf("Denně", "Měsíčně", "Ročně")
+    val resolutions = listOf("Denně", "Měsíc a rok", "Ročně")
     val aggregationTypes = listOf("MIN", "MAX", "AVG")
     val selectedAggregationType = graphContentState.selectedAggregationType
 

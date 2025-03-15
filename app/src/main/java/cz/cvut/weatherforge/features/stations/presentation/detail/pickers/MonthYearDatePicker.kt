@@ -1,4 +1,4 @@
-package cz.cvut.weatherforge.features.stations.presentation.detail
+package cz.cvut.weatherforge.features.stations.presentation.detail.pickers
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,19 +29,29 @@ import java.time.YearMonth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DayMonthPickerDialog(
+fun MonthYearDatePicker(
     onDismiss: () -> Unit,
     onDateSelected: (LocalDate) -> Unit
 ) {
-    val currentYear = LocalDate.now().year // Use the current year
+    // State for year, month, and day
+    var selectedYear by remember { mutableStateOf(LocalDate.now().year) }
     var selectedMonth by remember { mutableStateOf(LocalDate.now().monthValue) }
-    var selectedDay by remember { mutableStateOf(LocalDate.now().dayOfMonth) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Vyberte den a měsíc") }, // Localized title
+        title = { Text("Vyberte den, měsíc a rok") }, // Updated title
         text = {
             Column {
+                // Year Picker
+                YearPicker(
+                    selectedYear = selectedYear,
+                    onYearSelected = { year -> selectedYear = year },
+                    minimumYear = 1950, // Set a minimum year (can be adjusted)
+                    maximumYear = LocalDate.now().year // Set the maximum year to the current year
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
                 // Month Picker
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -66,18 +76,14 @@ fun DayMonthPickerDialog(
                 ) {
                     Text("Den:") // Localized label
                     Spacer(modifier = Modifier.width(8.dp))
-                    DayPicker(
-                        selectedDay = selectedDay,
-                        onDaySelected = { day -> selectedDay = day },
-                        maxDaysInMonth = YearMonth.of(currentYear, selectedMonth).lengthOfMonth()
-                    )
+
                 }
             }
         },
         confirmButton = {
             Button(
                 onClick = {
-                    val selectedDate = LocalDate.of(currentYear, selectedMonth, selectedDay)
+                    val selectedDate = LocalDate.of(selectedYear, selectedMonth, LocalDate.now().dayOfMonth)
                     onDateSelected(selectedDate)
                     onDismiss()
                 }
@@ -91,77 +97,4 @@ fun DayMonthPickerDialog(
             }
         }
     )
-}
-
-@Composable
-fun DropdownMenuForMonths(
-    selectedMonth: Int,
-    onMonthSelected: (Int) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    // Mapping of Month enum to Czech month names
-    val czechMonths = mapOf(
-        Month.JANUARY to "Leden",
-        Month.FEBRUARY to "Únor",
-        Month.MARCH to "Březen",
-        Month.APRIL to "Duben",
-        Month.MAY to "Květen",
-        Month.JUNE to "Červen",
-        Month.JULY to "Červenec",
-        Month.AUGUST to "Srpen",
-        Month.SEPTEMBER to "Září",
-        Month.OCTOBER to "Říjen",
-        Month.NOVEMBER to "Listopad",
-        Month.DECEMBER to "Prosinec"
-    )
-
-    Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
-        Button(onClick = { expanded = true }) {
-            Text(czechMonths[Month.of(selectedMonth)] ?: "Unknown") // Display Czech month name
-        }
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            Month.entries.forEach { month ->
-                DropdownMenuItem(
-                    text = { Text(czechMonths[month] ?: "Unknown") }, // Display Czech month name
-                    onClick = {
-                        onMonthSelected(month.value)
-                        expanded = false
-                    }
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun DayPicker(
-    selectedDay: Int,
-    onDaySelected: (Int) -> Unit,
-    maxDaysInMonth: Int
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
-        Button(onClick = { expanded = true }) {
-            Text("$selectedDay")
-        }
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            (1..maxDaysInMonth).forEach { day ->
-                DropdownMenuItem(
-                    text = { Text("$day") },
-                    onClick = {
-                        onDaySelected(day)
-                        expanded = false
-                    }
-                )
-            }
-        }
-    }
 }

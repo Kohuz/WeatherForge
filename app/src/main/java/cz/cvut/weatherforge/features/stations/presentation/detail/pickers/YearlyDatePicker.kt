@@ -50,36 +50,54 @@ fun YearlyDatePicker(
         title = { Text("Select Year") },
         text = {
             Column {
-                // Year Picker
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Year: ")
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Button(onClick = { selectedYear-- }) {
-                        Text("<")
-                    }
-                    Text(text = selectedYear.toString(), modifier = Modifier.padding(horizontal = 8.dp))
-                    Button(onClick = { selectedYear++ }) {
-                        Text(">")
-                    }
-                }
-
-                // Year List
-                val years = ((minimumDate?.year ?: 1950)..LocalDate.now().year).toList()
-                LazyColumn(modifier = Modifier.height(200.dp)) {
-                    items(years.size) { index ->
-                        val year = years[index]
-                        val isSelected = year == selectedYear
-                        OutlinedButton(
-                            onClick = { selectedYear = year },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(4.dp),
-                        ) {
-                            Text(text = year.toString())
-                        }
-                    }
-                }
+                // Use the YearPicker composable
+                YearPicker(
+                    selectedYear = selectedYear,
+                    onYearSelected = { year -> selectedYear = year },
+                    minimumYear = minimumDate?.year ?: 1950,
+                    maximumYear = LocalDate.now().year
+                )
             }
         }
     )
+}
+
+@Composable
+fun YearPicker(
+    selectedYear: Int,
+    onYearSelected: (Int) -> Unit,
+    minimumYear: Int = 1950,
+    maximumYear: Int = LocalDate.now().year
+) {
+    Column {
+        // Year Picker
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("Year: ")
+            Spacer(modifier = Modifier.width(8.dp))
+            Button(onClick = { onYearSelected(selectedYear - 1) }) {
+                Text("<")
+            }
+            Text(text = selectedYear.toString(), modifier = Modifier.padding(horizontal = 8.dp))
+            Button(onClick = { onYearSelected(selectedYear + 1) }) {
+                Text(">")
+            }
+        }
+
+        // Year List
+        val years = (minimumYear..maximumYear).toList()
+        LazyColumn(modifier = Modifier.height(200.dp)) {
+            items(years.size) { index ->
+                val year = years[index]
+                val isSelected = year == selectedYear
+                OutlinedButton(
+                    onClick = { onYearSelected(year) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(4.dp),
+                ) {
+                    Text(text = year.toString())
+                }
+            }
+        }
+    }
 }
