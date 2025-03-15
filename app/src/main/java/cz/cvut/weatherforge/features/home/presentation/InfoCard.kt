@@ -17,6 +17,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPagerIndicator
+import cz.cvut.weatherforge.features.stations.data.model.Station
 import cz.cvut.weatherforge.ui.theme.AppTypography
 
 @OptIn(ExperimentalPagerApi::class)
@@ -83,6 +84,45 @@ fun InfoCard(
                     value = value,
                     isClickable = isClickable, // Pass the boolean to WeatherInfoRow
                     onClick = { onClick(label) } // Pass the onClick lambda
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+            }
+        }
+    }
+}
+
+@Composable
+fun NearbyStationInfoCard(
+    title: String,
+    items: List<Pair<Station,Double>>,
+    onClick: (id: String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        shape = RoundedCornerShape(8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .background(Color.White)
+                .padding(16.dp)
+        ) {
+            Text(
+                text = title,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            items.forEach { (station, value) ->
+                WeatherInfoRow(
+                    label = station.location,
+                    value = value.toString(),
+                    isClickable = true,
+                    onClick = { onClick(station.stationId) } // Pass the onClick lambda
                 )
                 Spacer(modifier = Modifier.height(4.dp))
             }

@@ -23,8 +23,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cz.cvut.weatherforge.R
-import cz.cvut.weatherforge.features.measurements.data.model.MeasurementMonthly
-import cz.cvut.weatherforge.features.measurements.data.model.MeasurementYearly
+
 import cz.cvut.weatherforge.features.stations.data.model.Station
 import cz.cvut.weatherforge.features.stations.presentation.detail.DetailScreenViewModel
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.DailyChart
@@ -44,8 +43,6 @@ fun GraphContent(
 
     val selectedResolution = graphContentState.selectedResolutionIndex
     val resolutions = listOf("Denně", "Měsíc a rok", "Ročně")
-    val aggregationTypes = listOf("MIN", "MAX", "AVG")
-    val selectedAggregationType = graphContentState.selectedAggregationType
 
     // Show/hide date pickers
     if (graphContentState.showFromDatePicker) {
@@ -82,7 +79,7 @@ fun GraphContent(
                     graphContentState.toDate.toString(),
                     graphContentState.selectedElement!!.abbreviation
                 )
-                "Měsíčně" -> detailScreenViewModel.fetchMonthlyMeasurements(
+                "Měsíc a rok" -> detailScreenViewModel.fetchMonthlyMeasurements(
                     station.stationId,
                     graphContentState.fromDate.toString(),
                     graphContentState.toDate.toString(),
@@ -218,54 +215,16 @@ fun GraphContent(
             }
         }
 
-        if (resolutions[selectedResolution] == "Měsíčně" || resolutions[selectedResolution] == "Ročně") {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                aggregationTypes.forEach { type ->
-                    Row(
-                        modifier = Modifier
-                            .selectable(
-                                selected = (type == selectedAggregationType),
-                                onClick = { graphContentViewModel.selectAggregationType(type) },
-                                role = Role.RadioButton
-                            )
-                            .padding(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(
-                            selected = (type == selectedAggregationType),
-                            onClick = { graphContentViewModel.selectAggregationType(type) }
-                        )
-                        Text(
-                            text = type,
-                            modifier = Modifier.padding(start = 8.dp)
-                        )
-                    }
-                }
-            }
-        }
 
         // Display the chart
         if (graphContentState.selectedElement != null && graphContentState.fromDate != null && graphContentState.toDate != null) {
             when (resolutions[selectedResolution]) {
                 "Denně" -> DailyChart(detailScreenState.dailyMeasurements)
-                "Měsíčně" -> {
-                    val filteredMeasurements = filterMeasurementsMonthly(
-                        detailScreenState.monthlyMeasurements,
-                        graphContentState.selectedAggregationType
-                    )
-                    MonthlyChart(filteredMeasurements)
+                "Měsíc a rok" -> {
+                    MonthlyChart(detailScreenState.monthlyMeasurements)
                 }
                 "Ročně" -> {
-                    val filteredMeasurements = filterMeasurementsYearly(
-                        detailScreenState.yearlyMeasurements,
-                        graphContentState.selectedAggregationType
-                    )
-                    YearlyChart(filteredMeasurements)
+                    YearlyChart(detailScreenState.yearlyMeasurements)
                 }
             }
         }
@@ -273,20 +232,3 @@ fun GraphContent(
 }
 
 
-private fun filterMeasurementsMonthly(
-    measurements: List<MeasurementMonthly>,
-    aggregationType: String
-): List<MeasurementMonthly> {
-    return measurements.filter { measurement ->
-        measurement.timeFunction == "AVG" && measurement.mdFunction == aggregationType
-    }
-}
-
-private fun filterMeasurementsYearly(
-    measurements: List<MeasurementYearly>,
-    aggregationType: String
-): List<MeasurementYearly> {
-    return measurements.filter { measurement ->
-        measurement.timeFunction == "AVG" && measurement.mdFunction == aggregationType
-    }
-}

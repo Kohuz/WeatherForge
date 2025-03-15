@@ -2,6 +2,7 @@ package cz.cvut.weatherforge.features.home.presentation
 
 import InfoCard
 import InfoCardData
+import NearbyStationInfoCard
 import SwipeableInfoCard
 import android.content.pm.PackageManager
 import android.util.Log
@@ -40,7 +41,10 @@ import kotlin.math.sqrt
 
 
 @Composable
-fun HomeScreen(viewModel: HomeScreenViewModel = koinViewModel()) {
+fun HomeScreen(
+    viewModel: HomeScreenViewModel = koinViewModel(),
+    navigateToDetail: (id: String) -> Unit
+) {
     val screenState by viewModel.screenStateStream.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
@@ -110,9 +114,10 @@ fun HomeScreen(viewModel: HomeScreenViewModel = koinViewModel()) {
                             }
 
 
-                            InfoCard(
+                            NearbyStationInfoCard(
                                 title = stringResource(R.string.station_near),
-                                screenState.nearbyStations //MAKE IT CLICKABLE AND NAVIGATE TO THE STATION ID
+                                screenState.nearbyStations,
+                                onClick = navigateToDetail
                             )
 
                             if (screenState.allTimeRecords.isNotEmpty() && screenState.alltimeStationRecords.isNotEmpty()) {

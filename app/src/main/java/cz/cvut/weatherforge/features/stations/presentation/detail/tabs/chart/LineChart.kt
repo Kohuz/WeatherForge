@@ -14,7 +14,10 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.formatter.IFillFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import cz.cvut.weatherforge.R
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementDaily
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementMonthly
@@ -47,6 +50,17 @@ fun LineChartComposable(entries: List<Entry>, labels: List<String>) {
                     // Enable gradient fill
                     setDrawFilled(true)
                     fillDrawable = ContextCompat.getDrawable(context, R.drawable.chart_gradient)
+
+                    // Custom fill formatter to fill only under the line
+                    fillFormatter = object : IFillFormatter {
+                        override fun getFillLinePosition(
+                            dataSet: ILineDataSet,
+                            dataProvider: LineDataProvider
+                        ): Float {
+                            // Return the minimum Y value of the chart (e.g., the bottom of the chart)
+                            return (dataProvider as LineChart).axisLeft.axisMinimum
+                        }
+                    }
                 }
                 val lineData = LineData(dataSet)
                 data = lineData
@@ -97,6 +111,17 @@ fun LineChartComposable(entries: List<Entry>, labels: List<String>) {
                 // Enable gradient fill
                 setDrawFilled(true)
                 fillDrawable = ContextCompat.getDrawable(lineChart.context, R.drawable.chart_gradient)
+
+                // Custom fill formatter to fill only under the line
+                fillFormatter = object : IFillFormatter {
+                    override fun getFillLinePosition(
+                        dataSet: ILineDataSet,
+                        dataProvider: LineDataProvider
+                    ): Float {
+                        // Return the minimum Y value of the chart (e.g., the bottom of the chart)
+                        return (dataProvider as LineChart).axisLeft.axisMinimum
+                    }
+                }
             }
             val lineData = LineData(dataSet)
             lineChart.data = lineData

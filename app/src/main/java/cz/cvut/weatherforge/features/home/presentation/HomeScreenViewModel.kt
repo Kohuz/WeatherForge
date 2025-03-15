@@ -2,7 +2,6 @@ package cz.cvut.weatherforge.features.home.presentation
 
 import android.content.Context
 import android.content.pm.PackageManager
-import android.location.Location
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
@@ -27,7 +26,7 @@ class HomeScreenViewModel(private val stationRepository: StationRepository, priv
 
     data class HomeScreenState(
         val closestStation: Station? = null,
-        val nearbyStations: List<Pair<String, String>> = emptyList(),
+        val nearbyStations: List<Pair<Station, Double>> = emptyList(),
         val elementCodelist: List<ElementCodelistItem> = emptyList(),
         val actualMeasurements: List<MeasurementLatest> = emptyList(),
         val todayStationRecords: List<StationRecord> = emptyList(),
@@ -122,19 +121,19 @@ class HomeScreenViewModel(private val stationRepository: StationRepository, priv
     private fun calculateDistancesForNearbyStations(
         stations: List<Station>,
         userLocation: LatLng
-    ): List<Pair<String, String>> {
+    ): List<Pair<Station, Double>> {
         return stations.drop(1).map { station ->
             val distance = pythagoreanDistance(
                 userLocation.latitude,
                 userLocation.longitude,
                 station.latitude,
                 station.longitude
-            ) * 111.32 // kilometer per degree
-            station.location to "%.2f km".format(distance)
+            ) * 111.32 // Convert to kilometers
+            station to distance // Return Pair<Station, Double>
         }
     }
 
-    private suspend fun updateNearbyStations(nearbyStations: List<Pair<String, String>>) {
+    private suspend fun updateNearbyStations(nearbyStations: List<Pair<Station, Double>>) {
         _screenStateStream.update { state ->
             state.copy(nearbyStations = nearbyStations)
         }

@@ -49,10 +49,6 @@ sealed class Screens(val route: String) {
             override val icon = Icons.Filled.Home
         }
 
-//        data object Settings : TopLevel("settings") {
-//            override val icon = Icons.Filled.Info
-//        }
-
         companion object {
             val all get() = listOf(Home, Map, List)
         }
@@ -102,13 +98,12 @@ fun Navigation() {
                     navController.navigate(Screens.Detail.createRoute(stationId))
                 })
             }
-            composable(route = Screens.TopLevel.Home.route) {
-                HomeScreen()
-            }
-//            composable(route = Screens.TopLevel.Settings.route) {
-//                SettingsScreen()
-//            }
 
+            composable(route = Screens.TopLevel.Home.route) {
+                HomeScreen(navigateToDetail = { stationId ->
+                    navController.navigate(Screens.Detail.createRoute(stationId)) // Pass the function
+                })
+            }
 
             composable(
                 route = Screens.Detail.route,

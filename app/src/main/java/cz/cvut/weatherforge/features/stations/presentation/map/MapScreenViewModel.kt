@@ -10,11 +10,15 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.model.LatLng
 import cz.cvut.weatherforge.features.stations.data.StationRepository
 import cz.cvut.weatherforge.features.stations.data.model.Station
+import cz.cvut.weatherforge.features.stations.data.model.isActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+enum class StationFilter {
+    ALL, ACTIVE, INACTIVE
+}
 class MapScreenViewModel(private val repository: StationRepository) : ViewModel()  {
     private val _screenStateStream = MutableStateFlow(MapScreenState())
     val screenStateStream get() = _screenStateStream.asStateFlow()
@@ -26,7 +30,9 @@ class MapScreenViewModel(private val repository: StationRepository) : ViewModel(
         val results: List<Station> = emptyList(),
         val loading: Boolean = false,
         val successful: Boolean = true,
-        val userLocation: LatLng? = null
+        val userLocation: LatLng? = null,
+        val stationFilter: StationFilter = StationFilter.ACTIVE,
+
     )
 
     init {
@@ -73,6 +79,17 @@ class MapScreenViewModel(private val repository: StationRepository) : ViewModel(
             }
         } else {
             Log.e("location", "Location permission is not granted.")
+        }
+    }
+
+    fun updateStationFilter(filter: StationFilter) {
+        _screenStateStream.update { state ->
+            val filteredResults = when (filter) {
+                StationFilter.ALL -> allStations
+                StationFilter.ACTIVE -> allStations.filter { it.isActive() }
+                StationFilter.INACTIVE -> allStations.filter { !it.isActive() }
+            }
+            state.copy(results = filteredResults, stationFilter = filter)
         }
     }
 }
