@@ -4,6 +4,7 @@ import android.util.Log
 import com.kozubek.livesport.features.sportEntries.data.StationLocalDataSource
 import cz.cvut.weatherforge.features.stations.data.api.StationRemoteDataSource
 import cz.cvut.weatherforge.features.stations.data.model.ElementsCodelistResult
+import cz.cvut.weatherforge.features.stations.data.model.Station
 import cz.cvut.weatherforge.features.stations.data.model.StationResult
 import cz.cvut.weatherforge.features.stations.data.model.StationsResult
 
@@ -72,6 +73,18 @@ class StationRepository(
             Log.e("StationRepository", "Error fetching stations: ${t.message}")
             ElementsCodelistResult(emptyList(), isSuccess = false)
         }
+    }
+
+    suspend fun makeFavorite(stationId: String) {
+        stationLocalDataSource.makeFavorite(stationId)
+    }
+
+    suspend fun removeFavorite(stationId: String) {
+        stationLocalDataSource.removeFavorite(stationId)
+    }
+
+    suspend fun getFavoriteStations(): List<Station> {
+        return stationLocalDataSource.getFavorites()
     }
 
 }

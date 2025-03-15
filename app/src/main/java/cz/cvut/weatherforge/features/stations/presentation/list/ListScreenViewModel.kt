@@ -32,7 +32,8 @@ class ListScreenViewModel(private val repository: StationRepository) : ViewModel
     enum class Filter {
         Active,
         Inactive,
-        All
+        All,
+        Favorites
     }
 
     init {
@@ -97,10 +98,11 @@ class ListScreenViewModel(private val repository: StationRepository) : ViewModel
         val sortingCriteria = _screenStateStream.value.sortingCriteria
         val ascendingOrder = _screenStateStream.value.ascendingOrder
 
-        // Step 1: Filter by active/inactive
+        // Step 1: Filter by active/inactive/favorites
         val filteredByStatus = when (currentFilter) {
             Filter.Active -> allStations.filter { it.isActive() }
             Filter.Inactive -> allStations.filter { !it.isActive() }
+            Filter.Favorites -> allStations.filter { it.isFavorite } // Add this line
             else -> allStations
         }
 
@@ -160,5 +162,21 @@ class ListScreenViewModel(private val repository: StationRepository) : ViewModel
             state.copy(dialogOpen = false, loading = true)
         }
         loadStations() // Retry loading stations
+    }
+
+
+    fun toggleFavorite(stationId: String) {
+        viewModelScope.launch {
+            val station = allStations.find { it.stationId == stationId }
+            station?.let {
+                if (it.isFavorite) {
+                    repository.removeFavorite(stationId)
+                } else {
+                    repository.makeFavorite(stationId)
+                }
+                // Reload stations to reflect the updated favorite status
+                loadStations()
+            }
+        }
     }
 }

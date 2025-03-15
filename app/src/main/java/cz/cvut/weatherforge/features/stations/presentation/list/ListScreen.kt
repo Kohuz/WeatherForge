@@ -22,6 +22,8 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -94,7 +96,8 @@ import org.koin.androidx.compose.koinViewModel
                                 items(results) { station ->
                                     ResultCard(
                                         station = station,
-                                        onClick = {navigateToDetail(station.stationId)}
+                                        onClick = {navigateToDetail(station.stationId)},
+                                        onToggleFavorite = { viewModel.toggleFavorite(station.stationId) }
                                     )
                                 }
                             }
@@ -162,11 +165,14 @@ fun FilterChangeButtons(onFilterChange: (ListScreenViewModel.Filter) -> Unit,
     ){
         Text(text = "All")
     }
+    Button(onClick = { onFilterChange(ListScreenViewModel.Filter.Favorites) }) {
+        Text(text = "Favorites")
+    }
     }
 }
 
 @Composable
-fun ResultCard(station: Station, onClick: () -> Unit) {
+fun ResultCard(station: Station, onClick: () -> Unit, onToggleFavorite: () -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
@@ -182,7 +188,16 @@ fun ResultCard(station: Station, onClick: () -> Unit) {
                 imageVector = Icons.Filled.CheckCircle,
                 contentDescription = "Active Station",
                 tint = Color.Green
-            )        }
+            )
+        }
+        Icon(
+            imageVector = if (station.isFavorite) Icons.Outlined.Star else Icons.Outlined.Star,
+            contentDescription = "Favorite Station",
+            tint = if (station.isFavorite) Color.Yellow else Color.Gray,
+            modifier = Modifier
+                .padding(start = 4.dp)
+                .clickable { onToggleFavorite() }
+        )
     }
 }
 
@@ -262,7 +277,8 @@ fun SortingOptions(
                     contentDescription = if (ascendingOrder) "Ascending" else "Descending",
                     modifier = Modifier.padding(start = 4.dp)
                 )
-            }         }
+            }
+        }
 
         // Button for sorting by Begin Date
         Button(
@@ -280,7 +296,7 @@ fun SortingOptions(
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Begin date")
-                if (sortingCriteria == "Begin date") {
+                if (sortingCriteria == "Begin Date") {
                     Icon(
                         imageVector = if (ascendingOrder) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                         contentDescription = if (ascendingOrder) "Ascending" else "Descending",

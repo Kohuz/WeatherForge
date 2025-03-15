@@ -55,8 +55,9 @@ class StationRoomDataSource(private val stationDao: StationDao, private val elem
             longitude = this.longitude,
             latitude = this.latitude,
             elevation = this.elevation,
-            stationElements = emptyList(), // Add station elements if available
-            stationLatestMeasurements = emptyList() // Add latest measurements if available
+            stationElements = emptyList(),
+            isFavorite = this.isFavorite,
+            stationLatestMeasurements = emptyList()
         )
     }
 
@@ -71,7 +72,7 @@ class StationRoomDataSource(private val stationDao: StationDao, private val elem
             longitude = this.longitude,
             latitude = this.latitude,
             elevation = this.elevation,
-            favorite = false
+            isFavorite = false
         )
     }
 

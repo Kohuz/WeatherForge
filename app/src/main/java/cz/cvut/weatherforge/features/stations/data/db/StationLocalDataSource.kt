@@ -1,5 +1,6 @@
 package com.kozubek.livesport.features.sportEntries.data
 
+import cz.cvut.weatherforge.features.stations.data.db.DbStation
 import cz.cvut.weatherforge.features.stations.data.model.ElementCodelistItem
 import cz.cvut.weatherforge.features.stations.data.model.Station
 

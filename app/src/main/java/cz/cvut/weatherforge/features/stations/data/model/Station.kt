@@ -20,6 +20,7 @@ data class Station(
     val longitude: Double,
     val latitude: Double,
     val elevation: Double,
+    val isFavorite: Boolean = false,
     val stationElements: List<StationElement> = emptyList(),
     var stationLatestMeasurements: List<MeasurementLatest> = emptyList()
 ): ClusterItem {
