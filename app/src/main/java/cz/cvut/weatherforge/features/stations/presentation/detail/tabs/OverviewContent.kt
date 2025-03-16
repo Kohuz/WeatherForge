@@ -16,11 +16,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cz.cvut.weatherforge.R
+import cz.cvut.weatherforge.core.utils.getLocalizedDateString
 import cz.cvut.weatherforge.features.home.presentation.CurrentWeatherMeasurementsInfoCard
 import cz.cvut.weatherforge.features.stations.data.model.Station
 import cz.cvut.weatherforge.features.stations.data.model.isActive
 import cz.cvut.weatherforge.features.stations.presentation.detail.DetailScreenViewModel
 import cz.cvut.weatherforge.features.stations.presentation.detail.elementAbbreviationToNameUnitPair
+import kotlinx.datetime.toJavaLocalDate
 
 @Composable
 fun OverviewContent(station: Station, viewModel: DetailScreenViewModel, navigateToDetail: (id: String) -> Unit) {
@@ -37,7 +39,7 @@ fun OverviewContent(station: Station, viewModel: DetailScreenViewModel, navigate
                 Pair(stringResource(R.string.detail_location), station.location),
                 Pair(
                     stringResource(R.string.detail_start_of_measurement),
-                    station.startDate.toString()
+                    getLocalizedDateString(station.startDate?.date?.toJavaLocalDate())
                 ),
                 Pair(stringResource(R.string.detail_elevation), station.elevation.toString()),
                 Pair(

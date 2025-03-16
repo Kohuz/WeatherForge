@@ -59,6 +59,16 @@
     <string name="detail_measurement_started_on">Měření této veličiny začalo</string>
 
 
-
+    <string name="results">Výsledky</string>
+    <string name="active">Aktivní</string>
+    <string name="inactive">Neaktivní</string>
+    <string name="all">Vše</string>
+    <string name="favorites">Oblíbené</string>
+    <string name="enter_your_search">Zadejte hledaný výraz</string>
+    <string name="elevation">Nadmořská výška</string>
+    <string name="begin_date">Datum zahájení</string>
+    <string name="alphabetical">Abecedně</string>
+    <string name="failed_to_load_results">Nepodařilo se načíst výsledky</string>
+    <string name="retry">Zkusit znovu</string>
 
 </resources>

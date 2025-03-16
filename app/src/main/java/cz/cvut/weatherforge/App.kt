@@ -14,7 +14,6 @@ class App : Application() {
         super.onCreate()
         startKoin {
             androidContext(this@App)
-
             modules(stationModule, coreModule, homeModule, recordModule, measurementModule)
         }
     }

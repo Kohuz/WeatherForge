@@ -13,12 +13,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.ui.theme.AppTypography
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import cz.cvut.weatherforge.features.stations.data.model.Station
-import cz.cvut.weatherforge.ui.theme.AppTypography
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -120,9 +120,9 @@ fun NearbyStationInfoCard(
             items.forEach { (station, value) ->
                 WeatherInfoRow(
                     label = station.location,
-                    value = value.toString(),
+                    value = "${String.format("%.1f", value)} km",
                     isClickable = true,
-                    onClick = { onClick(station.stationId) } // Pass the onClick lambda
+                    onClick = { onClick(station.stationId) }
                 )
                 Spacer(modifier = Modifier.height(4.dp))
             }

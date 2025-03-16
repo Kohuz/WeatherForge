@@ -40,77 +40,77 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import cz.cvut.weatherforge.R
 import cz.cvut.weatherforge.features.stations.data.model.Station
 import cz.cvut.weatherforge.features.stations.data.model.isActive
 import org.koin.androidx.compose.koinViewModel
 
 
 @Composable
-    fun ListScreen(navigateToDetail: (id: String) -> Unit, viewModel: ListScreenViewModel = koinViewModel()) {
-        val screenState by viewModel.screenStateStream.collectAsStateWithLifecycle()
-        val results = screenState.results
-        val loading = screenState.loading
-        val currentFilter = screenState.currentFilter
-        val dialogOpen = screenState.dialogOpen
+fun ListScreen(navigateToDetail: (id: String) -> Unit, viewModel: ListScreenViewModel = koinViewModel()) {
+    val screenState by viewModel.screenStateStream.collectAsStateWithLifecycle()
+    val results = screenState.results
+    val loading = screenState.loading
+    val currentFilter = screenState.currentFilter
+    val dialogOpen = screenState.dialogOpen
 
-        Scaffold(
-            topBar = {
-                TopSearchBar(
-                    screenState.currentQuery,
-                    viewModel::onQueryChange,
-                )
-            }
-        ) { paddingValues ->
-            Box(modifier = Modifier.padding(paddingValues)) {
-                when (loading) {
-                    false -> {
+    Scaffold(
+        topBar = {
+            TopSearchBar(
+                screenState.currentQuery,
+                viewModel::onQueryChange,
+            )
+        }
+    ) { paddingValues ->
+        Box(modifier = Modifier.padding(paddingValues)) {
+            when (loading) {
+                false -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ) {
+                        HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)) // Use onSurface for divider
                         Column(
-                            modifier = Modifier
-                                .fillMaxSize()
+                            modifier = Modifier.padding(vertical = 6.dp)
                         ) {
-                            HorizontalDivider()
-                            Column (
-                                modifier = Modifier.padding(vertical = 6.dp)
-                            ) {
-                                FilterChangeButtons(
-                                    onFilterChange = viewModel::onFilterChange,
+                            FilterChangeButtons(
+                                onFilterChange = viewModel::onFilterChange,
+                                currentFilter = currentFilter
+                            )
+                            SortingOptions(
+                                sortingCriteria = screenState.sortingCriteria,
+                                ascendingOrder = screenState.ascendingOrder,
+                                onSortingCriteriaChange = { criteria -> viewModel.setSortingCriteria(criteria) },
+                                onAscendingOrderChange = { order -> viewModel.setAscendingOrder(order) }
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(5.dp))
+                        LazyColumn {
+                            items(results) { station ->
+                                ResultCard(
+                                    station = station,
+                                    onClick = { navigateToDetail(station.stationId) },
+                                    onToggleFavorite = { viewModel.toggleFavorite(station.stationId) },
+                                    sortingCriteria = screenState.sortingCriteria,
                                     currentFilter = currentFilter
                                 )
-                                SortingOptions(
-                                    sortingCriteria = screenState.sortingCriteria,
-                                    ascendingOrder = screenState.ascendingOrder,
-                                    onSortingCriteriaChange = { criteria -> viewModel.setSortingCriteria(criteria) },
-                                    onAscendingOrderChange = { order -> viewModel.setAscendingOrder(order) }
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(5.dp))
-                            ResultHeading()
-                            LazyColumn {
-                                items(results) { station ->
-                                    ResultCard(
-                                        station = station,
-                                        onClick = {navigateToDetail(station.stationId)},
-                                        onToggleFavorite = { viewModel.toggleFavorite(station.stationId) },
-                                        sortingCriteria = screenState.sortingCriteria,
-                                        currentFilter = currentFilter
-                                    )
-                                }
                             }
                         }
                     }
-                    true -> {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            CircularProgressIndicator()
+                }
+                true -> {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary) // Use primary color for progress indicator
                     }
                 }
             }
@@ -120,10 +120,10 @@ import org.koin.androidx.compose.koinViewModel
     if (dialogOpen) {
         AlertDialog(
             onDismissRequest = { viewModel.onDialogClose() },
-            text = { Text(text = "Failed to load results") },
+            text = { Text(text = stringResource(R.string.failed_to_load_results)) },
             confirmButton = {
                 Button(onClick = { viewModel.onDialogCloseRetry() }) {
-                    Text("Retry")
+                    Text(stringResource(R.string.retry))
                 }
             }
         )
@@ -131,19 +131,10 @@ import org.koin.androidx.compose.koinViewModel
 }
 
 @Composable
-fun ResultHeading() {
-    Text(modifier = Modifier
-        .fillMaxWidth()
-        .background(color = MaterialTheme.colorScheme.secondary)
-        .padding(5.dp),
-        text = "Results",
-        color = Color.White,
-        fontSize = 20.sp)
-    }
-
-@Composable
-fun FilterChangeButtons(onFilterChange: (ListScreenViewModel.Filter) -> Unit,
-                        currentFilter: ListScreenViewModel.Filter) {
+fun FilterChangeButtons(
+    onFilterChange: (ListScreenViewModel.Filter) -> Unit,
+    currentFilter: ListScreenViewModel.Filter
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -151,25 +142,30 @@ fun FilterChangeButtons(onFilterChange: (ListScreenViewModel.Filter) -> Unit,
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-    Button(onClick = { onFilterChange(ListScreenViewModel.Filter.Active)},
-
-    )
-    {
-        Text(text = "Active")
-    }
-    Button(onClick = { onFilterChange(ListScreenViewModel.Filter.Inactive)},
-
-    ){
-        Text(text = "Inactive")
-    }
-    Button(onClick = { onFilterChange(ListScreenViewModel.Filter.All)},
-
-    ){
-        Text(text = "All")
-    }
-    Button(onClick = { onFilterChange(ListScreenViewModel.Filter.Favorites) }) {
-        Text(text = "Favorites")
-    }
+        Button(
+            onClick = { onFilterChange(ListScreenViewModel.Filter.Active) },
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary) // Use primary color for buttons
+        ) {
+            Text(text = stringResource(R.string.active))
+        }
+        Button(
+            onClick = { onFilterChange(ListScreenViewModel.Filter.Inactive) },
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+        ) {
+            Text(text = stringResource(R.string.inactive))
+        }
+        Button(
+            onClick = { onFilterChange(ListScreenViewModel.Filter.All) },
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+        ) {
+            Text(text = stringResource(R.string.all))
+        }
+        Button(
+            onClick = { onFilterChange(ListScreenViewModel.Filter.Favorites) },
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+        ) {
+            Text(text = stringResource(R.string.favorites))
+        }
     }
 }
 
@@ -179,37 +175,44 @@ fun ResultCard(
     onClick: () -> Unit,
     onToggleFavorite: () -> Unit,
     sortingCriteria: String,
-    currentFilter: ListScreenViewModel.Filter) {
-    Row(verticalAlignment = Alignment.CenterVertically,
+    currentFilter: ListScreenViewModel.Filter
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }) {
+            .clickable { onClick() }
+            .background(MaterialTheme.colorScheme.surface) // Use surface color for cards
+            .padding(8.dp)
+    ) {
         Text(
             modifier = Modifier.padding(8.dp),
             text = station.location,
             fontWeight = FontWeight.Bold,
-            fontSize = 15.sp
+            fontSize = 15.sp,
+            color = MaterialTheme.colorScheme.onSurface // Use onSurface color for text
         )
 
         if (station.isActive()) {
             Icon(
                 imageVector = Icons.Filled.CheckCircle,
                 contentDescription = "Active Station",
-                tint = Color.Green
+                tint = MaterialTheme.colorScheme.primary // Use primary color for active icon
             )
         }
-       if(currentFilter == ListScreenViewModel.Filter.Inactive){
-           Text(
-               modifier = Modifier.padding(8.dp),
-               text = station.endDate.toString(),
-               fontWeight = FontWeight.Bold,
-               fontSize = 15.sp
-           )
-       }
+        if (currentFilter == ListScreenViewModel.Filter.Inactive) {
+            Text(
+                modifier = Modifier.padding(8.dp),
+                text = station.endDate.toString(),
+                fontWeight = FontWeight.Bold,
+                fontSize = 15.sp,
+                color = MaterialTheme.colorScheme.onSurface // Use onSurface color for text
+            )
+        }
         Icon(
             imageVector = if (station.isFavorite) Icons.Outlined.Star else Icons.Outlined.Star,
             contentDescription = "Favorite Station",
-            tint = if (station.isFavorite) Color.Yellow else Color.Gray,
+            tint = if (station.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f), // Use primary and onSurface colors for favorite icon
             modifier = Modifier
                 .padding(start = 4.dp)
                 .clickable { onToggleFavorite() }
@@ -224,39 +227,50 @@ fun TopSearchBar(query: String, onQueryChange: (String) -> Unit) {
     TopAppBar(
         modifier = Modifier.padding(vertical = 5.dp),
         title = {
-            TextField(value = query,
-            onValueChange = { newQuery -> onQueryChange(newQuery) },
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    keyboardController?.hide()
-                }
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp)
-            ,
-            shape = RoundedCornerShape(10.dp),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done
-            ),
-            leadingIcon = {
-                Icon(imageVector = Icons.Filled.Search, contentDescription = "searchIcon")
-            },
-            placeholder = { Text(text = "Enter your search") },
+            TextField(
+                value = query,
+                onValueChange = { newQuery -> onQueryChange(newQuery) },
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        keyboardController?.hide()
+                    }
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
+                shape = RoundedCornerShape(10.dp),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done
+                ),
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Filled.Search,
+                        contentDescription = "searchIcon",
+                        tint = MaterialTheme.colorScheme.onSurface // Use onSurface color for icon
+                    )
+                },
+                placeholder = {
+                    Text(
+                        text = stringResource(R.string.enter_your_search),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f) // Use onSurface color for placeholder
+                    )
+                },
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = "clear text",
+                        tint = MaterialTheme.colorScheme.onSurface, // Use onSurface color for icon
+                        modifier = Modifier
+                            .clickable {
+                                onQueryChange("")
+                            }
+                    )
+                },
 
-            trailingIcon = {
-                Icon(Icons.Default.Clear,
-                    contentDescription = "clear text",
-                    modifier = Modifier
-                        .clickable {
-                            onQueryChange("")
-                        }
-                )
-            }
-        )},
+            )
+        }
     )
 }
-
 
 @Composable
 fun SortingOptions(
@@ -272,80 +286,67 @@ fun SortingOptions(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Button for sorting by Elevation
         Button(
             onClick = {
                 if (sortingCriteria == "Elevation") {
-                    // Toggle order if the same button is clicked
                     onAscendingOrderChange(!ascendingOrder)
                 } else {
-                    // Set new sorting criteria and default to ascending order
                     onSortingCriteriaChange("Elevation")
                     onAscendingOrderChange(true)
                 }
             },
-
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary) // Use primary color for buttons
         ) {
-            Text(text = "Elevation")
+            Text(text = stringResource(R.string.elevation))
             if (sortingCriteria == "Elevation") {
                 Icon(
                     imageVector = if (ascendingOrder) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                     contentDescription = if (ascendingOrder) "Ascending" else "Descending",
-                    modifier = Modifier.padding(start = 4.dp)
+                    tint = MaterialTheme.colorScheme.onPrimary // Use onPrimary color for icon
                 )
             }
         }
 
-        // Button for sorting by Begin Date
         Button(
             onClick = {
                 if (sortingCriteria == "Begin Date") {
-                    // Toggle order if the same button is clicked
                     onAscendingOrderChange(!ascendingOrder)
                 } else {
-                    // Set new sorting criteria and default to ascending order
                     onSortingCriteriaChange("Begin Date")
                     onAscendingOrderChange(true)
                 }
             },
-
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Begin date")
-                if (sortingCriteria == "Begin Date") {
-                    Icon(
-                        imageVector = if (ascendingOrder) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                        contentDescription = if (ascendingOrder) "Ascending" else "Descending",
-                        modifier = Modifier.padding(start = 4.dp)
-                    )
-                }
+            Text(text = stringResource(R.string.begin_date))
+            if (sortingCriteria == "Begin Date") {
+                Icon(
+                    imageVector = if (ascendingOrder) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = if (ascendingOrder) "Ascending" else "Descending",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
             }
         }
 
-        // Button for sorting Alphabetically
         Button(
             onClick = {
                 if (sortingCriteria == "Alphabetical") {
-                    // Toggle order if the same button is clicked
                     onAscendingOrderChange(!ascendingOrder)
                 } else {
-                    // Set new sorting criteria and default to ascending order
                     onSortingCriteriaChange("Alphabetical")
                     onAscendingOrderChange(true)
                 }
             },
-
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
-            Text(text = "Alphabetical")
+            Text(text = stringResource(R.string.alphabetical))
             if (sortingCriteria == "Alphabetical") {
                 Icon(
                     imageVector = if (ascendingOrder) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                     contentDescription = if (ascendingOrder) "Ascending" else "Descending",
-                    modifier = Modifier.padding(start = 4.dp)
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }
     }
 }
-
-

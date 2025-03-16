@@ -23,6 +23,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cz.cvut.weatherforge.R
+import cz.cvut.weatherforge.core.utils.getLocalizedDateString
 
 import cz.cvut.weatherforge.features.stations.data.model.Station
 import cz.cvut.weatherforge.features.stations.presentation.detail.DetailScreenViewModel
@@ -153,7 +154,7 @@ fun GraphContent(
 
             if (beginDate != null) {
                 Text(
-                    text = "${stringResource(R.string.detail_measurement_started_on)}: ${beginDate.date}",
+                    text = "${stringResource(R.string.detail_measurement_started_on)}: ${getLocalizedDateString(beginDate.date.toJavaLocalDate())}",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)

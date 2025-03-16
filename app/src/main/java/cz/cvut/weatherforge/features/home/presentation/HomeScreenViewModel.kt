@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.model.LatLng
+import cz.cvut.weatherforge.core.utils.calculateDistancesForNearbyStations
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementLatest
 import cz.cvut.weatherforge.features.record.data.RecordRepository
 import cz.cvut.weatherforge.features.record.data.model.RecordStats

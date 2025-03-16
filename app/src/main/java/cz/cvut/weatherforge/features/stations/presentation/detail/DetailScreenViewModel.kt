@@ -3,7 +3,7 @@ package cz.cvut.weatherforge.features.stations.presentation.detail
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
-import cz.cvut.weatherforge.features.home.presentation.calculateDistancesForNearbyStations
+import cz.cvut.weatherforge.core.utils.calculateDistancesForNearbyStations
 import cz.cvut.weatherforge.features.measurements.data.MeasurementRepository
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementDaily
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementMonthly
