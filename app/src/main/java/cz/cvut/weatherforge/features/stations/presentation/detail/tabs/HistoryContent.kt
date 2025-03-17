@@ -23,7 +23,7 @@ import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.Mon
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.YearlyChart
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toKotlinLocalDate
-
+import java.time.LocalDate
 
 
 @Composable
@@ -230,6 +230,34 @@ fun HistoryContent(
                 }
             }
 
+            // Date Picker for Full Date
+            OutlinedButton(
+                onClick = { historyContentViewModel.showDatePicker(true) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = stringResource(
+                        R.string.select_date,
+                        historyContentState.selectedDate?.toString() ?: stringResource(R.string.no_date_selected)
+                    )
+                )
+            }
+
+
+
+            if (historyContentState.showDatePicker) {
+                ResolutionDatePickerDialog(
+                    minimumDate = detailState.station?.startDate?.date?.toJavaLocalDate(),
+                    resolution = resolutions[selectedResolution],
+                    onDismiss = { historyContentViewModel.showDatePicker(false) },
+                    onDateSelected = { date ->
+                        historyContentViewModel.setSelectedDate(date.toKotlinLocalDate())
+                    },
+                    dateToShow = LocalDate.now().minusYears(1)
+                )
+
+            }
+
             if (historyContentState.selectedElement != null && historyContentState.selectedLongTermDate != null) {
                 // Fetch measurements based on the selected resolution
                 LaunchedEffect(historyContentState.selectedElement, historyContentState.selectedLongTermDate, selectedResolution) {
@@ -270,33 +298,8 @@ fun HistoryContent(
                 }
             }
 
-            // Date Picker for Full Date
-            OutlinedButton(
-                onClick = { historyContentViewModel.showDatePicker(true) },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = stringResource(
-                        R.string.select_date,
-                        historyContentState.selectedDate?.toString() ?: stringResource(R.string.no_date_selected)
-                    )
-                )
-            }
 
 
-
-            if (historyContentState.showDatePicker) {
-                DailyDatePicker(
-                    minimumDate = detailState.station?.startDate?.date?.toJavaLocalDate(),
-                    onDismiss = { historyContentViewModel.showDatePicker(false) },
-                    onDateSelected = { date ->
-                        historyContentViewModel.setSelectedDate(date.toKotlinLocalDate())
-                    }
-                )
-
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 

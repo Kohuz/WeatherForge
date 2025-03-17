@@ -11,23 +11,24 @@ fun ResolutionDatePickerDialog(
     minimumDate: LocalDate?,
     resolution: String,
     onDismiss: () -> Unit,
-    onDateSelected: (LocalDate) -> Unit
+    onDateSelected: (LocalDate) -> Unit,
+    dateToShow: LocalDate? = null
 ) {
     when (resolution) {
         "Denně" -> {
-            DailyDatePicker(minimumDate, onDismiss, onDateSelected)
+            DailyDatePicker(minimumDate, onDismiss, onDateSelected, dateToShow)
         }
         "Měsíc a rok" -> {
             MonthYearDatePicker(onDismiss, onDateSelected)
         }
         "Den a měsíc" ->{
-            DayMonthlyDatePicker(minimumDate, onDismiss, onDateSelected)
+            DayMonthlyDatePicker(onDismiss, onDateSelected)
         }
         "Měsíčně" ->{
-            MonthDatePicker(onDismiss, onDateSelected)
+            MonthDatePicker(onDismiss, onDateSelected,minimumDate)
         }
         "Ročně" -> {
-            YearlyDatePicker(minimumDate, onDismiss, onDateSelected)
+            YearlyDatePicker(minimumDate, onDismiss, onDateSelected )
         }
     }
 }

@@ -20,9 +20,14 @@ fun DailyDatePicker(
     minimumDate: LocalDate?,
     onDismiss: () -> Unit,
     onDateSelected: (LocalDate) -> Unit,
+    dateToShow: LocalDate? = null
 ) {
     // Calculate the initial selected date in milliseconds
-    val initialSelectedDateMillis = minimumDate?.atStartOfDay(ZoneId.systemDefault())?.toInstant()?.toEpochMilli()
+    val initialSelectedDateMillis = dateToShow
+        ?.withDayOfMonth(1) // Start of the month
+        ?.atStartOfDay(ZoneId.systemDefault())
+        ?.toInstant()
+        ?.toEpochMilli()
 
     // Define the year range (e.g., from the minimum date's year to the current year)
     val yearRange = IntRange(minimumDate?.year ?: 1900, LocalDate.now().year)
@@ -31,11 +36,11 @@ fun DailyDatePicker(
     val locale = Locale("cs", "CZ")
 
     // Calculate the initial displayed month in milliseconds (default to the current month)
-    val initialDisplayedMonthMillis = LocalDate.now()
-        .withDayOfMonth(1) // Start of the month
-        .atStartOfDay(ZoneId.systemDefault())
-        .toInstant()
-        .toEpochMilli()
+    val initialDisplayedMonthMillis = dateToShow
+        ?.withDayOfMonth(1) // Start of the month
+        ?.atStartOfDay(ZoneId.systemDefault())
+        ?.toInstant()
+        ?.toEpochMilli()
 
     // Custom SelectableDates to limit the range from minimumDate to today
     val selectableDates = object : SelectableDates {

@@ -1,5 +1,6 @@
 package cz.cvut.weatherforge.features.stations.presentation.detail.pickers
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -7,10 +8,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -66,37 +70,36 @@ fun YearlyDatePicker(
 fun YearPicker(
     selectedYear: Int,
     onYearSelected: (Int) -> Unit,
-    minimumYear: Int = 1950,
-    maximumYear: Int = LocalDate.now().year
+    minimumYear: Int,
+    maximumYear: Int,
+    startFromCurrentYear: Boolean = false
 ) {
-    Column {
-        // Year Picker
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("Year: ")
-            Spacer(modifier = Modifier.width(8.dp))
-            Button(onClick = { onYearSelected(selectedYear - 1) }) {
-                Text("<")
-            }
-            Text(text = selectedYear.toString(), modifier = Modifier.padding(horizontal = 8.dp))
-            Button(onClick = { onYearSelected(selectedYear + 1) }) {
-                Text(">")
-            }
+    val years = remember {
+        if (startFromCurrentYear) {
+            (maximumYear downTo minimumYear).toList()
+        } else {
+            (minimumYear..maximumYear).toList()
         }
+    }
 
-        // Year List
-        val years = (minimumYear..maximumYear).toList()
-        LazyColumn(modifier = Modifier.height(200.dp)) {
-            items(years.size) { index ->
-                val year = years[index]
-                val isSelected = year == selectedYear
-                OutlinedButton(
-                    onClick = { onYearSelected(year) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp),
-                ) {
-                    Text(text = year.toString())
-                }
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
+        Button(onClick = { expanded = true }) {
+            Text("$selectedYear")
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            years.forEach { year ->
+                DropdownMenuItem(
+                    onClick = {
+                        onYearSelected(year)
+                        expanded = false
+                    },
+                    text = { Text("$year") }
+                )
             }
         }
     }

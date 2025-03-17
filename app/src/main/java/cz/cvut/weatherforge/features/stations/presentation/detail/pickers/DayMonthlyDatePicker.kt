@@ -28,7 +28,6 @@ import java.time.YearMonth
 
 @Composable
 fun DayMonthlyDatePicker(
-    minimumDate: LocalDate?,
     onDismiss: () -> Unit,
     onDateSelected: (LocalDate) -> Unit
 ) {

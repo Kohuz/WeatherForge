@@ -20,11 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import java.time.LocalDate
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MonthDatePicker(
     onDismiss: () -> Unit,
-    onDateSelected: (LocalDate) -> Unit
+    onDateSelected: (LocalDate) -> Unit,
+    minimumDate: LocalDate? = LocalDate.of(1950, 1, 1),
 ) {
     // State for year, month, and day
     var selectedMonth by remember { mutableStateOf(LocalDate.now().monthValue) }

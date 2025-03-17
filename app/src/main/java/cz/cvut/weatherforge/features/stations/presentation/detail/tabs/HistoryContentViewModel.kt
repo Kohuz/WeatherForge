@@ -103,7 +103,7 @@ class HistoryContentViewModel(
         _state.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
             try {
-                val date = _state.value.selectedDate?.toString() ?: java.time.LocalDate.now()
+                val date = _state.value.selectedDate?.toString() ?: java.time.LocalDate.now().minusYears(1)
                     .toString()
 
                 val concreteDayMeasurements =

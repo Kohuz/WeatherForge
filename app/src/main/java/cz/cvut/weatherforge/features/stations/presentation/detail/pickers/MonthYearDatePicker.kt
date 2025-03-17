@@ -68,16 +68,6 @@ fun MonthYearDatePicker(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Day Picker
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Den:") // Localized label
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                }
             }
         },
         confirmButton = {

@@ -31,6 +31,7 @@ import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.Dai
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.MonthlyChart
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.YearlyChart
 import kotlinx.datetime.toJavaLocalDate
+import java.time.LocalDate
 
 
 @Composable
@@ -66,7 +67,8 @@ fun GraphContent(
             onDismiss = { graphContentViewModel.showToDatePicker(false) },
             onDateSelected = { date ->
                 graphContentViewModel.setToDate(date)
-            }
+            },
+            dateToShow = LocalDate.now().minusMonths(1)
         )
     }
 
@@ -128,13 +130,13 @@ fun GraphContent(
                     DropdownMenuItem(
                         onClick = {
                             graphContentViewModel.selectElement(element)
-                            // Set the fromDate to the beginDate of the selected element
+                            // Calculate the date one month in the past from today
+                            val oneMonthAgo = LocalDate.now().minusMonths(2)
+                            // Set the fromDate to the beginDate of the selected element or one month ago if beginDate is null
                             val beginDate = station.stationElements
                                 .find { it.elementAbbreviation == element.abbreviation }
                                 ?.beginDate
-                            if (beginDate != null) {
-                                graphContentViewModel.setFromDate(beginDate.date.toJavaLocalDate())
-                            }
+                            graphContentViewModel.setFromDate(oneMonthAgo)
                             graphContentViewModel.toggleDropdown(false)
                         },
                         text = {
