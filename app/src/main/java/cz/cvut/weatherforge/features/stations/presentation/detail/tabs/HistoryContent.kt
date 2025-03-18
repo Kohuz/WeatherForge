@@ -17,10 +17,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cz.cvut.weatherforge.R
 import cz.cvut.weatherforge.features.stations.presentation.detail.DetailScreenViewModel
-import cz.cvut.weatherforge.features.stations.presentation.detail.pickers.DailyDatePicker
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.DailyChart
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.MonthlyChart
-import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.YearlyChart
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toKotlinLocalDate
 import java.time.LocalDate
@@ -298,8 +296,27 @@ fun HistoryContent(
                 }
             }
 
+            if (historyContentState.statsDay != null) {
+
+                Column {
+                    historyContentState.statsDay!!.measurements.map { it ->
+                        Text(it.element)
+                        Text(it.value.toString())
+                    }
+
+                }
+
+            }
 
 
+            else {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
         }
     }
 
