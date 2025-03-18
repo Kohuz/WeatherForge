@@ -32,6 +32,7 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.google.android.gms.maps.model.LatLng
 import cz.cvut.weatherforge.features.home.presentation.HomeScreen
+import cz.cvut.weatherforge.features.record.presentatioin.RecordsScreen
 import cz.cvut.weatherforge.features.stations.presentation.detail.DetailScreen
 
 sealed class Screens(val route: String) {
@@ -56,8 +57,12 @@ sealed class Screens(val route: String) {
             override val icon = Icons.Filled.Home
         }
 
+        data object Records : TopLevel("records") {
+            override val icon = Icons.Filled.Home
+        }
+
         companion object {
-            val all get() = listOf(Home, DefaultMap, List) // Use DefaultMap in the bottom bar
+            val all get() = listOf(Home, DefaultMap, List, Records) // Use DefaultMap in the bottom bar
         }
     }
 
@@ -136,6 +141,10 @@ fun Navigation() {
                 HomeScreen(navigateToDetail = { stationId ->
                     navController.navigate(Screens.Detail.createRoute(stationId))
                 })
+            }
+
+            composable(route = Screens.TopLevel.Records.route) {
+                RecordsScreen()
             }
 
             composable(

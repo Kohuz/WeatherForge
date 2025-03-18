@@ -149,4 +149,23 @@ class MeasurementRepository(
             MeasurementDailyResult(emptyList(), isSuccess = false)
         }
     }
+
+    suspend fun getMeasurementsTop(
+        stationId: String,
+        date: String,
+        element: String
+    ): MeasurementDailyResult {
+        return try {
+            val measurements = remoteDataSource.getMeasurementsTop(stationId, date, element)
+            val filteredMeasurements = if (element == "T" || element == "F") {
+                measurements.filter { it.vtype == "AVG" }
+            } else {
+                measurements
+            }
+            MeasurementDailyResult(filteredMeasurements, isSuccess = true)
+        } catch (t: Throwable) {
+            Log.v("api", t.toString())
+            MeasurementDailyResult(emptyList(), isSuccess = false)
+        }
+    }
 }

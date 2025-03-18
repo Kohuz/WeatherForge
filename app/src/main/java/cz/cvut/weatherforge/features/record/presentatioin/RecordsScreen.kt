@@ -1,25 +1,14 @@
-package cz.cvut.weatherforge.features.stations.presentation.detail.pickers
+package cz.cvut.weatherforge.features.record.presentatioin
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,10 +20,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import cz.cvut.weatherforge.features.record.presentatioin.RecordsScreenViewModel
 import cz.cvut.weatherforge.features.stations.data.model.ElementCodelistItem
 import org.koin.androidx.compose.koinViewModel
-import java.time.LocalDate
+
 
 @Composable
 fun RecordsScreen(
@@ -60,7 +48,7 @@ fun RecordsScreen(
 
                         // Element selection
                         Text("Select Element:")
-                        ElementDropdownMenu(
+                        DropdownMenu(
                             items = screenState.elementCodelist,
                             onItemSelected = { element ->
                                 viewModel.selectElement(element)
@@ -111,36 +99,4 @@ fun RecordsScreen(
     }
 }
 
-@Composable
-fun ElementDropdownMenu(
-    items: List<ElementCodelistItem>,
-    onItemSelected: (ElementCodelistItem) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-    var selectedItem by remember { mutableStateOf<ElementCodelistItem?>(null) }
 
-    Box {
-        // Button to toggle the dropdown menu
-        Button(onClick = { expanded = true }) {
-            Text(selectedItem?.name ?: "Select Element")
-        }
-
-        // Dropdown menu
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            // Iterate through the items and create a DropdownMenuItem for each
-            items.forEach { item ->
-                DropdownMenuItem(
-                    text = { Text(item.name) }, // Use the `text` parameter
-                    onClick = {
-                        selectedItem = item
-                        onItemSelected(item)
-                        expanded = false
-                    }
-                )
-            }
-        }
-    }
-}

@@ -48,6 +48,14 @@ interface MeasurementApiDescription {
 
     ): List<MeasurementDaily>
 
+    @GET("/measurements/{element}/top")
+    suspend fun getMeasurementsTop(
+        @Path("element") element: String,
+        @Query("date") date: String?,
+        @Query("stationId") stationId: String?
+
+    ): List<MeasurementDaily>
+
     @GET("/measurements/{stationId}/measurementsMonth")
     suspend fun getMeasurementsMonth(
         @Path("stationId") stationId: String,

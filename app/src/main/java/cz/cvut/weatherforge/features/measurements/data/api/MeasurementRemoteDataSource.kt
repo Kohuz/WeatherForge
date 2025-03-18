@@ -4,6 +4,8 @@ import cz.cvut.weatherforge.features.measurements.data.model.MeasurementDaily
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementMonthly
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementYearly
 import cz.cvut.weatherforge.features.record.data.model.ValueStats
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface MeasurementRemoteDataSource {
     suspend fun getMeasurementsDaily(
@@ -47,5 +49,11 @@ interface MeasurementRemoteDataSource {
     suspend fun getStatsDay(
         stationId: String,
         date: String
+    ): List<MeasurementDaily>
+
+    suspend fun getMeasurementsTop(
+        element: String,
+        date: String?,
+        stationId: String?
     ): List<MeasurementDaily>
 }

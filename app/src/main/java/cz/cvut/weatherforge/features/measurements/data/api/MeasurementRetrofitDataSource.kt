@@ -67,4 +67,12 @@ class MeasurementRetrofitDataSource(
     ): List<MeasurementDaily> {
         return apiDescription.getStatsDay(stationId, date)
     }
+
+    override suspend fun getMeasurementsTop(
+        element: String,
+        date: String?,
+        stationId: String?
+    ): List<MeasurementDaily> {
+        return apiDescription.getMeasurementsTop(element, date, stationId)
+    }
 }
