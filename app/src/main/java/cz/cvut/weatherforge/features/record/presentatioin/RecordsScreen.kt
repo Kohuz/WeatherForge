@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -37,7 +38,7 @@ fun RecordsScreen(
                     modifier = Modifier
                         .padding(paddingValues)
                         .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background)
+                        .background(MaterialTheme.colorScheme.primaryContainer)
                 ) {
                     Column(
                         modifier = Modifier
@@ -48,7 +49,7 @@ fun RecordsScreen(
 
                         // Element selection
                         Text("Select Element:")
-                        DropdownMenu(
+                        ElementDropdownMenu(
                             items = screenState.elementCodelist,
                             onItemSelected = { element ->
                                 viewModel.selectElement(element)
@@ -99,4 +100,37 @@ fun RecordsScreen(
     }
 }
 
+@Composable
+fun ElementDropdownMenu(
+    items: List<ElementCodelistItem>,
+    onItemSelected: (ElementCodelistItem) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+    var selectedItem by remember { mutableStateOf<ElementCodelistItem?>(null) }
+
+    Box {
+        // Button to toggle the dropdown menu
+        Button(onClick = { expanded = true }) {
+            Text(selectedItem?.name ?: "Select Element")
+        }
+
+        // Dropdown menu
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            // Iterate through the items and create a DropdownMenuItem for each
+            items.forEach { item ->
+                DropdownMenuItem(
+                    text = { Text(item.name) }, // Use the `text` parameter
+                    onClick = {
+                        selectedItem = item
+                        onItemSelected(item)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}
 

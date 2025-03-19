@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.example.compose.AppTheme
 import com.google.android.gms.maps.model.LatLng
 import cz.cvut.weatherforge.features.home.presentation.HomeScreen
 import cz.cvut.weatherforge.features.record.presentatioin.RecordsScreen
@@ -144,7 +145,9 @@ fun Navigation() {
             }
 
             composable(route = Screens.TopLevel.Records.route) {
-                RecordsScreen()
+                AppTheme {
+                    RecordsScreen()
+                }
             }
 
             composable(
