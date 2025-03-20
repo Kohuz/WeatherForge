@@ -15,8 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -26,7 +25,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -157,39 +155,27 @@ fun MapScreen(
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            // Button to show all stations
-            FilterButton(
-                text = "All Stations",
-                isSelected = screenState.stationFilter == StationFilter.ALL,
-                onClick = { viewModel.updateStationFilter(StationFilter.ALL) }
+            // FilterChip to show all stations
+            FilterChip(
+                selected = screenState.stationFilter == StationFilter.ALL,
+                onClick = { viewModel.updateStationFilter(StationFilter.ALL) },
+                label = { Text("All Stations") }
             )
 
-            // Button to show active stations
-            FilterButton(
-                text = "Active Stations",
-                isSelected = screenState.stationFilter == StationFilter.ACTIVE,
-                onClick = { viewModel.updateStationFilter(StationFilter.ACTIVE) }
+            // FilterChip to show active stations
+            FilterChip(
+                selected = screenState.stationFilter == StationFilter.ACTIVE,
+                onClick = { viewModel.updateStationFilter(StationFilter.ACTIVE) },
+                label = { Text("Active Stations") }
             )
 
-            // Button to show inactive stations
-            FilterButton(
-                text = "Inactive Stations",
-                isSelected = screenState.stationFilter == StationFilter.INACTIVE,
-                onClick = { viewModel.updateStationFilter(StationFilter.INACTIVE) }
+            // FilterChip to show inactive stations
+            FilterChip(
+                selected = screenState.stationFilter == StationFilter.INACTIVE,
+                onClick = { viewModel.updateStationFilter(StationFilter.INACTIVE) },
+                label = { Text("Inactive Stations") }
             )
         }
     }
 }
-// Custom composable for filter buttons
-@Composable
-fun FilterButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
-    Button(
-        onClick = onClick,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
-            contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
-        )
-    ) {
-        Text(text)
-    }
-}
+

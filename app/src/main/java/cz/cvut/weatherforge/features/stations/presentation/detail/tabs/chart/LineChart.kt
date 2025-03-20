@@ -41,7 +41,7 @@ fun LineChartComposable(entries: List<Entry>, labels: List<String>) {
                     lineWidth = 2f
                     setDrawCircleHole(false)
                     mode = LineDataSet.Mode.CUBIC_BEZIER
-                    setDrawValues(true)
+                    setDrawValues(false)
                     valueTextSize = 10f
 
                     // Disable circles for individual data points
@@ -90,6 +90,8 @@ fun LineChartComposable(entries: List<Entry>, labels: List<String>) {
                 axisLeft.axisLineColor = Color.BLACK // Darker axis line color
                 axisRight.isEnabled = false
 
+                legend.isEnabled = false
+
                 // Refresh the chart
                 invalidate()
             }
@@ -102,7 +104,7 @@ fun LineChartComposable(entries: List<Entry>, labels: List<String>) {
                 lineWidth = 2f
                 setCircleColor(Color.RED)
                 mode = LineDataSet.Mode.CUBIC_BEZIER
-                setDrawValues(true)
+                setDrawValues(false)
                 valueTextSize = 10f
 
                 // Disable circles for individual data points

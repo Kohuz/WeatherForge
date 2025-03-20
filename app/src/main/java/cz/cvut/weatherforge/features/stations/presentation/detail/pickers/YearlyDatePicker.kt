@@ -26,6 +26,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import java.time.LocalDate
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.*
+import androidx.compose.ui.res.stringResource
+import cz.cvut.weatherforge.R
 
 @Composable
 fun YearlyDatePicker(
@@ -37,21 +43,7 @@ fun YearlyDatePicker(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        confirmButton = {
-            Button(onClick = {
-                val selectedDate = LocalDate.of(selectedYear, 1, 1)
-                onDateSelected(selectedDate)
-                onDismiss()
-            }) {
-                Text("OK")
-            }
-        },
-        dismissButton = {
-            Button(onClick = onDismiss) {
-                Text("Cancel")
-            }
-        },
-        title = { Text("Select Year") },
+        title = { Text(stringResource(R.string.select_year)) }, // Localized title
         text = {
             Column {
                 // Use the YearPicker composable
@@ -59,8 +51,37 @@ fun YearlyDatePicker(
                     selectedYear = selectedYear,
                     onYearSelected = { year -> selectedYear = year },
                     minimumYear = minimumDate?.year ?: 1950,
-                    maximumYear = LocalDate.now().year
+                    maximumYear = LocalDate.now().year,
+                    startFromCurrentYear = true // Start from the current year in descending order
                 )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    val selectedDate = LocalDate.of(selectedYear, 1, 1) // Default to the first day of the year
+                    onDateSelected(selectedDate)
+                    onDismiss()
+                },
+                shape = MaterialTheme.shapes.medium, // Rounded corners
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
+                Text(stringResource(R.string.ok)) // Localized button text
+            }
+        },
+        dismissButton = {
+            Button(
+                onClick = onDismiss,
+                shape = MaterialTheme.shapes.medium, // Rounded corners
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.onSurface
+                )
+            ) {
+                Text(stringResource(R.string.cancel)) // Localized button text
             }
         }
     )
@@ -76,21 +97,39 @@ fun YearPicker(
 ) {
     val years = remember {
         if (startFromCurrentYear) {
-            (maximumYear downTo minimumYear).toList()
+            (maximumYear downTo minimumYear).toList() // Descending order
         } else {
-            (minimumYear..maximumYear).toList()
+            (minimumYear..maximumYear).toList() // Ascending order
         }
     }
 
     var expanded by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
-        Button(onClick = { expanded = true }) {
-            Text("$selectedYear")
+        OutlinedButton(
+            onClick = { expanded = true },
+            shape = MaterialTheme.shapes.medium, // Rounded corners
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.onSurface
+            )
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text("$selectedYear")
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = stringResource(R.string.select_year),
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         }
         DropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.fillMaxWidth(0.5f) // Limit dropdown width
         ) {
             years.forEach { year ->
                 DropdownMenuItem(

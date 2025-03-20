@@ -1,5 +1,6 @@
 package cz.cvut.weatherforge.features.stations.presentation.list
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +30,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -138,34 +141,40 @@ fun FilterChangeButtons(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp), // Add spacing between chips
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Button(
+        // Active Filter Chip
+        FilterChip(
+            selected = currentFilter == ListScreenViewModel.Filter.Active,
             onClick = { onFilterChange(ListScreenViewModel.Filter.Active) },
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary) // Use primary color for buttons
-        ) {
-            Text(text = stringResource(R.string.active))
-        }
-        Button(
+            label = { Text(stringResource(R.string.active)) },
+
+        )
+
+        // Inactive Filter Chip
+        FilterChip(
+            selected = currentFilter == ListScreenViewModel.Filter.Inactive,
             onClick = { onFilterChange(ListScreenViewModel.Filter.Inactive) },
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-        ) {
-            Text(text = stringResource(R.string.inactive))
-        }
-        Button(
+            label = { Text(stringResource(R.string.inactive)) },
+
+        )
+
+        // All Filter Chip
+        FilterChip(
+            selected = currentFilter == ListScreenViewModel.Filter.All,
             onClick = { onFilterChange(ListScreenViewModel.Filter.All) },
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-        ) {
-            Text(text = stringResource(R.string.all))
-        }
-        Button(
+            label = { Text(stringResource(R.string.all)) },
+
+        )
+
+        // Favorites Filter Chip
+        FilterChip(
+            selected = currentFilter == ListScreenViewModel.Filter.Favorites,
             onClick = { onFilterChange(ListScreenViewModel.Filter.Favorites) },
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-        ) {
-            Text(text = stringResource(R.string.favorites))
-        }
+            label = { Text(stringResource(R.string.favorites)) },
+        )
     }
 }
 
@@ -225,7 +234,6 @@ fun ResultCard(
 fun TopSearchBar(query: String, onQueryChange: (String) -> Unit) {
     val keyboardController = LocalSoftwareKeyboardController.current
     TopAppBar(
-        modifier = Modifier.padding(vertical = 5.dp),
         title = {
             TextField(
                 value = query,
@@ -236,8 +244,7 @@ fun TopSearchBar(query: String, onQueryChange: (String) -> Unit) {
                     }
                 ),
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp),
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(10.dp),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Done
@@ -246,20 +253,20 @@ fun TopSearchBar(query: String, onQueryChange: (String) -> Unit) {
                     Icon(
                         imageVector = Icons.Filled.Search,
                         contentDescription = "searchIcon",
-                        tint = MaterialTheme.colorScheme.onSurface // Use onSurface color for icon
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 placeholder = {
                     Text(
                         text = stringResource(R.string.enter_your_search),
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f) // Use onSurface color for placeholder
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
                 },
                 trailingIcon = {
                     Icon(
                         imageVector = Icons.Default.Clear,
                         contentDescription = "clear text",
-                        tint = MaterialTheme.colorScheme.onSurface, // Use onSurface color for icon
+                        tint = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier
                             .clickable {
                                 onQueryChange("")
@@ -272,6 +279,7 @@ fun TopSearchBar(query: String, onQueryChange: (String) -> Unit) {
     )
 }
 
+
 @Composable
 fun SortingOptions(
     sortingCriteria: String,
@@ -282,11 +290,13 @@ fun SortingOptions(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp), // Add spacing between chips
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Button(
+        // Elevation Chip
+        FilterChip(
+            selected = sortingCriteria == "Elevation",
             onClick = {
                 if (sortingCriteria == "Elevation") {
                     onAscendingOrderChange(!ascendingOrder)
@@ -295,19 +305,20 @@ fun SortingOptions(
                     onAscendingOrderChange(true)
                 }
             },
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary) // Use primary color for buttons
-        ) {
-            Text(text = stringResource(R.string.elevation))
-            if (sortingCriteria == "Elevation") {
-                Icon(
-                    imageVector = if (ascendingOrder) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                    contentDescription = if (ascendingOrder) "Ascending" else "Descending",
-                    tint = MaterialTheme.colorScheme.onPrimary // Use onPrimary color for icon
-                )
+            label = { Text("Elevation") },
+            trailingIcon = {
+                if (sortingCriteria == "Elevation") {
+                    Icon(
+                        imageVector = if (ascendingOrder) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                        contentDescription = "Sorting Order"
+                    )
+                }
             }
-        }
+        )
 
-        Button(
+        // Begin Date Chip
+        FilterChip(
+            selected = sortingCriteria == "Begin Date",
             onClick = {
                 if (sortingCriteria == "Begin Date") {
                     onAscendingOrderChange(!ascendingOrder)
@@ -316,19 +327,20 @@ fun SortingOptions(
                     onAscendingOrderChange(true)
                 }
             },
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-        ) {
-            Text(text = stringResource(R.string.begin_date))
-            if (sortingCriteria == "Begin Date") {
-                Icon(
-                    imageVector = if (ascendingOrder) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                    contentDescription = if (ascendingOrder) "Ascending" else "Descending",
-                    tint = MaterialTheme.colorScheme.onPrimary
-                )
+            label = { Text("Begin Date") },
+            trailingIcon = {
+                if (sortingCriteria == "Begin Date") {
+                    Icon(
+                        imageVector = if (ascendingOrder) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                        contentDescription = "Sorting Order"
+                    )
+                }
             }
-        }
+        )
 
-        Button(
+        // Alphabetical Chip
+        FilterChip(
+            selected = sortingCriteria == "Alphabetical",
             onClick = {
                 if (sortingCriteria == "Alphabetical") {
                     onAscendingOrderChange(!ascendingOrder)
@@ -337,16 +349,16 @@ fun SortingOptions(
                     onAscendingOrderChange(true)
                 }
             },
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-        ) {
-            Text(text = stringResource(R.string.alphabetical))
-            if (sortingCriteria == "Alphabetical") {
-                Icon(
-                    imageVector = if (ascendingOrder) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                    contentDescription = if (ascendingOrder) "Ascending" else "Descending",
-                    tint = MaterialTheme.colorScheme.onPrimary
-                )
+            label = { Text("Alphabetical") },
+            trailingIcon = {
+                if (sortingCriteria == "Alphabetical") {
+                    Icon(
+                        imageVector = if (ascendingOrder) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                        contentDescription = "Sorting Order"
+                    )
+                }
             }
-        }
+        )
     }
 }
+

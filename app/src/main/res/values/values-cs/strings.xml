@@ -68,4 +68,35 @@
     <string name="alphabetical">Abecedně</string>
     <string name="failed_to_load_results">Nepodařilo se načíst výsledky</string>
     <string name="retry">Zkusit znovu</string>
+    <string name="january">Leden</string>
+    <string name="february">Únor</string>
+    <string name="march">Březen</string>
+    <string name="april">Duben</string>
+    <string name="may">Květen</string>
+    <string name="june">Červen</string>
+    <string name="july">Červenec</string>
+    <string name="august">Srpen</string>
+    <string name="september">Září</string>
+    <string name="october">Říjen</string>
+    <string name="november">Listopad</string>
+    <string name="december">Prosinec</string>
+
+    <!-- Other Localized Strings -->
+    <string name="select_day_and_month">Vyberte den a měsíc</string>
+    <string name="month">Měsíc</string>
+    <string name="day">Den</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Zrušit</string>
+    <string name="unknown">Neznámý</string>
+    <string name="select_month">Vyberte měsíc</string>
+    <string name="select_day">Vyberte den</string>
+    <string name="select_day_month_year">Vyberte den a měsíc</string>
+    <string name="year">Rok</string>
+    <string name="select_year">Vyberte rok</string>
+    <string name="select_month_and_year">Vyberte měsíc a rok</string>
+    <string name="select_element">Vyberte měsíc a rok</string>
+    <string name="daily_stats">Počasí v den </string>
+    <string name="select_date_for_stats">Vyberte datum pro statistiky: %s</string>
+    <string name="select_date_for_chart">Vyberte datum pro graf: %s</string>
+
 </resources>

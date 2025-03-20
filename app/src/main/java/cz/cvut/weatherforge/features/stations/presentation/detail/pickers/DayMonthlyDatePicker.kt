@@ -25,6 +25,14 @@ import androidx.compose.ui.unit.dp
 import java.time.LocalDate
 import java.time.Month
 import java.time.YearMonth
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.*
+import androidx.compose.ui.res.stringResource
+import cz.cvut.weatherforge.R
+
+
 
 @Composable
 fun DayMonthlyDatePicker(
@@ -37,16 +45,19 @@ fun DayMonthlyDatePicker(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Vyberte den a měsíc") }, // Localized title
+        title = { Text(stringResource(R.string.select_day_and_month)) }, // Localized title
         text = {
-            Column {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
                 // Month Picker
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Měsíc:") // Localized label
+                    Text(stringResource(R.string.month)) // Localized label
                     Spacer(modifier = Modifier.width(8.dp))
                     DropdownMenuForMonths(
                         selectedMonth = selectedMonth,
@@ -54,15 +65,13 @@ fun DayMonthlyDatePicker(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
-
                 // Day Picker
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Den:") // Localized label
+                    Text(stringResource(R.string.day)) // Localized label
                     Spacer(modifier = Modifier.width(8.dp))
                     DayPicker(
                         selectedDay = selectedDay,
@@ -78,14 +87,26 @@ fun DayMonthlyDatePicker(
                     val selectedDate = LocalDate.of(currentYear, selectedMonth, selectedDay)
                     onDateSelected(selectedDate)
                     onDismiss()
-                }
+                },
+                shape = MaterialTheme.shapes.medium, // Rounded corners
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
             ) {
-                Text("OK") // Localized button text
+                Text(stringResource(R.string.ok)) // Localized button text
             }
         },
         dismissButton = {
-            Button(onClick = onDismiss) {
-                Text("Zrušit") // Localized button text
+            Button(
+                onClick = onDismiss,
+                shape = MaterialTheme.shapes.medium, // Rounded corners
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.onSurface
+                )
+            ) {
+                Text(stringResource(R.string.cancel)) // Localized button text
             }
         }
     )
@@ -100,31 +121,49 @@ fun DropdownMenuForMonths(
 
     // Mapping of Month enum to Czech month names
     val czechMonths = mapOf(
-        Month.JANUARY to "Leden",
-        Month.FEBRUARY to "Únor",
-        Month.MARCH to "Březen",
-        Month.APRIL to "Duben",
-        Month.MAY to "Květen",
-        Month.JUNE to "Červen",
-        Month.JULY to "Červenec",
-        Month.AUGUST to "Srpen",
-        Month.SEPTEMBER to "Září",
-        Month.OCTOBER to "Říjen",
-        Month.NOVEMBER to "Listopad",
-        Month.DECEMBER to "Prosinec"
+        Month.JANUARY to stringResource(R.string.january),
+        Month.FEBRUARY to stringResource(R.string.february),
+        Month.MARCH to stringResource(R.string.march),
+        Month.APRIL to stringResource(R.string.april),
+        Month.MAY to stringResource(R.string.may),
+        Month.JUNE to stringResource(R.string.june),
+        Month.JULY to stringResource(R.string.july),
+        Month.AUGUST to stringResource(R.string.august),
+        Month.SEPTEMBER to stringResource(R.string.september),
+        Month.OCTOBER to stringResource(R.string.october),
+        Month.NOVEMBER to stringResource(R.string.november),
+        Month.DECEMBER to stringResource(R.string.december)
     )
 
     Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
-        Button(onClick = { expanded = true }) {
-            Text(czechMonths[Month.of(selectedMonth)] ?: "Unknown") // Display Czech month name
+        OutlinedButton(
+            onClick = { expanded = true },
+            shape = MaterialTheme.shapes.medium, // Rounded corners
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.onSurface
+            )
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(czechMonths[Month.of(selectedMonth)] ?: stringResource(R.string.unknown))
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = stringResource(R.string.select_month),
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         }
         DropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.fillMaxWidth(0.5f) // Limit dropdown width
         ) {
             Month.entries.forEach { month ->
                 DropdownMenuItem(
-                    text = { Text(czechMonths[month] ?: "Unknown") }, // Display Czech month name
+                    text = { Text(czechMonths[month] ?: stringResource(R.string.unknown)) },
                     onClick = {
                         onMonthSelected(month.value)
                         expanded = false
@@ -144,12 +183,30 @@ fun DayPicker(
     var expanded by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
-        Button(onClick = { expanded = true }) {
-            Text("$selectedDay")
+        OutlinedButton(
+            onClick = { expanded = true },
+            shape = MaterialTheme.shapes.medium, // Rounded corners
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.onSurface
+            )
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text("$selectedDay")
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = stringResource(R.string.select_day),
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         }
         DropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.fillMaxWidth(0.5f) // Limit dropdown width
         ) {
             (1..maxDaysInMonth).forEach { day ->
                 DropdownMenuItem(

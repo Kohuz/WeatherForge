@@ -12,7 +12,7 @@ object RetrofitProvider {
 
     fun provide(): Retrofit {
         return Retrofit.Builder()
-                .baseUrl("http://192.168.0.236:8081/")
+                .baseUrl("http://167.71.32.243:8081/")
             .client(
                 OkHttpClient.Builder()
                     .addNetworkInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))

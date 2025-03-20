@@ -32,6 +32,11 @@ import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.Mon
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.YearlyChart
 import kotlinx.datetime.toJavaLocalDate
 import java.time.LocalDate
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.*
+import cz.cvut.weatherforge.features.record.presentation.ElementDropdownMenu
 
 
 @Composable
@@ -56,7 +61,8 @@ fun GraphContent(
             onDismiss = { graphContentViewModel.showFromDatePicker(false) },
             onDateSelected = { date ->
                 graphContentViewModel.setFromDate(date)
-            }
+            },
+            dateToShow = LocalDate.now().minusMonths(3)
         )
     }
 
@@ -103,49 +109,13 @@ fun GraphContent(
             .fillMaxSize()
             .padding(horizontal = 16.dp)
     ) {
-        // Dropdown for selecting station elements
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)
-        ) {
-            // Button to toggle dropdown visibility
-            OutlinedButton(
-                onClick = { graphContentViewModel.toggleDropdown(!graphContentState.expanded) },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = graphContentState.selectedElement?.name ?: stringResource(R.string.detail_select_station_element),
-                    modifier = Modifier.padding(8.dp)
-                )
+        ElementDropdownMenu(
+            items = detailScreenState.elementCodelist,
+            selectedItem = graphContentState.selectedElement,
+            onItemSelected = { element ->
+                graphContentViewModel.selectElement(element)
             }
-
-            // Dropdown menu
-            DropdownMenu(
-                expanded = graphContentState.expanded,
-                onDismissRequest = { graphContentViewModel.toggleDropdown(false) },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                detailScreenState.elementCodelist.forEach { element ->
-                    DropdownMenuItem(
-                        onClick = {
-                            graphContentViewModel.selectElement(element)
-                            // Calculate the date one month in the past from today
-                            val oneMonthAgo = LocalDate.now().minusMonths(2)
-                            // Set the fromDate to the beginDate of the selected element or one month ago if beginDate is null
-                            val beginDate = station.stationElements
-                                .find { it.elementAbbreviation == element.abbreviation }
-                                ?.beginDate
-                            graphContentViewModel.setFromDate(oneMonthAgo)
-                            graphContentViewModel.toggleDropdown(false)
-                        },
-                        text = {
-                            Text(text = element.name)
-                        }
-                    )
-                }
-            }
-        }
+        )
 
         // Show date selectors only if an element is selected
         if (graphContentState.selectedElement != null) {
@@ -168,11 +138,28 @@ fun GraphContent(
                 onClick = { graphContentViewModel.showFromDatePicker(true) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-            ) {
-                Text(
-                    text = graphContentState.fromDate?.toString() ?: "Select From Date"
+                    .padding(vertical = 8.dp),
+                shape = MaterialTheme.shapes.medium, // Rounded corners
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.onSurface
                 )
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = graphContentState.fromDate?.toString() ?: "Select From Date",
+                        modifier = Modifier.padding(8.dp)
+                    )
+                    Icon(
+                        imageVector = Icons.Default.ArrowDropDown,
+                        contentDescription = "Dropdown",
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
             }
 
             // To Date Selector
@@ -180,11 +167,28 @@ fun GraphContent(
                 onClick = { graphContentViewModel.showToDatePicker(true) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-            ) {
-                Text(
-                    text = graphContentState.toDate?.toString() ?: "Select To Date"
+                    .padding(vertical = 8.dp),
+                shape = MaterialTheme.shapes.medium, // Rounded corners
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.onSurface
                 )
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = graphContentState.toDate?.toString() ?: "Select To Date",
+                        modifier = Modifier.padding(8.dp)
+                    )
+                    Icon(
+                        imageVector = Icons.Default.ArrowDropDown,
+                        contentDescription = "Dropdown",
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
             }
         }
 
@@ -212,23 +216,17 @@ fun GraphContent(
                     )
                     Text(
                         text = resolution,
-                        modifier = Modifier.padding(start = 8.dp)
                     )
                 }
             }
         }
 
-
         // Display the chart
         if (graphContentState.selectedElement != null && graphContentState.fromDate != null && graphContentState.toDate != null) {
             when (resolutions[selectedResolution]) {
                 "Denně" -> DailyChart(detailScreenState.dailyMeasurements)
-                "Měsíc a rok" -> {
-                    MonthlyChart(detailScreenState.monthlyMeasurements)
-                }
-                "Ročně" -> {
-                    YearlyChart(detailScreenState.yearlyMeasurements)
-                }
+                "Měsíc a rok" -> MonthlyChart(detailScreenState.monthlyMeasurements)
+                "Ročně" -> YearlyChart(detailScreenState.yearlyMeasurements)
             }
         }
     }

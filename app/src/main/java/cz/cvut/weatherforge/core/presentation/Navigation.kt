@@ -33,7 +33,7 @@ import androidx.navigation.navArgument
 import com.example.compose.AppTheme
 import com.google.android.gms.maps.model.LatLng
 import cz.cvut.weatherforge.features.home.presentation.HomeScreen
-import cz.cvut.weatherforge.features.record.presentatioin.RecordsScreen
+import cz.cvut.weatherforge.features.record.presentation.RecordsScreen
 import cz.cvut.weatherforge.features.stations.presentation.detail.DetailScreen
 
 sealed class Screens(val route: String) {
@@ -102,19 +102,23 @@ fun Navigation() {
             modifier = Modifier.padding(innerPadding),
         ) {
             composable(route = Screens.TopLevel.List.route) {
-                ListScreen(navigateToDetail = { stationId ->
-                    navController.navigate(Screens.Detail.createRoute(stationId))
-                })
+                AppTheme {
+                    ListScreen(navigateToDetail = { stationId ->
+                        navController.navigate(Screens.Detail.createRoute(stationId))
+                    })
+                }
             }
 
             // Default map route (no parameters)
             composable(route = Screens.TopLevel.DefaultMap.route) {
-                MapScreen(
-                    navigateToDetail = { stationId ->
-                        navController.navigate(Screens.Detail.createRoute(stationId))
-                    },
-                    stationLocation = null // No specific location
-                )
+                AppTheme {
+                    MapScreen(
+                        navigateToDetail = { stationId ->
+                            navController.navigate(Screens.Detail.createRoute(stationId))
+                        },
+                        stationLocation = null // No specific location
+                    )
+                }
             }
 
             // Parameterized map route (with latitude and longitude)
@@ -129,19 +133,23 @@ fun Navigation() {
                 val longitude = entry.arguments?.getFloat("longitude")?.toDouble()
                 if (latitude != null && longitude != null) {
                     val stationLocation = LatLng(latitude, longitude)
-                    MapScreen(
-                        navigateToDetail = { stationId ->
-                            navController.navigate(Screens.Detail.createRoute(stationId))
-                        },
-                        stationLocation = stationLocation // Pass the station's location
-                    )
+                    AppTheme {
+                        MapScreen(
+                            navigateToDetail = { stationId ->
+                                navController.navigate(Screens.Detail.createRoute(stationId))
+                            },
+                            stationLocation = stationLocation // Pass the station's location
+                        )
+                    }
                 }
             }
 
             composable(route = Screens.TopLevel.Home.route) {
-                HomeScreen(navigateToDetail = { stationId ->
-                    navController.navigate(Screens.Detail.createRoute(stationId))
-                })
+                AppTheme {
+                    HomeScreen(navigateToDetail = { stationId ->
+                        navController.navigate(Screens.Detail.createRoute(stationId))
+                    })
+                }
             }
 
             composable(route = Screens.TopLevel.Records.route) {
@@ -156,20 +164,25 @@ fun Navigation() {
             ) { entry ->
                 val stationId = entry.arguments?.getString(Screens.Detail.ID)
                 if (stationId != null) {
-                    DetailScreen(
-                        stationId = stationId,
-                        navigateUp = { navController.navigateUp() },
-                        navigateToDetail = { statId ->
-                            navController.navigate(Screens.Detail.createRoute(statId))
-                        },
-                        navigateToMap = { latLng ->
-                            navController.navigate(
-                                Screens.TopLevel.Map.createRoute(latLng.latitude, latLng.longitude)
-                            ) {
-                                launchSingleTop = true
+                    AppTheme {
+                        DetailScreen(
+                            stationId = stationId,
+                            navigateUp = { navController.navigateUp() },
+                            navigateToDetail = { statId ->
+                                navController.navigate(Screens.Detail.createRoute(statId))
+                            },
+                            navigateToMap = { latLng ->
+                                navController.navigate(
+                                    Screens.TopLevel.Map.createRoute(
+                                        latLng.latitude,
+                                        latLng.longitude
+                                    )
+                                ) {
+                                    launchSingleTop = true
+                                }
                             }
-                        }
-                    )
+                        )
+                    }
                 }
             }
         }
