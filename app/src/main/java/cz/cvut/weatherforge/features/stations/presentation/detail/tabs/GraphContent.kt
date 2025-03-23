@@ -2,6 +2,7 @@ package cz.cvut.weatherforge.features.stations.presentation.detail.tabs
 
 import ResolutionDatePickerDialog
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +13,8 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -20,6 +23,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -30,6 +36,7 @@ import cz.cvut.weatherforge.R
 import cz.cvut.weatherforge.core.utils.getLocalizedDateString
 import cz.cvut.weatherforge.features.record.presentation.ElementDropdownMenu
 import cz.cvut.weatherforge.features.stations.data.model.Station
+import cz.cvut.weatherforge.features.stations.data.model.StationElement
 import cz.cvut.weatherforge.features.stations.presentation.detail.DetailScreenViewModel
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.DailyChart
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.MonthlyChart
@@ -54,7 +61,7 @@ fun GraphContent(
     if (graphContentState.showFromDatePicker) {
         ResolutionDatePickerDialog(
             minimumDate = station.stationElements
-                .find { it.elementAbbreviation == graphContentState.selectedElement!!.abbreviation }
+                .find { it.elementAbbreviation == graphContentState.selectedElement!!.elementAbbreviation }
                 ?.beginDate?.date?.toJavaLocalDate(),
             resolution = resolutions[selectedResolution],
             onDismiss = { graphContentViewModel.showFromDatePicker(false) },
@@ -85,19 +92,19 @@ fun GraphContent(
                     station.stationId,
                     graphContentState.fromDate.toString(),
                     graphContentState.toDate.toString(),
-                    graphContentState.selectedElement!!.abbreviation
+                    graphContentState.selectedElement!!.elementAbbreviation
                 )
                 "Měsíc a rok" -> detailScreenViewModel.fetchMonthlyMeasurements(
                     station.stationId,
                     graphContentState.fromDate.toString(),
                     graphContentState.toDate.toString(),
-                    graphContentState.selectedElement!!.abbreviation
+                    graphContentState.selectedElement!!.elementAbbreviation
                 )
                 "Ročně" -> detailScreenViewModel.fetchYearlyMeasurements(
                     station.stationId,
                     graphContentState.fromDate.toString(),
                     graphContentState.toDate.toString(),
-                    graphContentState.selectedElement!!.abbreviation
+                    graphContentState.selectedElement!!.elementAbbreviation
                 )
             }
         }
@@ -108,19 +115,21 @@ fun GraphContent(
             .fillMaxSize()
             .padding(horizontal = 16.dp)
     ) {
-        ElementDropdownMenu(
-            items = detailScreenState.elementCodelist,
-            selectedItem = graphContentState.selectedElement,
-            onItemSelected = { element ->
-                graphContentViewModel.selectElement(element)
-            }
-        )
+        detailScreenState.station?.let {
+            StationElementDropdown(
+                items = it.stationElements,
+                selectedItem = graphContentState.selectedElement,
+                onItemSelected = { element ->
+                    graphContentViewModel.selectElement(element)
+                }
+            )
+        }
 
         // Show date selectors only if an element is selected
         if (graphContentState.selectedElement != null) {
             // Date Selectors for fromDate and toDate
             val beginDate = station.stationElements
-                .find { it.elementAbbreviation == graphContentState.selectedElement!!.abbreviation }
+                .find { it.elementAbbreviation == graphContentState.selectedElement!!.elementAbbreviation }
                 ?.beginDate
 
             if (beginDate != null) {
@@ -231,4 +240,65 @@ fun GraphContent(
     }
 }
 
+
+@Composable
+fun StationElementDropdown(
+    items: List<StationElement>,
+    selectedItem: StationElement?,
+    onItemSelected: (StationElement) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) } // Internal state for dropdown visibility
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+    ) {
+        // Enhanced Button to toggle dropdown visibility
+        OutlinedButton(
+            onClick = { expanded = true },
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.medium,
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.onSurface
+            )
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = selectedItem?.elementName ?: stringResource(R.string.select_element),
+                    modifier = Modifier.padding(8.dp)
+                )
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = "Dropdown",
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
+
+        // Dropdown menu
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            items.forEach { item ->
+                DropdownMenuItem(
+                    onClick = {
+                        onItemSelected(item)
+                        expanded = false // Close dropdown after selection
+                    },
+                    text = {
+                        Text(text = item.elementName)
+                    }
+                )
+            }
+        }
+    }
+}
 

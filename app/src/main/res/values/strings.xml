@@ -103,7 +103,30 @@
 
 
     <string name="location_permission_denied">Uživatel zamítl povolení k přístupu k poloze.</string>
-    <string name="all_stations">Všechny stanice</string>
-    <string name="active_stations">Aktivní stanice</string>
-    <string name="inactive_stations">Neaktivní stanice</string>
+    <string name="all_stations">Všechny</string>
+    <string name="active_stations">Aktivní</string>
+    <string name="inactive_stations">Neaktivní</string>
+
+    <string name="records_screen_title">Záznamy počasí</string>
+
+    <!-- Element Dropdown -->
+
+    <!-- Radio Buttons -->
+    <string name="option_date">Datum</string>
+    <string name="option_station">Stanice</string>
+
+    <!-- Date Picker -->
+    <string name="date_picker_label">Vyberte datum pro zobrazení záznamů</string>
+
+    <!-- Station Search -->
+    <string name="search_station">Hledat stanici</string>
+    <string name="search_station_hint">Zadejte název stanice</string>
+
+    <!-- Measurements Table -->
+    <string name="table_header_date">Datum</string>
+    <string name="table_header_value">Hodnota</string>
+    <string name="measurements_table_label">Záznamy počasí</string>
+
+    <!-- Loading State -->
+    <string name="loading">Načítání...</string>
 </resources>

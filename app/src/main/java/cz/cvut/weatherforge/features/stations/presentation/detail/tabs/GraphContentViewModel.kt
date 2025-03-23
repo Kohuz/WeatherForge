@@ -7,6 +7,7 @@ import cz.cvut.weatherforge.features.measurements.data.model.MeasurementDaily
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementMonthly
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementYearly
 import cz.cvut.weatherforge.features.stations.data.model.ElementCodelistItem
+import cz.cvut.weatherforge.features.stations.data.model.StationElement
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -23,7 +24,7 @@ class GraphContentViewModel(
     data class GraphContentState(
         val selectedResolutionIndex: Int = 0,
         val expanded: Boolean = false,
-        val selectedElement: ElementCodelistItem? = null,
+        val selectedElement: StationElement? = null,
         val fromDate: LocalDate? = null,
         val toDate: LocalDate? = null,
         val showFromDatePicker: Boolean = false,
@@ -39,7 +40,7 @@ class GraphContentViewModel(
         _graphContentStateStream.update { it.copy(expanded = expanded) }
     }
 
-    fun selectElement(element: ElementCodelistItem) {
+    fun selectElement(element: StationElement) {
         _graphContentStateStream.update { it.copy(selectedElement = element) }
     }
 

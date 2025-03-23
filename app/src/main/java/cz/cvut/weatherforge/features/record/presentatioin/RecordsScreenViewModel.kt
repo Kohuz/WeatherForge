@@ -19,6 +19,7 @@ import cz.cvut.weatherforge.features.record.data.model.StationRecord
 import cz.cvut.weatherforge.features.stations.data.StationRepository
 import cz.cvut.weatherforge.features.stations.data.model.ElementCodelistItem
 import cz.cvut.weatherforge.features.stations.data.model.Station
+import cz.cvut.weatherforge.features.stations.data.model.StationElement
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -95,16 +96,6 @@ class RecordsScreenViewModel(
             )
         }
     }
-
-    init {
-        viewModelScope.launch {
-            val elementCodelistResult = stationRepository.getElementsCodelist()
-            if (elementCodelistResult.isSuccess) {
-                _screenStateStream.update { it.copy(elementCodelist = elementCodelistResult.elements) }
-            }
-        }
-    }
-
     fun loadInfo() {
         viewModelScope.launch {
             setLoadingState(true)
@@ -177,7 +168,7 @@ class RecordsScreenViewModel(
             val selectedStation = _screenStateStream.value.selectedStation
             val selectedDate = _screenStateStream.value.selectedDate
 
-            if (selectedElement != null && selectedStation != null && selectedDate != null) {
+            if (selectedElement != null && (selectedStation != null || selectedDate != null)) {
                 setLoadingState(true)
 
                 var result: MeasurementDailyResult
@@ -190,7 +181,7 @@ class RecordsScreenViewModel(
                 }
                 else {
                     result = measurementRepository.getMeasurementsTop(
-                        selectedStation.stationId,
+                        selectedStation!!.stationId,
                         null,
                         selectedElement.abbreviation
                     )
