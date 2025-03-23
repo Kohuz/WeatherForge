@@ -151,8 +151,8 @@ class MeasurementRepository(
     }
 
     suspend fun getMeasurementsTop(
-        stationId: String,
-        date: String,
+        stationId: String?,
+        date: String?,
         element: String
     ): MeasurementDailyResult {
         return try {

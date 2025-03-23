@@ -1,16 +1,13 @@
 package cz.cvut.weatherforge.features.stations.presentation.list
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,15 +20,12 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -79,9 +73,12 @@ fun ListScreen(navigateToDetail: (id: String) -> Unit, viewModel: ListScreenView
                         modifier = Modifier
                             .fillMaxSize()
                     ) {
-                        HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)) // Use onSurface for divider
+                        HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
                         Column(
-                            modifier = Modifier.padding(vertical = 6.dp)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 6.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally, // Center the content horizontally
                         ) {
                             FilterChangeButtons(
                                 onFilterChange = viewModel::onFilterChange,
@@ -94,7 +91,6 @@ fun ListScreen(navigateToDetail: (id: String) -> Unit, viewModel: ListScreenView
                                 onAscendingOrderChange = { order -> viewModel.setAscendingOrder(order) }
                             )
                         }
-                        Spacer(modifier = Modifier.height(5.dp))
                         LazyColumn {
                             items(results) { station ->
                                 ResultCard(
@@ -140,8 +136,7 @@ fun FilterChangeButtons(
 ) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp), // Add spacing between chips
         verticalAlignment = Alignment.CenterVertically
     ) {

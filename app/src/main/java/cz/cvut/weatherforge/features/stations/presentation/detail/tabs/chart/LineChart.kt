@@ -22,6 +22,7 @@ import cz.cvut.weatherforge.R
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementDaily
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementMonthly
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementYearly
+import com.github.mikephil.charting.formatter.ValueFormatter
 
 @Composable
 fun LineChartComposable(entries: List<Entry>, labels: List<String>) {
@@ -41,7 +42,7 @@ fun LineChartComposable(entries: List<Entry>, labels: List<String>) {
                     lineWidth = 2f
                     setDrawCircleHole(false)
                     mode = LineDataSet.Mode.CUBIC_BEZIER
-                    setDrawValues(false)
+                    setDrawValues(true) // Enable value display
                     valueTextSize = 10f
 
                     // Disable circles for individual data points
@@ -61,6 +62,18 @@ fun LineChartComposable(entries: List<Entry>, labels: List<String>) {
                             return (dataProvider as LineChart).axisLeft.axisMinimum
                         }
                     }
+
+                    // Custom value formatter to conditionally display values based on zoom level
+                    valueFormatter = object : ValueFormatter() {
+                        override fun getPointLabel(entry: Entry?): String {
+                            // Only show values if the chart is zoomed in enough
+                            return if (scaleX > 2f) {
+                                String.format("%.1f", entry?.y ?: 0f)
+                            } else {
+                                ""
+                            }
+                        }
+                    }
                 }
                 val lineData = LineData(dataSet)
                 data = lineData
@@ -72,22 +85,22 @@ fun LineChartComposable(entries: List<Entry>, labels: List<String>) {
                 xAxis.setDrawGridLines(true)
                 xAxis.gridColor = Color.LTGRAY
                 xAxis.gridLineWidth = 0.5f
-                xAxis.textSize = 14f // Increase text size for better visibility
-                xAxis.textColor = Color.DKGRAY // Use a darker color for better visibility
+                xAxis.textSize = 14f
+                xAxis.textColor = Color.DKGRAY
                 xAxis.setLabelRotationAngle(-45f)
                 xAxis.setAvoidFirstLastClipping(true)
-                xAxis.axisLineWidth = 1f // Increase axis line width
-                xAxis.axisLineColor = Color.BLACK // Darker axis line color
+                xAxis.axisLineWidth = 1f
+                xAxis.axisLineColor = Color.BLACK
 
                 // Configure Y-axis
                 axisLeft.isEnabled = true
-                axisLeft.textSize = 14f // Increase text size for better visibility
-                axisLeft.textColor = Color.DKGRAY // Use a darker color for better visibility
+                axisLeft.textSize = 14f
+                axisLeft.textColor = Color.DKGRAY
                 axisLeft.setDrawGridLines(true)
                 axisLeft.gridColor = Color.LTGRAY
                 axisLeft.gridLineWidth = 0.5f
-                axisLeft.axisLineWidth = 1f // Increase axis line width
-                axisLeft.axisLineColor = Color.BLACK // Darker axis line color
+                axisLeft.axisLineWidth = 1f
+                axisLeft.axisLineColor = Color.BLACK
                 axisRight.isEnabled = false
 
                 legend.isEnabled = false
@@ -104,7 +117,7 @@ fun LineChartComposable(entries: List<Entry>, labels: List<String>) {
                 lineWidth = 2f
                 setCircleColor(Color.RED)
                 mode = LineDataSet.Mode.CUBIC_BEZIER
-                setDrawValues(false)
+                setDrawValues(true) // Enable value display
                 valueTextSize = 10f
 
                 // Disable circles for individual data points
@@ -122,6 +135,18 @@ fun LineChartComposable(entries: List<Entry>, labels: List<String>) {
                     ): Float {
                         // Return the minimum Y value of the chart (e.g., the bottom of the chart)
                         return (dataProvider as LineChart).axisLeft.axisMinimum
+                    }
+                }
+
+                // Custom value formatter to conditionally display values based on zoom level
+                valueFormatter = object : ValueFormatter() {
+                    override fun getPointLabel(entry: Entry?): String {
+                        // Only show values if the chart is zoomed in enough
+                        return if (lineChart.scaleX > 2f) {
+                            String.format("%.1f", entry?.y ?: 0f)
+                        } else {
+                            ""
+                        }
                     }
                 }
             }

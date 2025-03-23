@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -71,6 +73,16 @@ fun DetailScreen(
                             Icon(
                                 imageVector = Icons.Default.Place,
                                 contentDescription = "View on Map"
+                            )
+                        }
+                        IconButton(
+                            onClick = {
+                                detailScreenViewModel.toggleFavorite(station.stationId)
+                            }
+                        ) {
+                            Icon(
+                                imageVector = if (station.isFavorite) Icons.Filled.Star else Icons.Outlined.Star,
+                                contentDescription = if (station.isFavorite) "Unfavorite" else "Favorite"
                             )
                         }
                     }

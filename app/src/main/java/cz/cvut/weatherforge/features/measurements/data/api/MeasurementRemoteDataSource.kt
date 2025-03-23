@@ -52,8 +52,8 @@ interface MeasurementRemoteDataSource {
     ): List<MeasurementDaily>
 
     suspend fun getMeasurementsTop(
-        element: String,
+        stationId: String?,
         date: String?,
-        stationId: String?
+        element: String
     ): List<MeasurementDaily>
 }

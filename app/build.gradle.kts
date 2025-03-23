@@ -89,6 +89,8 @@ dependencies {
     implementation(libs.accompanist.pager)
     implementation(libs.accompanist.pager.indicators)
     implementation(libs.mpandroidchart)
+    implementation(libs.androidx.material.icons.extended)
+
 
 }
 

@@ -1,15 +1,19 @@
 package cz.cvut.weatherforge.features.stations.presentation.detail.tabs
 
 import ResolutionDatePickerDialog
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -24,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cz.cvut.weatherforge.R
 import cz.cvut.weatherforge.core.utils.getLocalizedDateString
-
+import cz.cvut.weatherforge.features.record.presentation.ElementDropdownMenu
 import cz.cvut.weatherforge.features.stations.data.model.Station
 import cz.cvut.weatherforge.features.stations.presentation.detail.DetailScreenViewModel
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.DailyChart
@@ -32,11 +36,6 @@ import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.Mon
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.YearlyChart
 import kotlinx.datetime.toJavaLocalDate
 import java.time.LocalDate
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material3.*
-import cz.cvut.weatherforge.features.record.presentation.ElementDropdownMenu
 
 
 @Composable

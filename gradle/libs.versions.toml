@@ -24,6 +24,7 @@ composeBom = "2024.04.01"
 loggingInterceptor = "4.12.0"
 mapsCompose = "6.4.1"
 mapsComposeUtils = "1.0.0"
+materialIconsExtended = "1.7.8"
 mpandroidchart = "v3.1.0"
 navigationCompose = "2.8.7"
 okhttp = "4.12.0"
@@ -46,6 +47,7 @@ android-maps-utils-v3100 = { module = "com.google.maps.android:android-maps-util
 android-maps-utils-v3110 = { module = "com.google.maps.android:android-maps-utils", version.ref = "androidMapsUtilsVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-ktx-v1130 = { module = "androidx.core:core-ktx", version.ref = "coreKtxVersion" }
+androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompiler" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

@@ -4,7 +4,7 @@
     <string name="max">Maximum</string>
         <!-- Date Picker Strings -->
         <string name="select_day_month">Vyberte den a měsíc: %s</string>
-        <string name="select_date">Vyberte datum: %s</string>
+        <string name="select_date">Vyberte datum: </string>
         <string name="no_date_selected">Není vybráno datum</string>
 
         <!-- Error Message -->
@@ -98,7 +98,7 @@
     <string name="select_month_and_year">Vyberte měsíc a rok</string>
     <string name="select_element">Vyberte veličinu</string>
     <string name="daily_stats">Počasí v den </string>
-    <string name="select_date_for_stats">Vyberte datum pro statistiky: %s</string>
-    <string name="select_date_for_chart">Vyberte datum pro graf: %s</string>
+    <string name="select_date_for_stats">Vyberte datum pro statistiky:</string>
+    <string name="select_date_for_chart">Vyberte datum pro graf: </string>
 
 </resources>

@@ -41,7 +41,7 @@ fun OverviewContent(station: Station, viewModel: DetailScreenViewModel, navigate
                     stringResource(R.string.detail_start_of_measurement),
                     getLocalizedDateString(station.startDate?.date?.toJavaLocalDate())
                 ),
-                Pair(stringResource(R.string.detail_elevation), station.elevation.toString()),
+                Pair(stringResource(R.string.detail_elevation),  String.format("%.0f m n.m.", station.elevation)),
                 Pair(
                     stringResource(R.string.detail_coordinates),
                     String.format("%.4f, %.4f", station.latitude, station.longitude)
@@ -53,9 +53,9 @@ fun OverviewContent(station: Station, viewModel: DetailScreenViewModel, navigate
                         station.endDate.toString()
                     )
                 } else {
-                   Pair("", "")
+                    null
                 }
-            )
+            ).filterNotNull()
         )
 
         NearbyStationInfoCard(

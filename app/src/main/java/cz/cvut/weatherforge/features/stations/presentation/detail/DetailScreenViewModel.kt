@@ -118,6 +118,20 @@ class DetailScreenViewModel(
             }
         }
     }
+
+    fun toggleFavorite(stationId: String) {
+        viewModelScope.launch {
+            val station = screenStateStream.value.station
+            station?.let {
+                if (it.isFavorite) {
+                    stationRepository.removeFavorite(stationId)
+                } else {
+                    stationRepository.makeFavorite(stationId)
+                }
+                loadStation(stationId)
+            }
+        }
+    }
 }
 
 fun elementAbbreviationToNameUnitPair(abbreviation: String, codelist: List<ElementCodelistItem>): ElementCodelistItem? {

@@ -1,40 +1,34 @@
 package cz.cvut.weatherforge.core.presentation
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Leaderboard
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import cz.cvut.weatherforge.R
-import cz.cvut.weatherforge.features.stations.presentation.list.ListScreen
-import cz.cvut.weatherforge.features.stations.presentation.map.MapScreen
-import androidx.compose.ui.Modifier
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.example.compose.AppTheme
 import com.google.android.gms.maps.model.LatLng
 import cz.cvut.weatherforge.features.home.presentation.HomeScreen
 import cz.cvut.weatherforge.features.record.presentation.RecordsScreen
 import cz.cvut.weatherforge.features.stations.presentation.detail.DetailScreen
+import cz.cvut.weatherforge.features.stations.presentation.list.ListScreen
+import cz.cvut.weatherforge.features.stations.presentation.map.MapScreen
 
 sealed class Screens(val route: String) {
 
@@ -59,7 +53,7 @@ sealed class Screens(val route: String) {
         }
 
         data object Records : TopLevel("records") {
-            override val icon = Icons.Filled.Home
+            override val icon = Icons.Filled.Leaderboard
         }
 
         companion object {
