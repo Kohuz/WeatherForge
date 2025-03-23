@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -41,6 +42,7 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.clustering.Clustering
 import com.google.maps.android.compose.rememberCameraPositionState
+import cz.cvut.weatherforge.R
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -82,7 +84,7 @@ fun MapScreen(
             viewModel.fetchUserLocation(context, fusedLocationClient)
         } else {
             // Log an error if permission is denied
-            Log.e("locationScreen", "Location permission was denied by the user.")
+            Log.e("MapScreen", context.getString(R.string.location_permission_denied))
         }
     }
 
@@ -140,8 +142,8 @@ fun MapScreen(
                     false
                 },
                 clusterItemContent = { content ->
-                    // Display an icon for each station
-                    Icon(Icons.Filled.Place, contentDescription = content.location)
+                    // Display an icon for each station (using a more visible icon)
+                        Icon(Icons.Filled.LocationOn, contentDescription = content.location)
                 }
             )
         }
@@ -159,23 +161,22 @@ fun MapScreen(
             FilterChip(
                 selected = screenState.stationFilter == StationFilter.ALL,
                 onClick = { viewModel.updateStationFilter(StationFilter.ALL) },
-                label = { Text("All Stations") }
+                label = { Text(context.getString(R.string.all_stations)) }
             )
 
             // FilterChip to show active stations
             FilterChip(
                 selected = screenState.stationFilter == StationFilter.ACTIVE,
                 onClick = { viewModel.updateStationFilter(StationFilter.ACTIVE) },
-                label = { Text("Active Stations") }
+                label = { Text(context.getString(R.string.active_stations)) }
             )
 
             // FilterChip to show inactive stations
             FilterChip(
                 selected = screenState.stationFilter == StationFilter.INACTIVE,
                 onClick = { viewModel.updateStationFilter(StationFilter.INACTIVE) },
-                label = { Text("Inactive Stations") }
+                label = { Text(context.getString(R.string.inactive_stations)) }
             )
         }
     }
 }
-

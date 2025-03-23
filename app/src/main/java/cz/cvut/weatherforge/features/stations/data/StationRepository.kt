@@ -83,8 +83,4 @@ class StationRepository(
         stationLocalDataSource.removeFavorite(stationId)
     }
 
-    suspend fun getFavoriteStations(): List<Station> {
-        return stationLocalDataSource.getFavorites()
-    }
-
 }

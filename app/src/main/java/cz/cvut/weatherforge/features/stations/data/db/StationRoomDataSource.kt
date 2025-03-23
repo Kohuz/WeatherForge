@@ -25,10 +25,6 @@ class StationRoomDataSource(private val stationDao: StationDao, private val elem
         stationDao.deleteStations()
     }
 
-    override suspend fun getFavorites(): List<Station> {
-        return stationDao.getFavorites().map { it.toStation() }
-    }
-
     override suspend fun makeFavorite(stationId: String) {
         return stationDao.makeFavorite(stationId)
     }

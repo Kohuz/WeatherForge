@@ -19,9 +19,6 @@ interface StationDao {
     @Query("UPDATE station SET isFavorite = 0 WHERE stationId = :stationId")
     suspend fun removeFavorite(stationId: String)
 
-    @Query("SELECT * FROM station WHERE isFavorite = 1")
-    suspend fun getFavorites(): List<DbStation>
-
     @Insert
     suspend fun insertStations(stations: List<DbStation>)
 

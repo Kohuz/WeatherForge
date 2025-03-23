@@ -13,8 +13,6 @@ interface StationLocalDataSource {
 
         suspend fun deleteStations()
 
-        suspend fun getFavorites(): List<Station>
-
         suspend fun makeFavorite(stationId: String)
 
         suspend fun removeFavorite(stationId: String)

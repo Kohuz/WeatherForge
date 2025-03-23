@@ -99,4 +99,9 @@
     <string name="select_date_for_stats">Vyberte datum pro statistiky</string>
     <string name="select_date_for_chart">Vyberte datum pro graf</string>
 
+    <string name="location_permission_denied">Uživatel zamítl povolení k přístupu k poloze.</string>
+    <string name="all_stations">Všechny</string>
+    <string name="active_stations">Aktivní</string>
+    <string name="inactive_stations">Neaktivní</string>
+
 </resources>

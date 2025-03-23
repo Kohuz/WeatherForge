@@ -12,8 +12,8 @@ object RetrofitProvider {
 
     fun provide(): Retrofit {
         return Retrofit.Builder()
-//                .baseUrl("http://167.71.32.243:8081/")
             .baseUrl("http://138.2.165.231:8081/")
+           // .baseUrl("http://localhost:8081/")
 
             .client(
                 OkHttpClient.Builder()
