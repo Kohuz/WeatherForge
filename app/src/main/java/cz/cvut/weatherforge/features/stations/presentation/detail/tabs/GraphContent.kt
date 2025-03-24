@@ -13,6 +13,7 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -87,27 +88,29 @@ fun GraphContent(
     // Fetch data when all parameters are available
     LaunchedEffect(selectedResolution, graphContentState.fromDate, graphContentState.toDate, graphContentState.selectedElement) {
         if (graphContentState.selectedElement != null && graphContentState.fromDate != null && graphContentState.toDate != null) {
-            when (resolutions[selectedResolution]) {
-                "Denně" -> detailScreenViewModel.fetchDailyMeasurements(
-                    station.stationId,
-                    graphContentState.fromDate.toString(),
-                    graphContentState.toDate.toString(),
-                    graphContentState.selectedElement!!.elementAbbreviation
-                )
-                "Měsíc a rok" -> detailScreenViewModel.fetchMonthlyMeasurements(
-                    station.stationId,
-                    graphContentState.fromDate.toString(),
-                    graphContentState.toDate.toString(),
-                    graphContentState.selectedElement!!.elementAbbreviation
-                )
-                "Ročně" -> detailScreenViewModel.fetchYearlyMeasurements(
-                    station.stationId,
-                    graphContentState.fromDate.toString(),
-                    graphContentState.toDate.toString(),
-                    graphContentState.selectedElement!!.elementAbbreviation
-                )
+                when (resolutions[selectedResolution]) {
+                    "Denně" -> detailScreenViewModel.fetchDailyMeasurements(
+                        station.stationId,
+                        graphContentState.fromDate.toString(),
+                        graphContentState.toDate.toString(),
+                        graphContentState.selectedElement!!.elementAbbreviation
+                    )
+
+                    "Měsíc a rok" -> detailScreenViewModel.fetchMonthlyMeasurements(
+                        station.stationId,
+                        graphContentState.fromDate.toString(),
+                        graphContentState.toDate.toString(),
+                        graphContentState.selectedElement!!.elementAbbreviation
+                    )
+
+                    "Ročně" -> detailScreenViewModel.fetchYearlyMeasurements(
+                        station.stationId,
+                        graphContentState.fromDate.toString(),
+                        graphContentState.toDate.toString(),
+                        graphContentState.selectedElement!!.elementAbbreviation
+                    )
+                }
             }
-        }
     }
 
     Column(
@@ -159,7 +162,7 @@ fun GraphContent(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = graphContentState.fromDate?.toString() ?: "Select From Date",
+                        text = graphContentState.fromDate?.toString() ?: stringResource(R.string.select_to_date),
                         modifier = Modifier.padding(8.dp)
                     )
                     Icon(
@@ -188,7 +191,7 @@ fun GraphContent(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = graphContentState.toDate?.toString() ?: "Select To Date",
+                        text = graphContentState.toDate?.toString() ?: stringResource(R.string.select_to_date),
                         modifier = Modifier.padding(8.dp)
                     )
                     Icon(
@@ -231,13 +234,24 @@ fun GraphContent(
 
         // Display the chart
         if (graphContentState.selectedElement != null && graphContentState.fromDate != null && graphContentState.toDate != null) {
-            when (resolutions[selectedResolution]) {
+
+            if(!detailScreenState.graphLoading){
+                when (resolutions[selectedResolution]) {
                 "Denně" -> DailyChart(detailScreenState.dailyMeasurements)
                 "Měsíc a rok" -> MonthlyChart(detailScreenState.monthlyMeasurements)
                 "Ročně" -> YearlyChart(detailScreenState.yearlyMeasurements)
+                }
+            } else {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                    }
+                }
+
             }
         }
-    }
 }
 
 

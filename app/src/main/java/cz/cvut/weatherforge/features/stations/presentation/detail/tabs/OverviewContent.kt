@@ -90,7 +90,7 @@ fun OverviewContent(station: Station, viewModel: DetailScreenViewModel, navigate
                         )
                         if (elementInfo != null) {
                             val valueWithUnit =
-                                "${record.highest?.value} ${elementInfo.unit}\n ${record.highest?.recordDate.toString()}"
+                                "${record.highest?.value} ${elementInfo.unit}(${record.highest?.recordDate.toString()})"
                             elementInfo.name to valueWithUnit
                         } else {
                             null
@@ -103,7 +103,7 @@ fun OverviewContent(station: Station, viewModel: DetailScreenViewModel, navigate
                         )
                         if (elementInfo != null) {
                             val valueWithUnit =
-                                "${record.lowest?.value} ${elementInfo.unit}\n ${record.lowest?.recordDate.toString()} "
+                                "${record.lowest?.value} ${elementInfo.unit}(${record.lowest?.recordDate.toString()})"
                             elementInfo.name to valueWithUnit
                         } else {
                             null
@@ -116,7 +116,7 @@ fun OverviewContent(station: Station, viewModel: DetailScreenViewModel, navigate
                         )
                         if (elementInfo != null) {
                             val valueWithUnit =
-                                "${String.format("%.2f", record.average)} ${elementInfo.unit}"
+                                "${record.lowest?.value} ${elementInfo.unit}(${record.lowest?.recordDate.toString()})"
                             elementInfo.name to valueWithUnit
                         } else {
                             null

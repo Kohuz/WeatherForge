@@ -41,7 +41,7 @@ fun LineChartComposable(entries: List<Entry>, labels: List<String>) {
                     valueTextColor = Color.BLACK
                     lineWidth = 2f
                     setDrawCircleHole(false)
-                    mode = LineDataSet.Mode.CUBIC_BEZIER
+                    mode = LineDataSet.Mode.LINEAR
                     setDrawValues(true) // Enable value display
                     valueTextSize = 10f
 
@@ -116,7 +116,7 @@ fun LineChartComposable(entries: List<Entry>, labels: List<String>) {
                 valueTextColor = Color.BLACK
                 lineWidth = 2f
                 setCircleColor(Color.RED)
-                mode = LineDataSet.Mode.CUBIC_BEZIER
+                mode = LineDataSet.Mode.LINEAR
                 setDrawValues(true) // Enable value display
                 valueTextSize = 10f
 

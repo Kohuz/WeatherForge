@@ -37,7 +37,7 @@ fun HistoryContent(
     val resolutions = listOf("Den a měsíc", "Měsíčně")
     val selectedResolution = historyContentState.selectedResolutionIndex
 
-    LaunchedEffect(historyContentState.selectedDate) {
+    LaunchedEffect(historyContentState.selectedConcreteDayDate) {
         historyContentViewModel.fetchConcreteDayData(stationId)
     }
 
@@ -82,7 +82,7 @@ fun HistoryContent(
         if (historyContentState.showLongTermDatePicker) {
             ResolutionDatePickerDialog(
                 minimumDate = historyContentState.selectedLongTermDate?.toJavaLocalDate(),
-                resolution = resolutions[selectedResolution],
+                resolution = "Den a měsíc",
                 onDismiss = { historyContentViewModel.showLongTermDatePicker(false) },
                 onDateSelected = { date -> historyContentViewModel.setSelectedLongTermDate(date.toKotlinLocalDate()) }
             )
@@ -172,7 +172,41 @@ fun HistoryContent(
             }
         }
 
-        // Display statsDay in a prettier way
+        OutlinedButton(
+            onClick = { historyContentViewModel.showConcreteDatePicker(true) },
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.medium, // Rounded corners
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.onSurface
+            )
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = stringResource(
+                        R.string.select_date,
+                        historyContentState.selectedConcreteDayDate?.toString() ?: stringResource(R.string.no_date_selected)
+                    )
+                )
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = stringResource(R.string.select_date),
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
+
+        if (historyContentState.showConcreteDayDatePicker) {
+            ResolutionDatePickerDialog(
+                minimumDate = historyContentState.selectedLongTermDate?.toJavaLocalDate(),
+                resolution = "Denně",
+                onDismiss = { historyContentViewModel.showLongTermDatePicker(false) },
+                onDateSelected = { date -> historyContentViewModel.setSelectedLongTermDate(date.toKotlinLocalDate()) }
+            )
+        }
         if (historyContentState.statsDay != null) {
             Card(
                 modifier = Modifier
@@ -283,41 +317,16 @@ fun HistoryContent(
             }
         }
 
-        // Date Picker for Full Date
-        OutlinedButton(
-            onClick = { historyContentViewModel.showDatePicker(true) },
-            modifier = Modifier.fillMaxWidth(),
-            shape = MaterialTheme.shapes.medium, // Rounded corners
-            colors = ButtonDefaults.outlinedButtonColors(
-                containerColor = MaterialTheme.colorScheme.surface,
-                contentColor = MaterialTheme.colorScheme.onSurface
-            )
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text(
-                    text = stringResource(
-                        R.string.select_date,
-                        historyContentState.selectedDate?.toString() ?: stringResource(R.string.no_date_selected)
-                    )
-                )
-                Icon(
-                    imageVector = Icons.Default.ArrowDropDown,
-                    contentDescription = stringResource(R.string.select_date),
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-        }
 
 
 
-        if (historyContentState.showDatePicker) {
+
+
+        if (historyContentState.showGraphDatePicker) {
             ResolutionDatePickerDialog(
                 minimumDate = detailState.station?.startDate?.date?.toJavaLocalDate(),
                 resolution = resolutions[selectedResolution],
-                onDismiss = { historyContentViewModel.showDatePicker(false) },
+                onDismiss = { historyContentViewModel.showGraphDatePicker(false) },
                 onDateSelected = { date ->
                     historyContentViewModel.setSelectedDate(date.toKotlinLocalDate())
                 },

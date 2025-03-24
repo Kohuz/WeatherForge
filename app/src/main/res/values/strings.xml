@@ -11,7 +11,7 @@
         <string name="error_message">Chyba: %s</string>
 
         <!-- Weather Statistics -->
-        <string name="weather_statistics">Statistika počasí</string>
+        <string name="weather_statistics">Statistika počasí pro tento den v historii</string>
 
         <!-- Temperature -->
         <string name="temperature">Teplota</string>
@@ -129,4 +129,5 @@
 
     <!-- Loading State -->
     <string name="loading">Načítání...</string>
+    <string name="select_to_date">Vyberte datum DO</string>
 </resources>

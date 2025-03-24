@@ -27,6 +27,7 @@ class DetailScreenViewModel(
 
     data class DetailScreenState(
         val station: Station? = null,
+        val graphLoading: Boolean = false,
         val selectedTabIndex: Int = 0,
         val nearbyStations: List<Pair<Station, Double>> = emptyList(),
         val elementCodelist: List<ElementCodelistItem> = emptyList(),
@@ -94,28 +95,36 @@ class DetailScreenViewModel(
 
     fun fetchDailyMeasurements(stationId: String, dateFrom: String, dateTo: String, element: String) {
         viewModelScope.launch {
+            _screenStateStream.update { it.copy(graphLoading = true) }
             val dailyMeasurementsResult = measurementRepository.getDailyMeasurements(stationId,dateFrom, dateTo, element)
             if (dailyMeasurementsResult.isSuccess) {
                 _screenStateStream.update { it.copy(dailyMeasurements = dailyMeasurementsResult.measurements) }
             }
+            _screenStateStream.update { it.copy(graphLoading = false) }
         }
     }
 
     fun fetchMonthlyMeasurements(stationId: String, dateFrom: String, dateTo: String, element: String) {
         viewModelScope.launch {
+            _screenStateStream.update { it.copy(graphLoading = true) }
             val monthlyMeasurementsResult = measurementRepository.getMonthlyMeasurements(stationId,dateFrom, dateTo, element)
             if (monthlyMeasurementsResult.isSuccess) {
                 _screenStateStream.update { it.copy(monthlyMeasurements = monthlyMeasurementsResult.measurements) }
             }
+            _screenStateStream.update { it.copy(graphLoading = false) }
+
         }
     }
 
     fun fetchYearlyMeasurements(stationId: String, dateFrom: String, dateTo: String, element: String) {
         viewModelScope.launch {
+            _screenStateStream.update { it.copy(graphLoading = true) }
             val yearlyMeasurementsResult = measurementRepository.getYearlyMeasurements(stationId,dateFrom, dateTo, element)
             if (yearlyMeasurementsResult.isSuccess) {
                 _screenStateStream.update { it.copy(yearlyMeasurements = yearlyMeasurementsResult.measurements) }
             }
+            _screenStateStream.update { it.copy(graphLoading = false) }
+
         }
     }
 

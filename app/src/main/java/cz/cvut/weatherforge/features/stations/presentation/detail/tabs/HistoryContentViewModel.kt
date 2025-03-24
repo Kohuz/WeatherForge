@@ -18,14 +18,19 @@ class HistoryContentViewModel(
 ) : ViewModel() {
 
     data class HistoryContentState(
-        val selectedDate: LocalDate? = null,
-        val selectedLongTermDate: LocalDate? = null, // Long term date
+        val selectedConcreteDayDate: LocalDate? = null,
+        val selectedGraphDate: LocalDate? = null,
+        val selectedLongTermDate: LocalDate? = null,
+
         val selectedResolutionIndex: Int = 0,
         val dropdownExpanded: Boolean = false,
         val selectedElement: ElementCodelistItem? = null,
 
-        val showDatePicker: Boolean = false,
+        val showGraphDatePicker: Boolean = false,
+        val showConcreteDayDatePicker: Boolean = false,
         val showLongTermDatePicker: Boolean = false,
+
+
         val dailyStats: ValueStatsResult? = null,
         val dailyAndMonthlyMeasurements: MeasurementDailyResult? = null,
         val monthlyMeasurements: MeasurementMonthlyResult? = null,
@@ -49,12 +54,16 @@ class HistoryContentViewModel(
 
     // Function to update the selected date and fetch data
     fun setSelectedDate(date: LocalDate) {
-        _state.update { it.copy(selectedDate = date) }
+        _state.update { it.copy(selectedConcreteDayDate = date) }
     }
 
     // Function to show/hide the date picker
-    fun showDatePicker(show: Boolean) {
-        _state.update { it.copy(showDatePicker = show) }
+    fun showConcreteDatePicker(show: Boolean) {
+        _state.update { it.copy(showConcreteDayDatePicker = show) }
+    }
+
+    fun showGraphDatePicker(show: Boolean) {
+        _state.update { it.copy(showGraphDatePicker = show) }
     }
 
     fun setSelectedLongTermDate(date: LocalDate) {
@@ -103,7 +112,7 @@ class HistoryContentViewModel(
         _state.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
             try {
-                val date = _state.value.selectedDate?.toString() ?: java.time.LocalDate.now().minusYears(1)
+                val date = _state.value.selectedConcreteDayDate?.toString() ?: java.time.LocalDate.now().minusYears(1)
                     .toString()
 
                 val concreteDayMeasurements =
