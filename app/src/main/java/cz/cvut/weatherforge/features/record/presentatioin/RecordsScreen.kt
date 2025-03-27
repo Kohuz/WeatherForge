@@ -1,32 +1,57 @@
-package cz.cvut.weatherforge.features.record.presentation
+package cz.cvut.weatherforge.features.record.presentatioin
 
 import ResolutionDatePickerDialog
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import cz.cvut.weatherforge.features.stations.presentation.detail.DetailScreenViewModel
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.android.gms.maps.model.LatLng
 import cz.cvut.weatherforge.R
 import cz.cvut.weatherforge.core.utils.getLocalizedDateString
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementDaily
-import cz.cvut.weatherforge.features.record.presentatioin.RecordsScreenViewModel
 import cz.cvut.weatherforge.features.stations.data.model.ElementCodelistItem
-import cz.cvut.weatherforge.features.stations.data.model.Station
-import cz.cvut.weatherforge.features.stations.data.model.StationElement
-import kotlinx.datetime.toJavaLocalDate
 
+import kotlinx.datetime.toJavaLocalDate
 import org.koin.androidx.compose.koinViewModel
 import java.time.LocalDate
 
@@ -89,51 +114,51 @@ fun RecordsScreen(
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                                // Date selection button
+                        // Date selection button
+                        Text(
+                            text = stringResource(R.string.date_picker_label),
+                            style = MaterialTheme.typography.labelLarge,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        OutlinedButton(
+                            onClick = { viewModel.showDatePicker(true) },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = MaterialTheme.shapes.medium,
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                containerColor = MaterialTheme.colorScheme.surface,
+                                contentColor = MaterialTheme.colorScheme.onSurface
+                            )
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
                                 Text(
-                                    text = stringResource(R.string.date_picker_label),
-                                    style = MaterialTheme.typography.labelLarge,
-                                    modifier = Modifier.padding(bottom = 8.dp)
+                                    text = screenState.selectedDate ?: stringResource(R.string.select_date),
+                                    modifier = Modifier.padding(8.dp)
                                 )
-                                OutlinedButton(
-                                    onClick = { viewModel.showDatePicker(true) },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = MaterialTheme.shapes.medium,
-                                    colors = ButtonDefaults.outlinedButtonColors(
-                                        containerColor = MaterialTheme.colorScheme.surface,
-                                        contentColor = MaterialTheme.colorScheme.onSurface
-                                    )
-                                ) {
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Text(
-                                            text = screenState.selectedDate ?: stringResource(R.string.select_date),
-                                            modifier = Modifier.padding(8.dp)
-                                        )
-                                        Icon(
-                                            imageVector = Icons.Default.ArrowDropDown,
-                                            contentDescription = "Dropdown",
-                                            modifier = Modifier.size(24.dp)
-                                        )
-                                    }
-                                }
+                                Icon(
+                                    imageVector = Icons.Default.ArrowDropDown,
+                                    contentDescription = "Dropdown",
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                        }
 
-                                // Date picker dialog
-                                if (screenState.showDatePicker) {
-                                    ResolutionDatePickerDialog(
-                                        minimumDate = LocalDate.now().minusYears(200),
-                                        resolution = "Denně",
-                                        onDismiss = { viewModel.showDatePicker(false) },
-                                        onDateSelected = { date ->
-                                            viewModel.setSelectedDate(date.toString())
-                                            viewModel.showDatePicker(false)
-                                        },
-                                        dateToShow = LocalDate.now()
-                                    )
-                                }
+                        // Date picker dialog
+                        if (screenState.showDatePicker) {
+                            ResolutionDatePickerDialog(
+                                minimumDate = LocalDate.now().minusYears(200),
+                                resolution = "Denně",
+                                onDismiss = { viewModel.showDatePicker(false) },
+                                onDateSelected = { date ->
+                                    viewModel.setSelectedDate(date.toString())
+                                    viewModel.showDatePicker(false)
+                                },
+                                dateToShow = LocalDate.now()
+                            )
+                        }
 
 
                         Spacer(modifier = Modifier.height(16.dp))
@@ -273,3 +298,8 @@ fun MeasurementsTable(measurements: List<MeasurementDaily>, selectedElement: Ele
         }
     }
 }
+
+
+
+
+

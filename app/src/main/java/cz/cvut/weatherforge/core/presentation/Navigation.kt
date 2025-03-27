@@ -25,7 +25,7 @@ import androidx.navigation.navArgument
 import com.example.compose.AppTheme
 import com.google.android.gms.maps.model.LatLng
 import cz.cvut.weatherforge.features.home.presentation.HomeScreen
-import cz.cvut.weatherforge.features.record.presentation.RecordsScreen
+import cz.cvut.weatherforge.features.record.presentatioin.RecordsScreen
 import cz.cvut.weatherforge.features.stations.presentation.detail.DetailScreen
 import cz.cvut.weatherforge.features.stations.presentation.list.ListScreen
 import cz.cvut.weatherforge.features.stations.presentation.map.MapScreen

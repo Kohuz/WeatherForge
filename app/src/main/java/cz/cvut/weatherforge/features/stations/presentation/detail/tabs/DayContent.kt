@@ -14,19 +14,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cz.cvut.weatherforge.R
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementDaily
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementDailyResult
 import cz.cvut.weatherforge.features.measurements.data.model.ValueStatsResult
-import cz.cvut.weatherforge.features.record.presentation.ElementDropdownMenu
 import cz.cvut.weatherforge.features.stations.data.model.ElementCodelistItem
 import cz.cvut.weatherforge.features.stations.presentation.detail.DetailScreenViewModel
 import cz.cvut.weatherforge.features.stations.presentation.detail.elementAbbreviationToNameUnitPair
-import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.DailyChart
-import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.MonthlyChart
+
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toKotlinLocalDate
 import java.time.LocalDate

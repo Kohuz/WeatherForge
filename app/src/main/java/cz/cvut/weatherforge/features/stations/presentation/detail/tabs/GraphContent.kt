@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cz.cvut.weatherforge.R
 import cz.cvut.weatherforge.core.utils.getLocalizedDateString
-import cz.cvut.weatherforge.features.record.presentation.ElementDropdownMenu
 import cz.cvut.weatherforge.features.stations.data.model.Station
 import cz.cvut.weatherforge.features.stations.data.model.StationElement
 import cz.cvut.weatherforge.features.stations.presentation.detail.DetailScreenViewModel

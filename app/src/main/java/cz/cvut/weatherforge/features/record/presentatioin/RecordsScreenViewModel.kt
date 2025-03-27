@@ -35,10 +35,12 @@ class RecordsScreenViewModel(
     val screenStateStream get() = _screenStateStream.asStateFlow()
 
     data class RecordsScreenState(
+        val selectedTabIndex: Int = 0,
         val elementCodelist: List<ElementCodelistItem> = emptyList(),
         val allStations: List<Station> = emptyList(),
         val filteredStations: List<Station> = emptyList(),
         val allTimeRecords: List<RecordStats> = emptyList(),
+        val dayRecords: List<RecordStats> = emptyList(),
         val selectedElement: ElementCodelistItem? = null,
         val selectedStation: Station? = null,
         val selectedStationName: String? = null,
@@ -61,43 +63,12 @@ class RecordsScreenViewModel(
 
             // Load all stations
             setLoadingState(true)
-            val stationsResult = stationRepository.getStations()
-            if (stationsResult.isSuccess) {
-                _screenStateStream.update { state ->
-                    state.copy(
-                        allStations = stationsResult.stations,
-                        filteredStations = stationsResult.stations // Initially, show all stations
-                    )
-                }
-            }
+
+            loadInfo()
             setLoadingState(false)
         }
     }
 
-    // Method to filter stations based on search query
-    fun filterStations(query: String) {
-        _screenStateStream.update { state ->
-            val filteredStations = if (query.isBlank()) {
-                state.allStations // Show all stations if query is empty
-            } else {
-                state.allStations.filter { station ->
-                    station.location.startsWith(query, ignoreCase = true) // Case-insensitive search
-                }
-            }
-            state.copy(filteredStations = filteredStations)
-        }
-    }
-
-    fun selectStation(station: Station?) {
-        if (station != null) {
-            _screenStateStream.update { state ->
-                state.copy(
-                    selectedStation = station,
-                    selectedStationName = station.location
-                )
-            }
-        }
-    }
     fun loadInfo() {
         viewModelScope.launch {
             setLoadingState(true)
@@ -117,6 +88,7 @@ class RecordsScreenViewModel(
         }
     }
 
+
     // Method to select an element
     fun selectElement(element: ElementCodelistItem) {
         _screenStateStream.update { state ->
@@ -124,12 +96,6 @@ class RecordsScreenViewModel(
         }
     }
 
-    // Method to set the selected station name
-    fun setSelectedStationName(name: String) {
-        _screenStateStream.update { state ->
-            state.copy(selectedStationName = name)
-        }
-    }
 
     // Method to show/hide the date picker
     fun showDatePicker(show: Boolean) {
@@ -144,25 +110,6 @@ class RecordsScreenViewModel(
             state.copy(selectedDate = date)
         }
     }
-
-    fun setSearchQuery(query: String) {
-        _screenStateStream.update { state ->
-            state.copy(searchQuery = query)
-        }
-    }
-
-    fun setSelectedOption(option: String) {
-        _screenStateStream.update { state ->
-            state.copy(selectedOption = option)
-        }
-    }
-
-    fun setExpanded(expanded: Boolean) {
-        _screenStateStream.update { state ->
-            state.copy(expanded = expanded)
-        }
-    }
-
     // Method to fetch measurements based on selected element, station, and date
     fun fetchMeasurements() {
         viewModelScope.launch {
@@ -173,21 +120,12 @@ class RecordsScreenViewModel(
             if (selectedElement != null && (selectedStation != null || selectedDate != null)) {
                 setLoadingState(true)
 
-                var result: MeasurementDailyResult
-                if (screenStateStream.value.selectedOption == "Datum") {
-                    result = measurementRepository.getMeasurementsTop(
+                val result = measurementRepository.getMeasurementsTop(
                         null,
                         selectedDate,
                         selectedElement.abbreviation
                     )
-                }
-                else {
-                    result = measurementRepository.getMeasurementsTop(
-                        selectedStation!!.stationId,
-                        null,
-                        selectedElement.abbreviation
-                    )
-                }
+
 
                 if (result.isSuccess) {
                     _screenStateStream.update { state ->
@@ -204,5 +142,9 @@ class RecordsScreenViewModel(
         _screenStateStream.update { state ->
             state.copy(loading = isLoading)
         }
+    }
+
+    fun selectTab(index: Int) {
+        _screenStateStream.update { it.copy(selectedTabIndex = index) }
     }
 }
