@@ -25,6 +25,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.maps.model.LatLng
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.GraphContent
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.GraphContentViewModel
+import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.DayContent
+import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.DayContentViewModel
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.HistoryContent
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.HistoryContentViewModel
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.OverviewContent
@@ -39,12 +41,13 @@ fun DetailScreen(
     navigateToMap: (LatLng) -> Unit,
     detailScreenViewModel: DetailScreenViewModel = koinViewModel(),
     graphContentViewModel: GraphContentViewModel = koinViewModel(),
+    dayContentViewModel: DayContentViewModel = koinViewModel(),
     historyContentViewModel: HistoryContentViewModel = koinViewModel()
 ) {
     val screenState by detailScreenViewModel.screenStateStream.collectAsStateWithLifecycle()
     val station = screenState.station
     val selectedTabIndex = screenState.selectedTabIndex
-    val tabs = listOf("Přehled", "Graf", "Dnešek v historii") //TODO: Localize
+    val tabs = listOf("Přehled", "Graf", "Dnešek v historii", "Historické průběhy")
 
     LaunchedEffect(stationId) {
         detailScreenViewModel.loadStation(stationId)
@@ -110,7 +113,8 @@ fun DetailScreen(
                 when (selectedTabIndex) {
                     0 -> OverviewContent(station, detailScreenViewModel, navigateToDetail)
                     1 -> GraphContent(station, detailScreenViewModel, graphContentViewModel)
-                    2 -> HistoryContent(stationId, historyContentViewModel, detailScreenViewModel)
+                    2 -> DayContent(stationId, dayContentViewModel, detailScreenViewModel)
+                    3 -> HistoryContent(stationId, historyContentViewModel, detailScreenViewModel)
                 }
             }
         }

@@ -86,50 +86,9 @@ fun RecordsScreen(
                             },
                         )
 
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        // Radio buttons to choose between Date and Station
-                        Text(
-                            text = "Filter by:",
-                            style = MaterialTheme.typography.labelLarge,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-                        val options = listOf(
-                            stringResource(R.string.option_date),
-                            stringResource(R.string.option_station)
-                        )
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            options.forEach { option ->
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .selectable(
-                                            selected = (option == screenState.selectedOption),
-                                            onClick = { viewModel.setSelectedOption(option) }
-                                        )
-                                        .padding(8.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    RadioButton(
-                                        selected = (option == screenState.selectedOption),
-                                        onClick = { viewModel.setSelectedOption(option) }
-                                    )
-                                    Text(
-                                        text = option,
-                                        modifier = Modifier.padding(start = 8.dp)
-                                    )
-                                }
-                            }
-                        }
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        // Conditional UI based on the selected option
-                        when (screenState.selectedOption) {
-                            stringResource(R.string.option_date) -> {
                                 // Date selection button
                                 Text(
                                     text = stringResource(R.string.date_picker_label),
@@ -175,57 +134,7 @@ fun RecordsScreen(
                                         dateToShow = LocalDate.now()
                                     )
                                 }
-                            }
-                            stringResource(R.string.option_station) -> {
 
-                                LazyColumn(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .heightIn(max = 200.dp)
-                                ) {
-                                    items(
-                                        items = screenState.filteredStations,
-                                        key = { station -> station.stationId }
-                                    ) { station ->
-                                        StationItem(
-                                            station = station,
-                                            onClick = {
-                                                viewModel.selectStation(station)
-                                                viewModel.setSearchQuery(station.location)
-                                            }
-                                        )
-                                    }
-                                }
-                                // Station search field
-                                Text(
-                                    text = stringResource(R.string.search_station_hint),
-                                    style = MaterialTheme.typography.labelLarge,
-                                    modifier = Modifier.padding(bottom = 8.dp)
-                                )
-                                OutlinedTextField(
-                                    value = screenState.selectedStation?.location ?: screenState.searchQuery,
-                                    onValueChange = { query ->
-                                        viewModel.setSearchQuery(query)
-                                        viewModel.filterStations(query)
-                                    },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    label = { Text(stringResource(R.string.search_station)) },
-                                    trailingIcon = {
-                                        if (screenState.searchQuery.isNotEmpty()) {
-                                            IconButton(onClick = {
-                                                viewModel.setSearchQuery("")
-                                                viewModel.selectStation(null) //
-                                            }) {
-                                                Icon(Icons.Default.Close, contentDescription = "Clear")
-                                            }
-                                        }
-                                    }
-                                )
-
-                                Spacer(modifier = Modifier.height(16.dp))
-
-                            }
-                        }
 
                         Spacer(modifier = Modifier.height(16.dp))
 
@@ -244,38 +153,16 @@ fun RecordsScreen(
         }
     }
 }
-@Composable
-fun StationItem(
-    station: Station,
-    onClick: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .clickable { onClick() },
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text(
-                text = station.location,
-                style = MaterialTheme.typography.bodyLarge
-            )
-        }
-    }
-}
 
 @Composable
 fun ElementDropdownMenu(
     items: List<ElementCodelistItem>,
     selectedItem: ElementCodelistItem?,
-    onItemSelected: (ElementCodelistItem) -> Unit
+    onItemSelected: (ElementCodelistItem) -> Unit,
+    allowedElements: List<String> = listOf("TMI", "TMA", "SCE", "SNO", "SRA", "Fmax")
 ) {
     var expanded by remember { mutableStateOf(false) } // Internal state for dropdown visibility
 
-    val allowedElements = listOf("TMI", "TMA", "SCE", "SNO", "SRA", "FMAX")
     val filteredItems = items.filter { it.abbreviation in allowedElements }
 
     Box(
