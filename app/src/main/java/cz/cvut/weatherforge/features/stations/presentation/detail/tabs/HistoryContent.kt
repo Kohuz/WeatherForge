@@ -288,21 +288,28 @@ private fun ChartDisplay(
     when {
         state.selectedElement != null && state.selectedGraphDate != null -> {
             when (resolutions[selectedResolution]) {
-                "Denně" -> {
+                "Den a měsíc" -> {
                     when {
-                        state.dailyAndMonthlyMeasurements != null ->
+                        state.dailyAndMonthlyMeasurements != null -> {
                             DailyChart(state.dailyAndMonthlyMeasurements.measurements)
-                        else -> LoadingIndicator()
+                        }
+                        state.isLoading -> LoadingIndicator()
+                        else -> Text("No daily data available")
                     }
                 }
                 "Měsíčně" -> {
                     when {
-                        state.monthlyMeasurements != null ->
+                        state.monthlyMeasurements != null -> {
                             MonthlyChart(state.monthlyMeasurements.measurements)
-                        else -> LoadingIndicator()
+                        }
+                        state.isLoading -> LoadingIndicator()
+                        else -> Text("No monthly data available")
                     }
                 }
             }
+        }
+        else -> {
+            Text("Please select an element and date to view charts")
         }
     }
 }

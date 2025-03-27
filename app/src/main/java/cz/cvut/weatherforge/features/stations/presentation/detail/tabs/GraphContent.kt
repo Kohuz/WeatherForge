@@ -162,7 +162,8 @@ fun GraphContent(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = graphContentState.fromDate?.toString() ?: stringResource(R.string.select_to_date),
+                        text = graphContentState.fromDate?.formatForResolution(resolutions[selectedResolution])
+                            ?: stringResource(R.string.select_to_date),
                         modifier = Modifier.padding(8.dp)
                     )
                     Icon(
@@ -190,7 +191,8 @@ fun GraphContent(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = graphContentState.toDate?.toString() ?: stringResource(R.string.select_to_date),
+                        text = graphContentState.toDate?.formatForResolution(resolutions[selectedResolution])
+                            ?: stringResource(R.string.select_to_date),
                         modifier = Modifier.padding(8.dp)
                     )
                     Icon(
@@ -315,3 +317,11 @@ fun StationElementDropdown(
     }
 }
 
+fun LocalDate.formatForResolution(resolution: String): String {
+    return when (resolution) {
+        "Denně" -> this.toString()
+        "Měsíc a rok" -> "${this.monthValue}/${this.year}"
+        "Ročně" -> this.year.toString()
+        else -> this.toString()
+    }
+}
