@@ -143,7 +143,14 @@ class MeasurementRepository(
     ): MeasurementDailyResult {
         return try {
             val measurements = remoteDataSource.getStatsDay(stationId, date)
-            MeasurementDailyResult(measurements, isSuccess = true)
+            val filteredMeasurements = measurements.filter { measurement ->
+                if (measurement.element == "T" || measurement.element == "F") {
+                    measurement.vtype == "AVG"
+                } else {
+                    true
+                }
+            }
+            MeasurementDailyResult(filteredMeasurements, isSuccess = true)
         } catch (t: Throwable) {
             Log.v("api", t.toString())
             MeasurementDailyResult(emptyList(), isSuccess = false)

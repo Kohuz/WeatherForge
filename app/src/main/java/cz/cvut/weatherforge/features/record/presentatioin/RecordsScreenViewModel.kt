@@ -46,9 +46,9 @@ class RecordsScreenViewModel(
         val showDatePicker: Boolean = false,
         val loading: Boolean = false,
         val measurements: List<MeasurementDaily> = emptyList(),
-        val searchQuery: String = "", // Added for station search query
-        val selectedOption: String = "Date", // Added for selected option (Date or Station)
-        val expanded: Boolean = false // Added for dropdown visibility
+        val searchQuery: String = "",
+        val selectedOption: String = "Date",
+        val expanded: Boolean = false
     )
 
     init {
@@ -88,12 +88,14 @@ class RecordsScreenViewModel(
         }
     }
 
-    fun selectStation(station: Station) {
-        _screenStateStream.update { state ->
-            state.copy(
-                selectedStation = station,
-                selectedStationName = station.location
-            )
+    fun selectStation(station: Station?) {
+        if (station != null) {
+            _screenStateStream.update { state ->
+                state.copy(
+                    selectedStation = station,
+                    selectedStationName = station.location
+                )
+            }
         }
     }
     fun loadInfo() {
@@ -172,7 +174,7 @@ class RecordsScreenViewModel(
                 setLoadingState(true)
 
                 var result: MeasurementDailyResult
-                if (screenStateStream.value.selectedOption == "Date") {
+                if (screenStateStream.value.selectedOption == "Datum") {
                     result = measurementRepository.getMeasurementsTop(
                         null,
                         selectedDate,

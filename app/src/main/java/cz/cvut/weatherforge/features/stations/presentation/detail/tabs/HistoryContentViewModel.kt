@@ -52,8 +52,7 @@ class HistoryContentViewModel(
         _state.update { it.copy(dropdownExpanded = expanded) }
     }
 
-    // Function to update the selected date and fetch data
-    fun setSelectedDate(date: LocalDate) {
+    fun setSelectedConcreteDayDate(date: LocalDate) {
         _state.update { it.copy(selectedConcreteDayDate = date) }
     }
 
@@ -68,6 +67,9 @@ class HistoryContentViewModel(
 
     fun setSelectedLongTermDate(date: LocalDate) {
         _state.update { it.copy(selectedLongTermDate = date) }
+    }
+    fun setSelectedGraphDate(date: LocalDate) {
+        _state.update { it.copy(selectedGraphDate = date) }
     }
 
     fun showLongTermDatePicker(show: Boolean) {
@@ -107,7 +109,6 @@ class HistoryContentViewModel(
             
         }
         }
-        // Function to fetch all data
     fun fetchConcreteDayData(stationId: String) {
         _state.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
@@ -115,10 +116,11 @@ class HistoryContentViewModel(
                 val date = _state.value.selectedConcreteDayDate?.toString() ?: java.time.LocalDate.now().minusYears(1)
                     .toString()
 
+                _state.update { it.copy(selectedLongTermDate = LocalDate.parse(date)) }
+
                 val concreteDayMeasurements =
                     repository.getStatsDay(stationId, date)
 
-                // Update the state with the fetched data
                 _state.update {
                     it.copy(
                         statsDay = concreteDayMeasurements,

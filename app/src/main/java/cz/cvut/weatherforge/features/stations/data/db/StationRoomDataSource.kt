@@ -1,13 +1,10 @@
-package com.kozubek.livesport.features.sportEntries.data.db
+package cz.cvut.weatherforge.features.stations.data.db
 
-import com.kozubek.livesport.features.sportEntries.data.StationLocalDataSource
-import cz.cvut.weatherforge.features.stations.data.db.DbElementCodelistItem
-
-import cz.cvut.weatherforge.features.stations.data.db.DbStation
 import cz.cvut.weatherforge.features.stations.data.model.ElementCodelistItem
 import cz.cvut.weatherforge.features.stations.data.model.Station
 
-class StationRoomDataSource(private val stationDao: StationDao, private val elementCodelistDao: ElementCodelistDao) : StationLocalDataSource {
+class StationRoomDataSource(private val stationDao: StationDao, private val elementCodelistDao: ElementCodelistDao) :
+    StationLocalDataSource {
 
     override suspend fun getStations(): List<Station> {
         return stationDao.getStations().map { it.toStation() }

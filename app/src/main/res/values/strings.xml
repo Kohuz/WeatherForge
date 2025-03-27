@@ -64,7 +64,7 @@
     <string name="inactive">Neaktivní</string>
     <string name="all">Vše</string>
     <string name="favorites">Oblíbené</string>
-    <string name="enter_your_search">Zadejte hledaný výraz</string>
+    <string name="enter_your_search">Vyhledejte název stanice</string>
     <string name="elevation">Nadmořská výška</string>
     <string name="begin_date">Datum zahájení</string>
     <string name="alphabetical">Abecedně</string>
@@ -87,7 +87,7 @@
     <string name="select_day_and_month">Vyberte den a měsíc</string>
     <string name="month">Měsíc</string>
     <string name="day">Den</string>
-    <string name="ok">OK</string>
+    <string name="ok">Potvrdit</string>
     <string name="cancel">Zrušit</string>
     <string name="unknown">Neznámý</string>
     <string name="select_month">Vyberte měsíc</string>
@@ -102,6 +102,7 @@
     <string name="select_date_for_chart">Vyberte datum pro graf: </string>
 
 
+    <string name="sorting_order">Řazení</string>
     <string name="location_permission_denied">Uživatel zamítl povolení k přístupu k poloze.</string>
     <string name="all_stations">Všechny</string>
     <string name="active_stations">Aktivní</string>

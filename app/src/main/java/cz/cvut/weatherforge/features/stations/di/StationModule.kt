@@ -1,7 +1,7 @@
 package cz.cvut.weatherforge.features.stations.di
 
-import com.kozubek.livesport.features.sportEntries.data.StationLocalDataSource
-import com.kozubek.livesport.features.sportEntries.data.db.StationRoomDataSource
+import cz.cvut.weatherforge.features.stations.data.db.StationLocalDataSource
+import cz.cvut.weatherforge.features.stations.data.db.StationRoomDataSource
 import cz.cvut.weatherforge.core.data.db.LocalDatabase
 import cz.cvut.weatherforge.features.stations.data.StationRepository
 import cz.cvut.weatherforge.features.stations.data.api.StationApiDescription

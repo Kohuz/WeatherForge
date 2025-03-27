@@ -22,7 +22,10 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import cz.cvut.weatherforge.R
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,32 +35,27 @@ fun DailyDatePicker(
     onDateSelected: (LocalDate) -> Unit,
     dateToShow: LocalDate? = null
 ) {
-    // Calculate the initial selected date in milliseconds
     val initialSelectedDateMillis = dateToShow
         ?.withDayOfMonth(1) // Start of the month
         ?.atStartOfDay(ZoneId.systemDefault())
         ?.toInstant()
         ?.toEpochMilli()
 
-    // Define the year range (e.g., from the minimum date's year to the current year)
     val yearRange = IntRange(minimumDate?.year ?: 1900, LocalDate.now().year)
 
-    // Set the locale to Czech
     val locale = Locale("cs", "CZ")
 
-    // Calculate the initial displayed month in milliseconds (default to the current month)
     val initialDisplayedMonthMillis = dateToShow
-        ?.withDayOfMonth(1) // Start of the month
+        ?.withDayOfMonth(1)
         ?.atStartOfDay(ZoneId.systemDefault())
         ?.toInstant()
         ?.toEpochMilli()
 
-    // Custom SelectableDates to limit the range from minimumDate to today
     val selectableDates = object : SelectableDates {
         override fun isSelectableDate(utcTimeMillis: Long): Boolean {
             val date = Instant.ofEpochMilli(utcTimeMillis).atZone(ZoneId.systemDefault()).toLocalDate()
             val today = LocalDate.now()
-            return date.isAfter(minimumDate?.minusDays(1)) && !date.isAfter(today) // Include today
+            return date.isAfter(minimumDate?.minusDays(1)) && !date.isAfter(today)
         }
 
         override fun isSelectableYear(year: Int): Boolean {
@@ -65,17 +63,15 @@ fun DailyDatePicker(
         }
     }
 
-    // Initialize the DatePickerState
     val datePickerState = DatePickerState(
         initialSelectedDateMillis = initialSelectedDateMillis,
         yearRange = yearRange,
         locale = locale,
         initialDisplayedMonthMillis = initialDisplayedMonthMillis,
-        initialDisplayMode = DisplayMode.Picker, // Use the standard calendar view
-        selectableDates = selectableDates // Apply the custom date range limitation
+        initialDisplayMode = DisplayMode.Picker,
+        selectableDates = selectableDates
     )
 
-    // DatePickerDialog
     DatePickerDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
@@ -100,16 +96,16 @@ fun DailyDatePicker(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Check,
-                        contentDescription = "Confirm",
+                        contentDescription = "Potvrdit",
                     )
-                    Text("OK")
+                    Text(stringResource(R.string.ok))
                 }
             }
         },
         dismissButton = {
             Button(
                 onClick = onDismiss,
-                shape = MaterialTheme.shapes.medium, // Rounded corners
+                shape = MaterialTheme.shapes.medium,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                     contentColor = MaterialTheme.colorScheme.onSurface
@@ -122,9 +118,9 @@ fun DailyDatePicker(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = "Cancel",
+                        contentDescription = "Zrušit",
                     )
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         }

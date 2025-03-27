@@ -55,8 +55,8 @@ fun SwipeableInfoCard(
 fun InfoCard(
     title: String,
     items: List<Pair<String, String>>,
-    isClickable: Boolean = false, // Add this parameter
-    onClick: (String) -> Unit = {}, // Add this parameter (default empty lambda)
+    isClickable: Boolean = false,
+    onClick: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -82,8 +82,8 @@ fun InfoCard(
                 WeatherInfoRow(
                     label = label,
                     value = value,
-                    isClickable = isClickable, // Pass the boolean to WeatherInfoRow
-                    onClick = { onClick(label) } // Pass the onClick lambda
+                    isClickable = isClickable,
+                    onClick = { onClick(label) }
                 )
                 Spacer(modifier = Modifier.height(4.dp))
             }

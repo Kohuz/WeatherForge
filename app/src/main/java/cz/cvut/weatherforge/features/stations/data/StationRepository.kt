@@ -1,10 +1,9 @@
 package cz.cvut.weatherforge.features.stations.data
 
 import android.util.Log
-import com.kozubek.livesport.features.sportEntries.data.StationLocalDataSource
+import cz.cvut.weatherforge.features.stations.data.db.StationLocalDataSource
 import cz.cvut.weatherforge.features.stations.data.api.StationRemoteDataSource
 import cz.cvut.weatherforge.features.stations.data.model.ElementsCodelistResult
-import cz.cvut.weatherforge.features.stations.data.model.Station
 import cz.cvut.weatherforge.features.stations.data.model.StationResult
 import cz.cvut.weatherforge.features.stations.data.model.StationsResult
 
@@ -66,12 +65,29 @@ class StationRepository(
                 ElementsCodelistResult(localElements, isSuccess = true)
             } else {
                 val remoteElements = stationRemoteDataSource.getElementsCodelist()
+                    .map { element ->
+                        element.copy(name = translateElementName(element.abbreviation))
+                    }
                 stationLocalDataSource.insertCodelist(remoteElements)
                 ElementsCodelistResult(remoteElements, isSuccess = true)
             }
         } catch (t: Throwable) {
             Log.e("StationRepository", "Error fetching stations: ${t.message}")
             ElementsCodelistResult(emptyList(), isSuccess = false)
+        }
+    }
+
+    private fun translateElementName(originalName: String): String {
+        return when (originalName) {
+            "T" -> "Průměrná teplota"
+            "TMI" -> "Minimální teplota"
+            "TMA" -> "Maximální teplota"
+            "F" -> "Průměrná rychlost větru"
+            "Fmax" -> "Nejvyšší rychlost větru"
+            "SRA" -> "Množství srážek"
+            "SNO" -> "Nový sníh"
+            "SCE" -> "Výška sněhu"
+            else -> originalName
         }
     }
 

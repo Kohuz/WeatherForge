@@ -76,12 +76,12 @@ fun OverviewContent(station: Station, viewModel: DetailScreenViewModel, navigate
 
 
         if (screenState.allTimeRecords.isNotEmpty()) {
-            val allTimeRecordData = InfoCardData(
+            InfoCard(
                 title = stringResource(R.string.records),
                 items = screenState.allTimeRecords.mapNotNull { record ->
                     if(record.element == "TMA" ||
                         record.element == "Fmax" ||
-                        record.element == "SVH" ||
+                        record.element == "SRA" ||
                         record.element == "SNO" ||
                         record.element == "SCE") {
                         val elementInfo = elementAbbreviationToNameUnitPair(
@@ -116,7 +116,7 @@ fun OverviewContent(station: Station, viewModel: DetailScreenViewModel, navigate
                         )
                         if (elementInfo != null) {
                             val valueWithUnit =
-                                "${record.lowest?.value} ${elementInfo.unit}(${record.lowest?.recordDate.toString()})"
+                                "${record.lowest?.value} ${elementInfo.unit} (${record.lowest?.recordDate.toString()})"
                             elementInfo.name to valueWithUnit
                         } else {
                             null
@@ -125,7 +125,6 @@ fun OverviewContent(station: Station, viewModel: DetailScreenViewModel, navigate
 
                 }
             )
-            SwipeableInfoCard(listOf(allTimeRecordData))
         }
        
         

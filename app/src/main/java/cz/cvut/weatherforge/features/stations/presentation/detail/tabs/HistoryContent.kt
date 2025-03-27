@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cz.cvut.weatherforge.R
 import cz.cvut.weatherforge.features.stations.presentation.detail.DetailScreenViewModel
+import cz.cvut.weatherforge.features.stations.presentation.detail.elementAbbreviationToNameUnitPair
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.DailyChart
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.MonthlyChart
 import kotlinx.datetime.toJavaLocalDate
@@ -45,17 +46,37 @@ fun HistoryContent(
         historyContentViewModel.fetchLongTermStats(stationId)
     }
 
+    LaunchedEffect(historyContentState.selectedGraphDate, historyContentState.selectedElement) {
+        when (resolutions[selectedResolution]) {
+            "Denně" -> {
+                historyContentViewModel.fetchDailyMeasurements(
+                    stationId,
+                    historyContentState.selectedElement!!.abbreviation,
+                    historyContentState.selectedGraphDate!!
+                )
+
+            }
+
+            "Měsíčně" -> {
+                historyContentViewModel.fetchMonthlyMeasurements(
+                    stationId,
+                    historyContentState.selectedElement!!.abbreviation,
+                    historyContentState.selectedGraphDate!!
+                )
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        // Date Picker for Day and Month
         OutlinedButton(
             onClick = { historyContentViewModel.showLongTermDatePicker(true) },
             modifier = Modifier.fillMaxWidth(),
-            shape = MaterialTheme.shapes.medium, // Rounded corners
+            shape = MaterialTheme.shapes.medium,
             colors = ButtonDefaults.outlinedButtonColors(
                 containerColor = MaterialTheme.colorScheme.surface,
                 contentColor = MaterialTheme.colorScheme.onSurface
@@ -175,7 +196,7 @@ fun HistoryContent(
         OutlinedButton(
             onClick = { historyContentViewModel.showConcreteDatePicker(true) },
             modifier = Modifier.fillMaxWidth(),
-            shape = MaterialTheme.shapes.medium, // Rounded corners
+            shape = MaterialTheme.shapes.medium,
             colors = ButtonDefaults.outlinedButtonColors(
                 containerColor = MaterialTheme.colorScheme.surface,
                 contentColor = MaterialTheme.colorScheme.onSurface
@@ -201,10 +222,10 @@ fun HistoryContent(
 
         if (historyContentState.showConcreteDayDatePicker) {
             ResolutionDatePickerDialog(
-                minimumDate = historyContentState.selectedLongTermDate?.toJavaLocalDate(),
+                minimumDate = detailState.station?.startDate?.date?.toJavaLocalDate(),
                 resolution = "Denně",
-                onDismiss = { historyContentViewModel.showLongTermDatePicker(false) },
-                onDateSelected = { date -> historyContentViewModel.setSelectedLongTermDate(date.toKotlinLocalDate()) }
+                onDismiss = { historyContentViewModel.showConcreteDatePicker(false) },
+                onDateSelected = { date -> historyContentViewModel.setSelectedConcreteDayDate(date.toKotlinLocalDate()) }
             )
         }
         if (historyContentState.statsDay != null) {
@@ -223,18 +244,21 @@ fun HistoryContent(
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     historyContentState.statsDay!!.measurements.forEach { measurement ->
+                        val nameUnitPair = elementAbbreviationToNameUnitPair(measurement.element, detailState.elementCodelist)
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 4.dp),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
+                            if (nameUnitPair != null) {
+                                Text(
+                                    text = nameUnitPair.name,
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                            }
                             Text(
-                                text = measurement.element,
-                                style = MaterialTheme.typography.titleMedium
-                            )
-                            Text(
-                                text = measurement.value.toString(),
+                                text = "${measurement.value.toString()} ${nameUnitPair?.unit}",
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }
@@ -273,7 +297,6 @@ fun HistoryContent(
             }
         }
 
-        // Element Dropdown
         OutlinedButton(
             onClick = { historyContentViewModel.toggleDropdown(!historyContentState.dropdownExpanded) },
             modifier = Modifier.fillMaxWidth(),
@@ -321,6 +344,33 @@ fun HistoryContent(
 
 
 
+        OutlinedButton(
+            onClick = { historyContentViewModel.showGraphDatePicker(true) },
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.medium,
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.onSurface
+            )
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = stringResource(
+                        R.string.select_day_month,
+                        historyContentState.selectedGraphDate?.toString() ?: stringResource(R.string.no_date_selected)
+                    )
+                )
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = stringResource(R.string.select_date),
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
+
 
         if (historyContentState.showGraphDatePicker) {
             ResolutionDatePickerDialog(
@@ -328,7 +378,7 @@ fun HistoryContent(
                 resolution = resolutions[selectedResolution],
                 onDismiss = { historyContentViewModel.showGraphDatePicker(false) },
                 onDateSelected = { date ->
-                    historyContentViewModel.setSelectedDate(date.toKotlinLocalDate())
+                    historyContentViewModel.setSelectedGraphDate(date.toKotlinLocalDate())
                 },
                 dateToShow = LocalDate.now().minusYears(1)
             )
@@ -353,13 +403,6 @@ fun HistoryContent(
                         CircularProgressIndicator()
                     }
                 }
-            }
-        } else {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
             }
         }
     }

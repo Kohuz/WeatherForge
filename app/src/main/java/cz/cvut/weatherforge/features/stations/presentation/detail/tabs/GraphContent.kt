@@ -173,13 +173,12 @@ fun GraphContent(
                 }
             }
 
-            // To Date Selector
             OutlinedButton(
                 onClick = { graphContentViewModel.showToDatePicker(true) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
-                shape = MaterialTheme.shapes.medium, // Rounded corners
+                shape = MaterialTheme.shapes.medium,
                 colors = ButtonDefaults.outlinedButtonColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                     contentColor = MaterialTheme.colorScheme.onSurface

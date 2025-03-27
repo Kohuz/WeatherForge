@@ -78,7 +78,7 @@ fun ListScreen(navigateToDetail: (id: String) -> Unit, viewModel: ListScreenView
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 6.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally, // Center the content horizontally
+                            horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
                             FilterChangeButtons(
                                 onFilterChange = viewModel::onFilterChange,
@@ -109,7 +109,7 @@ fun ListScreen(navigateToDetail: (id: String) -> Unit, viewModel: ListScreenView
                         contentAlignment = Alignment.Center,
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary) // Use primary color for progress indicator
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                     }
                 }
             }
@@ -137,10 +137,9 @@ fun FilterChangeButtons(
     Row(
         modifier = Modifier
             .fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp), // Add spacing between chips
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Active Filter Chip
         FilterChip(
             selected = currentFilter == ListScreenViewModel.Filter.Active,
             onClick = { onFilterChange(ListScreenViewModel.Filter.Active) },
@@ -148,7 +147,6 @@ fun FilterChangeButtons(
 
         )
 
-        // Inactive Filter Chip
         FilterChip(
             selected = currentFilter == ListScreenViewModel.Filter.Inactive,
             onClick = { onFilterChange(ListScreenViewModel.Filter.Inactive) },
@@ -156,7 +154,6 @@ fun FilterChangeButtons(
 
         )
 
-        // All Filter Chip
         FilterChip(
             selected = currentFilter == ListScreenViewModel.Filter.All,
             onClick = { onFilterChange(ListScreenViewModel.Filter.All) },
@@ -164,7 +161,6 @@ fun FilterChangeButtons(
 
         )
 
-        // Favorites Filter Chip
         FilterChip(
             selected = currentFilter == ListScreenViewModel.Filter.Favorites,
             onClick = { onFilterChange(ListScreenViewModel.Filter.Favorites) },
@@ -274,7 +270,6 @@ fun TopSearchBar(query: String, onQueryChange: (String) -> Unit) {
     )
 }
 
-
 @Composable
 fun SortingOptions(
     sortingCriteria: String,
@@ -286,10 +281,9 @@ fun SortingOptions(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp), // Add spacing between chips
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Elevation Chip
         FilterChip(
             selected = sortingCriteria == "Elevation",
             onClick = {
@@ -300,18 +294,17 @@ fun SortingOptions(
                     onAscendingOrderChange(true)
                 }
             },
-            label = { Text("Elevation") },
+            label = { Text(stringResource(R.string.elevation)) },
             trailingIcon = {
                 if (sortingCriteria == "Elevation") {
                     Icon(
                         imageVector = if (ascendingOrder) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                        contentDescription = "Sorting Order"
+                        contentDescription = stringResource(R.string.sorting_order)
                     )
                 }
             }
         )
 
-        // Begin Date Chip
         FilterChip(
             selected = sortingCriteria == "Begin Date",
             onClick = {
@@ -322,18 +315,17 @@ fun SortingOptions(
                     onAscendingOrderChange(true)
                 }
             },
-            label = { Text("Begin Date") },
+            label = { Text(stringResource(R.string.begin_date)) },
             trailingIcon = {
                 if (sortingCriteria == "Begin Date") {
                     Icon(
                         imageVector = if (ascendingOrder) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                        contentDescription = "Sorting Order"
+                        contentDescription = stringResource(R.string.sorting_order)
                     )
                 }
             }
         )
 
-        // Alphabetical Chip
         FilterChip(
             selected = sortingCriteria == "Alphabetical",
             onClick = {
@@ -344,12 +336,12 @@ fun SortingOptions(
                     onAscendingOrderChange(true)
                 }
             },
-            label = { Text("Alphabetical") },
+            label = { Text(stringResource(R.string.alphabetical)) },
             trailingIcon = {
                 if (sortingCriteria == "Alphabetical") {
                     Icon(
                         imageVector = if (ascendingOrder) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                        contentDescription = "Sorting Order"
+                        contentDescription = stringResource(R.string.sorting_order)
                     )
                 }
             }

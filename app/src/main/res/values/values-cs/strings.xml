@@ -62,7 +62,7 @@
     <string name="inactive">Neaktivní</string>
     <string name="all">Vše</string>
     <string name="favorites">Oblíbené</string>
-    <string name="enter_your_search">Zadejte hledaný výraz</string>
+    <string name="enter_your_search">Vyhledejte název stanice</string>
     <string name="elevation">Nadmořská výška</string>
     <string name="begin_date">Datum zahájení</string>
     <string name="alphabetical">Abecedně</string>
@@ -105,10 +105,14 @@
     <string name="inactive_stations">Neaktivní</string>
 
     <string name="records_screen_title">Záznamy počasí</string>
-
+    <string name="ok">OK</string>
+    <string name="cancel">Zrušit</string>
     <!-- Element Dropdown -->
     <string name="select_element">Vyberte prvek</string>
-
+    <string name="elevation">Nadmořská výška</string>
+    <string name="begin_date">Datum zahájení</string>
+    <string name="alphabetical">Abecedně</string>
+    <string name="sorting_order">Řazení</string>
     <!-- Radio Buttons -->
     <string name="option_date">Datum</string>
     <string name="option_station">Stanice</string>

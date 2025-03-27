@@ -5,7 +5,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
@@ -35,7 +37,7 @@ fun RecordsScreen(
 ) {
     val screenState by viewModel.screenStateStream.collectAsStateWithLifecycle()
 
-    LaunchedEffect(screenState.selectedStation, screenState.selectedDate) {
+    LaunchedEffect(screenState.selectedStation, screenState.selectedDate, screenState.selectedElement) {
         if (screenState.selectedStation != null || screenState.selectedDate != null && screenState.selectedElement != null) {
             viewModel.fetchMeasurements()
         }
@@ -175,32 +177,7 @@ fun RecordsScreen(
                                 }
                             }
                             stringResource(R.string.option_station) -> {
-                                // Station search field
-                                Text(
-                                    text = stringResource(R.string.search_station_hint),
-                                    style = MaterialTheme.typography.labelLarge,
-                                    modifier = Modifier.padding(bottom = 8.dp)
-                                )
-                                OutlinedTextField(
-                                    value = screenState.searchQuery,
-                                    onValueChange = { query ->
-                                        viewModel.setSearchQuery(query)
-                                        viewModel.filterStations(query)
-                                    },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    label = { Text(stringResource(R.string.search_station)) },
-                                    trailingIcon = {
-                                        if (screenState.searchQuery.isNotEmpty()) {
-                                            IconButton(onClick = { viewModel.setSearchQuery("") }) {
-                                                Icon(Icons.Default.Close, contentDescription = "Clear")
-                                            }
-                                        }
-                                    }
-                                )
 
-                                Spacer(modifier = Modifier.height(16.dp))
-
-                                // Display filtered stations
                                 LazyColumn(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -214,10 +191,39 @@ fun RecordsScreen(
                                             station = station,
                                             onClick = {
                                                 viewModel.selectStation(station)
+                                                viewModel.setSearchQuery(station.location)
                                             }
                                         )
                                     }
                                 }
+                                // Station search field
+                                Text(
+                                    text = stringResource(R.string.search_station_hint),
+                                    style = MaterialTheme.typography.labelLarge,
+                                    modifier = Modifier.padding(bottom = 8.dp)
+                                )
+                                OutlinedTextField(
+                                    value = screenState.selectedStation?.location ?: screenState.searchQuery,
+                                    onValueChange = { query ->
+                                        viewModel.setSearchQuery(query)
+                                        viewModel.filterStations(query)
+                                    },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    label = { Text(stringResource(R.string.search_station)) },
+                                    trailingIcon = {
+                                        if (screenState.searchQuery.isNotEmpty()) {
+                                            IconButton(onClick = {
+                                                viewModel.setSearchQuery("")
+                                                viewModel.selectStation(null) //
+                                            }) {
+                                                Icon(Icons.Default.Close, contentDescription = "Clear")
+                                            }
+                                        }
+                                    }
+                                )
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
                             }
                         }
 
