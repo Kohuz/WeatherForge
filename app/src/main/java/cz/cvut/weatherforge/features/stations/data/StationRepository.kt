@@ -77,7 +77,7 @@ class StationRepository(
         }
     }
 
-    private fun translateElementName(originalName: String): String {
+    fun translateElementName(originalName: String): String {
         return when (originalName) {
             "T" -> "Průměrná teplota"
             "TMI" -> "Minimální teplota"

@@ -66,10 +66,6 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.ui.text.google.fonts)
     testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.koin.androidx.compose)
@@ -90,6 +86,10 @@ dependencies {
     implementation(libs.accompanist.pager.indicators)
     implementation(libs.mpandroidchart)
     implementation(libs.androidx.material.icons.extended)
+    testImplementation(libs.mockito.mockito.core)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
 
 
 }
