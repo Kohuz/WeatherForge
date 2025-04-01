@@ -21,13 +21,11 @@ import org.junit.Before
 import org.junit.Test
 import java.io.IOException
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class RecordRepositoryTest {
 
     private lateinit var repository: RecordRepository
     private lateinit var remoteDataSource: RecordRemoteDataSource
 
-    // Test data
     private val testStationRecord = StationRecord(
         stationId = "ST001",
         element = "T",

@@ -38,7 +38,6 @@ class RecordsScreenViewModel(
         val selectedTabIndex: Int = 0,
         val elementCodelist: List<ElementCodelistItem> = emptyList(),
         val allStations: List<Station> = emptyList(),
-        val filteredStations: List<Station> = emptyList(),
         val allTimeRecords: List<RecordStats> = emptyList(),
         val dayRecords: List<RecordStats> = emptyList(),
         val selectedElement: ElementCodelistItem? = null,
@@ -72,6 +71,7 @@ class RecordsScreenViewModel(
     fun loadInfo() {
         viewModelScope.launch {
             setLoadingState(true)
+            loadStations()
             fetchAllTimeRecords()
             setLoadingState(false)
         }
@@ -83,6 +83,16 @@ class RecordsScreenViewModel(
             if (allTimeRecordsResult.isSuccess) {
                 _screenStateStream.update { state ->
                     state.copy(allTimeRecords = allTimeRecordsResult.stats)
+                }
+            }
+        }
+    }
+    private fun loadStations() {
+        viewModelScope.launch {
+            val allStationsResult = stationRepository.getStations()
+            if (allStationsResult.isSuccess) {
+                _screenStateStream.update { state ->
+                    state.copy(allStations = allStationsResult.stations)
                 }
             }
         }
@@ -144,7 +154,4 @@ class RecordsScreenViewModel(
         }
     }
 
-    fun selectTab(index: Int) {
-        _screenStateStream.update { it.copy(selectedTabIndex = index) }
-    }
 }

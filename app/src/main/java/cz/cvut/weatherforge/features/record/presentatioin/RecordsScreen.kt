@@ -3,7 +3,6 @@ package cz.cvut.weatherforge.features.record.presentatioin
 import ResolutionDatePickerDialog
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import cz.cvut.weatherforge.features.stations.presentation.detail.DetailScreenViewModel
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,25 +14,19 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Place
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -45,12 +38,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.android.gms.maps.model.LatLng
 import cz.cvut.weatherforge.R
 import cz.cvut.weatherforge.core.utils.getLocalizedDateString
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementDaily
 import cz.cvut.weatherforge.features.stations.data.model.ElementCodelistItem
-
+import cz.cvut.weatherforge.features.stations.data.model.Station
 import kotlinx.datetime.toJavaLocalDate
 import org.koin.androidx.compose.koinViewModel
 import java.time.LocalDate
@@ -70,8 +62,10 @@ fun RecordsScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(text = stringResource(R.string.records_screen_title)) }
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(text = stringResource(R.string.records_screen_title))
+                }
             )
         }
     ) { paddingValues ->
@@ -114,7 +108,6 @@ fun RecordsScreen(
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        // Date selection button
                         Text(
                             text = stringResource(R.string.date_picker_label),
                             style = MaterialTheme.typography.labelLarge,
@@ -146,7 +139,6 @@ fun RecordsScreen(
                             }
                         }
 
-                        // Date picker dialog
                         if (screenState.showDatePicker) {
                             ResolutionDatePickerDialog(
                                 minimumDate = LocalDate.now().minusYears(200),
@@ -170,7 +162,7 @@ fun RecordsScreen(
                                 style = MaterialTheme.typography.labelLarge,
                                 modifier = Modifier.padding(bottom = 8.dp)
                             )
-                            MeasurementsTable(measurements = screenState.measurements, selectedElement = screenState.selectedElement)
+                            MeasurementsTable(measurements = screenState.measurements, selectedElement = screenState.selectedElement, screenState.allStations)
                         }
                     }
                 }
@@ -212,7 +204,6 @@ fun ElementDropdownMenu(
             ) {
                 Text(
                     text = selectedItem?.name ?: stringResource(R.string.select_element),
-                    modifier = Modifier.padding(8.dp)
                 )
                 Icon(
                     imageVector = Icons.Default.ArrowDropDown,
@@ -222,7 +213,6 @@ fun ElementDropdownMenu(
             }
         }
 
-        // Dropdown menu
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
@@ -232,7 +222,7 @@ fun ElementDropdownMenu(
                 DropdownMenuItem(
                     onClick = {
                         onItemSelected(item)
-                        expanded = false // Close dropdown after selection
+                        expanded = false
                     },
                     text = {
                         Text(text = item.name)
@@ -243,12 +233,7 @@ fun ElementDropdownMenu(
     }
 }
 @Composable
-fun MeasurementsTable(measurements: List<MeasurementDaily>, selectedElement: ElementCodelistItem?) {
-    // Sort measurements by value
-    var sortedMeasurements = measurements.sortedBy { it.value }
-    if (selectedElement?.abbreviation == "TMI") {
-        sortedMeasurements = sortedMeasurements.reversed()
-    }
+fun MeasurementsTable(measurements: List<MeasurementDaily>, selectedElement: ElementCodelistItem?, stations: List<Station>) {
 
     Column(
         modifier = Modifier
@@ -272,13 +257,18 @@ fun MeasurementsTable(measurements: List<MeasurementDaily>, selectedElement: Ele
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.weight(1f)
             )
+            Text(
+                text = stringResource(R.string.station),
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.weight(1f)
+            )
         }
 
         // Table rows
         LazyColumn(
             modifier = Modifier.fillMaxWidth()
         ) {
-            items(sortedMeasurements) { measurement ->
+            items(measurements) { measurement ->
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -293,6 +283,12 @@ fun MeasurementsTable(measurements: List<MeasurementDaily>, selectedElement: Ele
                         text = measurement.value.toString(),
                         modifier = Modifier.weight(1f)
                     )
+                    stations.find { station -> station.stationId == measurement.stationId }?.let {
+                        Text(
+                            text = it.location,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
                 }
             }
         }

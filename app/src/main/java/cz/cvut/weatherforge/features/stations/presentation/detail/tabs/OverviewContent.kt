@@ -79,6 +79,9 @@ fun OverviewContent(station: Station, viewModel: DetailScreenViewModel, navigate
             InfoCard(
                 title = stringResource(R.string.records),
                 items = screenState.allTimeRecords.mapNotNull { record ->
+                    if(record.element == "T" || record.element == "F") {
+                        return
+                    }
                     if(record.element == "TMA" ||
                         record.element == "Fmax" ||
                         record.element == "SRA" ||

@@ -14,14 +14,12 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.*
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class StationRepositoryTest {
 
     private lateinit var repository: StationRepository
     private lateinit var remoteDataSource: StationRemoteDataSource
     private lateinit var localDataSource: StationLocalDataSource
 
-    // Test stations
     private val testStation1 = Station(
         stationId = "1",
         code = "ST1",
@@ -72,8 +70,6 @@ class StationRepositoryTest {
 
     @Before
     fun setUp() {
-
-        // Mock static Log class
         mockkStatic(android.util.Log::class)
         every { android.util.Log.v(any(), any()) } returns 0
         every { android.util.Log.e(any(), any()) } returns 0
@@ -284,7 +280,6 @@ class StationRepositoryTest {
 
     @Test
     fun `getStations returns local stations when available`() = runTest {
-        // Arrange - Use existing testStation1 and testStation2
         val localStations = listOf(testStation1, testStation2)
         `when`(localDataSource.getStations()).thenReturn(localStations)
 
@@ -301,7 +296,6 @@ class StationRepositoryTest {
 
     @Test
     fun `getStations fetches from remote and saves when local is empty`() = runTest {
-        // Arrange - Use existing testStation1 and testStation2
         val remoteStations = listOf(testStation1, testStation2)
         `when`(localDataSource.getStations()).thenReturn(emptyList())
         `when`(remoteDataSource.getStations()).thenReturn(remoteStations)

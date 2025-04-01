@@ -10,12 +10,15 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -96,8 +99,8 @@ fun HomeScreen(
                                         navigateToDetail(screenState.closestStation!!.stationId)
                                     },
                                 text = screenState.closestStation!!.location,
-                                style = MaterialTheme.typography.headlineMedium, // Use headlineMedium from the theme
-                                color = MaterialTheme.colorScheme.onSurface // Use onSurface color for text
+                                style = MaterialTheme.typography.headlineMedium,
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
@@ -107,7 +110,8 @@ fun HomeScreen(
                     modifier = Modifier
                         .padding(paddingValues)
                         .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background) // Use background color for the screen
+                        .background(MaterialTheme.colorScheme.background)
+                        .verticalScroll(rememberScrollState())
                 ) {
                     Column(
                         modifier = Modifier

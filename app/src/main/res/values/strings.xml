@@ -133,4 +133,7 @@
     <!-- Loading State -->
     <string name="loading">Načítání...</string>
     <string name="select_to_date">Vyberte datum DO</string>
+    <string name="sortBy">Řadit dle</string>
+    <string name="filterBy">Filtrovat</string>
+    <string name="station">Stanice\n</string>
 </resources>

@@ -5,10 +5,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -41,12 +45,16 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cz.cvut.weatherforge.R
+import cz.cvut.weatherforge.core.utils.getLocalizedDateString
 import cz.cvut.weatherforge.features.stations.data.model.Station
 import cz.cvut.weatherforge.features.stations.data.model.isActive
+import kotlinx.datetime.toJavaLocalDate
+import kotlinx.datetime.toJavaLocalDateTime
 import org.koin.androidx.compose.koinViewModel
 
 
@@ -77,13 +85,21 @@ fun ListScreen(navigateToDetail: (id: String) -> Unit, viewModel: ListScreenView
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 6.dp),
+                                .padding(vertical = 4.dp), // Reduce vertical padding
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
+                            Text(stringResource(R.string.filterBy))
+
                             FilterChangeButtons(
                                 onFilterChange = viewModel::onFilterChange,
-                                currentFilter = currentFilter
+                                currentFilter = currentFilter,
                             )
+
+                            Text(
+                                stringResource(R.string.sortBy),
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
+
                             SortingOptions(
                                 sortingCriteria = screenState.sortingCriteria,
                                 ascendingOrder = screenState.ascendingOrder,
@@ -97,7 +113,6 @@ fun ListScreen(navigateToDetail: (id: String) -> Unit, viewModel: ListScreenView
                                     station = station,
                                     onClick = { navigateToDetail(station.stationId) },
                                     onToggleFavorite = { viewModel.toggleFavorite(station.stationId) },
-                                    sortingCriteria = screenState.sortingCriteria,
                                     currentFilter = currentFilter
                                 )
                             }
@@ -136,9 +151,11 @@ fun FilterChangeButtons(
 ) {
     Row(
         modifier = Modifier
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+,
     ) {
         FilterChip(
             selected = currentFilter == ListScreenViewModel.Filter.Active,
@@ -174,7 +191,6 @@ fun ResultCard(
     station: Station,
     onClick: () -> Unit,
     onToggleFavorite: () -> Unit,
-    sortingCriteria: String,
     currentFilter: ListScreenViewModel.Filter
 ) {
     Row(
@@ -182,7 +198,7 @@ fun ResultCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
-            .background(MaterialTheme.colorScheme.surface) // Use surface color for cards
+            .background(MaterialTheme.colorScheme.surface)
             .padding(8.dp)
     ) {
         Text(
@@ -190,23 +206,23 @@ fun ResultCard(
             text = station.location,
             fontWeight = FontWeight.Bold,
             fontSize = 15.sp,
-            color = MaterialTheme.colorScheme.onSurface // Use onSurface color for text
+            color = MaterialTheme.colorScheme.onSurface
         )
 
         if (station.isActive()) {
             Icon(
                 imageVector = Icons.Filled.CheckCircle,
                 contentDescription = "Active Station",
-                tint = MaterialTheme.colorScheme.primary // Use primary color for active icon
+                tint = MaterialTheme.colorScheme.primary
             )
         }
         if (currentFilter == ListScreenViewModel.Filter.Inactive) {
             Text(
                 modifier = Modifier.padding(8.dp),
-                text = station.endDate.toString(),
+                text = getLocalizedDateString(station.endDate.date.toJavaLocalDate()),
                 fontWeight = FontWeight.Bold,
                 fontSize = 15.sp,
-                color = MaterialTheme.colorScheme.onSurface // Use onSurface color for text
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
         Icon(
@@ -235,7 +251,8 @@ fun TopSearchBar(query: String, onQueryChange: (String) -> Unit) {
                     }
                 ),
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .height(52.dp),
                 shape = RoundedCornerShape(10.dp),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Done
@@ -270,6 +287,7 @@ fun TopSearchBar(query: String, onQueryChange: (String) -> Unit) {
     )
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SortingOptions(
     sortingCriteria: String,
@@ -294,7 +312,15 @@ fun SortingOptions(
                     onAscendingOrderChange(true)
                 }
             },
-            label = { Text(stringResource(R.string.elevation)) },
+            label = {
+                Text(
+                    stringResource(R.string.elevation),
+                    maxLines = 2,
+                    softWrap = true,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.width(80.dp)
+                )
+            },
             trailingIcon = {
                 if (sortingCriteria == "Elevation") {
                     Icon(
@@ -315,7 +341,13 @@ fun SortingOptions(
                     onAscendingOrderChange(true)
                 }
             },
-            label = { Text(stringResource(R.string.begin_date)) },
+            label = {  Text(
+                stringResource(R.string.begin_date),
+                maxLines = 2,
+                softWrap = true,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.width(80.dp)
+            ) },
             trailingIcon = {
                 if (sortingCriteria == "Begin Date") {
                     Icon(
@@ -336,7 +368,13 @@ fun SortingOptions(
                     onAscendingOrderChange(true)
                 }
             },
-            label = { Text(stringResource(R.string.alphabetical)) },
+            label = {  Text(
+                stringResource(R.string.alphabetical),
+                maxLines = 2,
+                softWrap = true,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.width(80.dp)
+            ) },
             trailingIcon = {
                 if (sortingCriteria == "Alphabetical") {
                     Icon(

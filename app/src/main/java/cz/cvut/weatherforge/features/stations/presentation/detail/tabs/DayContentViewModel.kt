@@ -101,7 +101,7 @@ class DayContentViewModel(
                         .minusYears(1)
                         .toString()
 
-                _state.update { it.copy(selectedLongTermDate = LocalDate.parse(date)) }
+                _state.update { it.copy(selectedConcreteDayDate  = LocalDate.parse(date)) }
 
                 val concreteDayMeasurements =
                     repository.getStatsDay(stationId, date)

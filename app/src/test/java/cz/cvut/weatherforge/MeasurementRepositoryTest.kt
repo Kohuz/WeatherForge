@@ -21,13 +21,11 @@ import org.mockito.kotlin.verify
 import retrofit2.HttpException
 import retrofit2.Response
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class MeasurementRepositoryTest {
 
     private lateinit var repository: MeasurementRepository
     private lateinit var remoteDataSource: MeasurementRemoteDataSource
 
-    // Test data matching real model classes
     private val testDailyMeasurement = MeasurementDaily(
         stationId = "ST001",
         element = "T",
@@ -71,7 +69,6 @@ class MeasurementRepositoryTest {
 
     @Before
     fun setUp() {
-        // Mock static Log class
         mockkStatic(Log::class)
         every { Log.v(any(), any()) } returns 0
 
@@ -81,7 +78,6 @@ class MeasurementRepositoryTest {
 
     @Test
     fun `getDailyMeasurements filters correctly for all element types`() = runTest {
-        // Test data - what the remote would actually return for each call
         val testTMeasurements = listOf(
             testDailyMeasurement.copy(element = "T", vtype = "AVG"),
             testDailyMeasurement.copy(element = "T", vtype = "MAX")  // Should be filtered out
@@ -97,7 +93,6 @@ class MeasurementRepositoryTest {
             testDailyMeasurement.copy(element = "SRA", vtype = "TOTAL")
         )
 
-        // Setup mocks to return different data for each element
         coEvery { remoteDataSource.getMeasurementsDaily("ST001", "2023-01-01", "2023-01-02", "T") } returns testTMeasurements
         coEvery { remoteDataSource.getMeasurementsDaily("ST001", "2023-01-01", "2023-01-02", "F") } returns testFMeasurements
         coEvery { remoteDataSource.getMeasurementsDaily("ST001", "2023-01-01", "2023-01-02", "SRA") } returns testSRAMeasurements
@@ -122,7 +117,6 @@ class MeasurementRepositoryTest {
 
     @Test
     fun `getMonthlyMeasurements filters correctly for all element types`() = runTest {
-        // Test data covering all filtering cases
         val testMeasurements = listOf(
             // T - should keep only AVG/AVG
             testMonthlyMeasurement.copy(element = "T", timeFunction = "AVG", mdFunction = "AVG"),
@@ -158,7 +152,6 @@ class MeasurementRepositoryTest {
             testMonthlyMeasurement.copy(element = "OTHER", mdFunction = "OTHER_VALUE")
         )
 
-        // Setup mock to return different subsets based on requested element
         coEvery { remoteDataSource.getMeasurementsMonthly(any(), any(), any(), any()) } answers {
             val element = arg<String>(3)
             testMeasurements.filter { it.element == element }
@@ -207,7 +200,6 @@ class MeasurementRepositoryTest {
     }
     @Test
     fun `getYearlyMeasurements filters correctly for all element types`() = runTest {
-        // Test data covering all filtering cases
         val testMeasurements = listOf(
             // T - should keep only AVG/AVG
             testYearlyMeasurement.copy(element = "T", timeFunction = "AVG", mdFunction = "AVG"),
@@ -243,7 +235,6 @@ class MeasurementRepositoryTest {
             testYearlyMeasurement.copy(element = "OTHER", mdFunction = "OTHER_VALUE")
         )
 
-        // Setup mock to return different subsets based on requested element
         coEvery { remoteDataSource.getMeasurementsYearly(any(), any(), any(), any()) } answers {
             val element = arg<String>(3)
             testMeasurements.filter { it.element == element }

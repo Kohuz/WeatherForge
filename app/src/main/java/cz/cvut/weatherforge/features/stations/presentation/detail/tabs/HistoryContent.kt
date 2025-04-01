@@ -165,7 +165,7 @@ private fun ConcreteDayStatsCard(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = stringResource(R.string.daily_stats),
+                text = "${stringResource(R.string.daily_stats)} lll",
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
@@ -309,7 +309,7 @@ private fun ChartDisplay(
             }
         }
         else -> {
-            Text("Please select an element and date to view charts")
+            Text("Prosím vyberte veličinu a datum pro zobrazení průběhu")
         }
     }
 }

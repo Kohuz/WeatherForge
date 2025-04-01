@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -17,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cz.cvut.weatherforge.R
+import cz.cvut.weatherforge.core.utils.getLocalizedDateString
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementDaily
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementDailyResult
 import cz.cvut.weatherforge.features.measurements.data.model.ValueStatsResult
@@ -77,11 +77,9 @@ fun DayContent(
             }
         )
 
-        // Concrete day data
-        historyContentState.statsDay?.let { ConcreteDayStatsCard(it, detailState.elementCodelist) }
-
-
-
+        if(historyContentState.statsDay != null && historyContentState.selectedConcreteDayDate != null) {
+            ConcreteDayStatsCard(historyContentState.statsDay!!, detailState.elementCodelist, historyContentState.selectedConcreteDayDate!!.toJavaLocalDate())
+        }
     }
 }
 
@@ -153,7 +151,7 @@ private fun DateSelectionButton(
             Text(
                 text = stringResource(
                     labelRes,
-                    date?.toString() ?: stringResource(R.string.no_date_selected)
+                    getLocalizedDateString(date)
                 )
             )
             Icon(
@@ -242,8 +240,8 @@ private fun PrecipitationStats(dailyStats: ValueStatsResult) {
             text = stringResource(R.string.precipitation),
             style = MaterialTheme.typography.titleMedium
         )
-        Text(stringResource(R.string.max_precipitation, dailyStats.valueStats.find { it.element == "SVH" }?.highest ?: "--"))
-        Text(stringResource(R.string.avg_precipitation, dailyStats.valueStats.find { it.element == "SVH" }?.average?.let { "%.1f".format(it) } ?: "--"))
+        Text(stringResource(R.string.max_precipitation, dailyStats.valueStats.find { it.element == "SRA" }?.highest ?: "--"))
+        Text(stringResource(R.string.avg_precipitation, dailyStats.valueStats.find { it.element == "SRA" }?.average?.let { "%.1f".format(it) } ?: "--"))
     }
 }
 
@@ -259,7 +257,7 @@ private fun WindStats(dailyStats: ValueStatsResult) {
         Text(
             text = stringResource(
                 R.string.max_wind,
-                dailyStats.valueStats.find { it.element == "FMAX" }?.highest ?: "--"
+                dailyStats.valueStats.find { it.element == "Fmax" }?.highest ?: "--"
             )
         )
 
@@ -326,7 +324,8 @@ private fun SnowStats(dailyStats: ValueStatsResult) {
 @Composable
 private fun ConcreteDayStatsCard(
     statsDay: MeasurementDailyResult,
-    elementCodelist: List<ElementCodelistItem>
+    elementCodelist: List<ElementCodelistItem>,
+    date: LocalDate
 ) {
     Card(
         modifier = Modifier
@@ -336,7 +335,7 @@ private fun ConcreteDayStatsCard(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = stringResource(R.string.daily_stats),
+                text = "${stringResource(R.string.daily_stats)} ${getLocalizedDateString(date)}",
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(bottom = 8.dp)
             )

@@ -9,7 +9,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.ButtonDefaults
@@ -31,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cz.cvut.weatherforge.R
@@ -116,6 +120,7 @@ fun GraphContent(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp)
+            .verticalScroll(rememberScrollState())
     ) {
         detailScreenState.station?.let {
             StationElementDropdown(
@@ -225,9 +230,13 @@ fun GraphContent(
                         selected = (index == selectedResolution),
                         onClick = { graphContentViewModel.selectResolution(index) }
                     )
-                    Text(
-                        text = resolution,
-                    )
+                        Text(
+                            resolution,
+                            maxLines = 2,
+                            softWrap = true,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.width(80.dp)
+                        )
                 }
             }
         }
