@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.ButtonDefaults
@@ -89,7 +91,7 @@ fun RecordsScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(16.dp)
+                            .verticalScroll(rememberScrollState())
                     ) {
                         // Element Dropdown
                         Text(
@@ -157,12 +159,17 @@ fun RecordsScreen(
 
                         // Display measurements in a table
                         if (screenState.measurements.isNotEmpty()) {
-                            Text(
-                                text = stringResource(R.string.measurements_table_label),
-                                style = MaterialTheme.typography.labelLarge,
-                                modifier = Modifier.padding(bottom = 8.dp)
-                            )
-                            MeasurementsTable(measurements = screenState.measurements, selectedElement = screenState.selectedElement, screenState.allStations)
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f) // Takes all remaining space
+                            ) {
+                                MeasurementsTable(
+                                    measurements = screenState.measurements,
+                                    selectedElement = screenState.selectedElement,
+                                    stations = screenState.allStations
+                                )
+                            }
                         }
                     }
                 }
@@ -266,7 +273,8 @@ fun MeasurementsTable(measurements: List<MeasurementDaily>, selectedElement: Ele
 
         // Table rows
         LazyColumn(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxSize()
         ) {
             items(measurements) { measurement ->
                 Row(
