@@ -145,18 +145,17 @@ fun ListScreen(navigateToDetail: (id: String) -> Unit, viewModel: ListScreenView
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun FilterChangeButtons(
     onFilterChange: (ListScreenViewModel.Filter) -> Unit,
-    currentFilter: ListScreenViewModel.Filter
+    currentFilter: ListScreenViewModel.Filter,
 ) {
-    Row(
+    FlowRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-,
+        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
     ) {
         FilterChip(
             selected = currentFilter == ListScreenViewModel.Filter.Active,
@@ -300,12 +299,11 @@ fun SortingOptions(
     onSortingCriteriaChange: (String) -> Unit,
     onAscendingOrderChange: (Boolean) -> Unit,
 ) {
-    Row(
+    FlowRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
+        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
     ) {
         FilterChip(
             selected = sortingCriteria == "Elevation",

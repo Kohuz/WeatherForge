@@ -23,6 +23,9 @@ import cz.cvut.weatherforge.features.stations.data.model.Station
 import cz.cvut.weatherforge.features.stations.data.model.isActive
 import cz.cvut.weatherforge.features.stations.presentation.detail.DetailScreenViewModel
 import kotlinx.datetime.toJavaLocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.util.Locale
 
 @Composable
 fun OverviewContent(station: Station, viewModel: DetailScreenViewModel, navigateToDetail: (id: String) -> Unit) {
@@ -69,7 +72,7 @@ fun OverviewContent(station: Station, viewModel: DetailScreenViewModel, navigate
             CurrentWeatherMeasurementsInfoCard(
                 title = stringResource(R.string.detail_current_state),
                 measurements = station.stationLatestMeasurements,
-                elementCodelist = screenState.elementCodelist
+                elementCodelist = screenState.elementCodelist,
             )
         }
 

@@ -36,7 +36,8 @@ fun SwipeableInfoCard(
         ) { page ->
             InfoCard(
                 title = infoCards[page].title,
-                items = infoCards[page].items
+                items = infoCards[page].items,
+                footer = infoCards[page].footer
             )
         }
         Spacer(modifier = Modifier.height(8.dp))
@@ -54,6 +55,7 @@ fun SwipeableInfoCard(
 @Composable
 fun InfoCard(
     title: String,
+    footer: String? = null,
     items: List<Pair<String, String>>,
     isClickable: Boolean = false,
     onClick: (String) -> Unit = {},
@@ -86,6 +88,9 @@ fun InfoCard(
                     onClick = { onClick(label) }
                 )
                 Spacer(modifier = Modifier.height(4.dp))
+            }
+            if (footer != null) {
+                Text(text = footer, style = AppTypography.bodySmall)
             }
         }
     }
@@ -156,5 +161,6 @@ fun WeatherInfoRow(
 
 data class InfoCardData(
     val title: String,
-    val items: List<Pair<String, String>>
+    val items: List<Pair<String, String>>,
+    val footer: String? = null
 )

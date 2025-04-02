@@ -39,7 +39,12 @@ import cz.cvut.weatherforge.R
 import cz.cvut.weatherforge.core.utils.elementAbbreviationToNameUnitPair
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementLatest
 import cz.cvut.weatherforge.features.stations.data.model.ElementCodelistItem
+import kotlinx.datetime.toJavaLocalDate
+import kotlinx.datetime.toJavaLocalDateTime
 import org.koin.androidx.compose.koinViewModel
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.util.Locale
 
 
 @Composable
@@ -123,7 +128,7 @@ fun HomeScreen(
                                 CurrentWeatherMeasurementsInfoCard(
                                     title = stringResource(R.string.weather_at_nearest),
                                     measurements = it,
-                                    elementCodelist = screenState.elementCodelist
+                                    elementCodelist = screenState.elementCodelist,
                                 )
                             }
                         }
@@ -246,8 +251,10 @@ fun CurrentWeatherMeasurementsInfoCard(
     title: String,
     measurements: List<MeasurementLatest>,
     elementCodelist: List<ElementCodelistItem>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
+    val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
+        .withLocale(Locale("cs", "CZ"))
     InfoCard(
         title = title,
         items = measurements.mapNotNull { measurement ->
@@ -262,6 +269,7 @@ fun CurrentWeatherMeasurementsInfoCard(
                 null
             }
         },
+        footer = "${stringResource(R.string.updated)} ${measurements.first().timestamp.toJavaLocalDateTime().format(formatter)}",
         modifier = modifier
     )
 }
