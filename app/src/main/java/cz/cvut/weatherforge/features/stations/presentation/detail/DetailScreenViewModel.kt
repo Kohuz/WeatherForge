@@ -130,19 +130,20 @@ class DetailScreenViewModel(
 
     fun toggleFavorite(stationId: String) {
         viewModelScope.launch {
-            val station = screenStateStream.value.station
-            station?.let {
-                if (it.isFavorite) {
+            val currentStation = _screenStateStream.value.station
+            currentStation?.let { station ->
+                // 1. Optimistic UI update
+                _screenStateStream.update { it.copy(station = station.copy(isFavorite = !station.isFavorite)) }
+
+                // 2. Sync with repository (no reload needed)
+                if (station.isFavorite) {
                     stationRepository.removeFavorite(stationId)
                 } else {
                     stationRepository.makeFavorite(stationId)
                 }
-                loadStation(stationId)
             }
         }
     }
+
 }
 
-fun elementAbbreviationToNameUnitPair(abbreviation: String, codelist: List<ElementCodelistItem>): ElementCodelistItem? {
-    return codelist.find { item -> item.abbreviation == abbreviation }
-}

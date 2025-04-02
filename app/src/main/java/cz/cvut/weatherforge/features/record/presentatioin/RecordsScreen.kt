@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cz.cvut.weatherforge.R
 import cz.cvut.weatherforge.core.utils.getLocalizedDateString
+import cz.cvut.weatherforge.core.utils.getUnitByElementAbbreviation
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementDaily
 import cz.cvut.weatherforge.features.stations.data.model.ElementCodelistItem
 import cz.cvut.weatherforge.features.stations.data.model.Station
@@ -66,7 +67,8 @@ fun RecordsScreen(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
-                    Text(text = stringResource(R.string.records_screen_title))
+                    Text(text = stringResource(R.string.records_screen_title),
+                        style = MaterialTheme.typography.headlineLarge)
                 }
             )
         }
@@ -112,7 +114,7 @@ fun RecordsScreen(
 
                         Text(
                             text = stringResource(R.string.date_picker_label),
-                            style = MaterialTheme.typography.labelLarge,
+                            style = MaterialTheme.typography.bodyLarge,
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
                         OutlinedButton(
@@ -167,7 +169,8 @@ fun RecordsScreen(
                                 MeasurementsTable(
                                     measurements = screenState.measurements,
                                     selectedElement = screenState.selectedElement,
-                                    stations = screenState.allStations
+                                    stations = screenState.allStations,
+                                    elementCodelist = screenState.elementCodelist
                                 )
                             }
                         }
@@ -211,6 +214,7 @@ fun ElementDropdownMenu(
             ) {
                 Text(
                     text = selectedItem?.name ?: stringResource(R.string.select_element),
+                    style = MaterialTheme.typography.bodyLarge
                 )
                 Icon(
                     imageVector = Icons.Default.ArrowDropDown,
@@ -240,7 +244,7 @@ fun ElementDropdownMenu(
     }
 }
 @Composable
-fun MeasurementsTable(measurements: List<MeasurementDaily>, selectedElement: ElementCodelistItem?, stations: List<Station>) {
+fun MeasurementsTable(measurements: List<MeasurementDaily>, selectedElement: ElementCodelistItem?, stations: List<Station>, elementCodelist: List<ElementCodelistItem>) {
 
     Column(
         modifier = Modifier
@@ -255,14 +259,9 @@ fun MeasurementsTable(measurements: List<MeasurementDaily>, selectedElement: Ele
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = stringResource(R.string.table_header_date),
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.weight(1f)
-            )
-            Text(
                 text = stringResource(R.string.table_header_value),
                 style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f).padding(5.dp)
             )
             Text(
                 text = stringResource(R.string.station),
@@ -284,12 +283,8 @@ fun MeasurementsTable(measurements: List<MeasurementDaily>, selectedElement: Ele
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = getLocalizedDateString(measurement.date.toJavaLocalDate()),
-                        modifier = Modifier.weight(1f)
-                    )
-                    Text(
-                        text = measurement.value.toString(),
-                        modifier = Modifier.weight(1f)
+                        text = "${measurement.value.toString()} ${getUnitByElementAbbreviation(measurement.element, elementCodelist)}",
+                        modifier = Modifier.weight(1f).padding(5.dp)
                     )
                     stations.find { station -> station.stationId == measurement.stationId }?.let {
                         Text(

@@ -18,12 +18,12 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cz.cvut.weatherforge.R
+import cz.cvut.weatherforge.core.utils.elementAbbreviationToNameUnitPair
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementDaily
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementDailyResult
 import cz.cvut.weatherforge.features.record.presentatioin.ElementDropdownMenu
 import cz.cvut.weatherforge.features.stations.data.model.ElementCodelistItem
 import cz.cvut.weatherforge.features.stations.presentation.detail.DetailScreenViewModel
-import cz.cvut.weatherforge.features.stations.presentation.detail.elementAbbreviationToNameUnitPair
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.DailyChart
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.MonthlyChart
 import kotlinx.datetime.toJavaLocalDate

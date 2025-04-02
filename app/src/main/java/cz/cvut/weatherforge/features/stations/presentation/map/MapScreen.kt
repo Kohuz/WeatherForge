@@ -157,8 +157,7 @@ fun MapScreen(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(16.dp),
+                .background(MaterialTheme.colorScheme.surface),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             // FilterChip to show all stations

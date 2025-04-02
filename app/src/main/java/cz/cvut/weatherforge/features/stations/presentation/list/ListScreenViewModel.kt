@@ -172,7 +172,7 @@ class ListScreenViewModel(private val repository: StationRepository) : ViewModel
                 if (it.isFavorite) {
                     repository.removeFavorite(stationId)
                 } else {
-                    repository.makeFavorite(stationId)
+                repository.makeFavorite(stationId)
                 }
                 // Reload stations to reflect the updated favorite status
                 loadStations()

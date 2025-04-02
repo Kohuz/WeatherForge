@@ -36,9 +36,9 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.location.LocationServices
 import cz.cvut.weatherforge.R
+import cz.cvut.weatherforge.core.utils.elementAbbreviationToNameUnitPair
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementLatest
 import cz.cvut.weatherforge.features.stations.data.model.ElementCodelistItem
-import cz.cvut.weatherforge.features.stations.presentation.detail.elementAbbreviationToNameUnitPair
 import org.koin.androidx.compose.koinViewModel
 
 
@@ -83,13 +83,13 @@ fun HomeScreen(
                         verticalArrangement = Arrangement.Center,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.surface) // Use surface color for the top bar
+                            .background(MaterialTheme.colorScheme.surface)
                     ) {
                         Text(
                             modifier = Modifier.padding(8.dp),
                             text = stringResource(R.string.nearest_station),
-                            style = MaterialTheme.typography.headlineLarge, // Use headlineLarge from the theme
-                            color = MaterialTheme.colorScheme.onSurface // Use onSurface color for text
+                            style = MaterialTheme.typography.headlineLarge,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         screenState.closestStation?.let {
                             Text(

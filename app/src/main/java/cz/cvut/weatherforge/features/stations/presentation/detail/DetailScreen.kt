@@ -11,6 +11,7 @@ import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -85,6 +86,11 @@ fun DetailScreen(
                         ) {
                             Icon(
                                 imageVector = if (station.isFavorite) Icons.Filled.Star else Icons.Outlined.Star,
+                                tint = if (station.isFavorite) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                                },
                                 contentDescription = if (station.isFavorite) "Unfavorite" else "Favorite"
                             )
                         }

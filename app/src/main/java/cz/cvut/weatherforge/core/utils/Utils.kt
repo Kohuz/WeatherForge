@@ -2,6 +2,7 @@ package cz.cvut.weatherforge.core.utils
 
 
 import com.google.android.gms.maps.model.LatLng
+import cz.cvut.weatherforge.features.stations.data.model.ElementCodelistItem
 import cz.cvut.weatherforge.features.stations.data.model.Station
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -43,3 +44,10 @@ fun pythagoreanDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double):
     return sqrt(dx. pow(2) + dy.pow(2))
 }
 
+fun getUnitByElementAbbreviation(abbreviation: String, codelist: List<ElementCodelistItem>): String{
+    return codelist.find { item -> item.abbreviation == abbreviation }?.unit ?: ""
+}
+
+fun elementAbbreviationToNameUnitPair(abbreviation: String, codelist: List<ElementCodelistItem>): ElementCodelistItem? {
+    return codelist.find { item -> item.abbreviation == abbreviation }
+}

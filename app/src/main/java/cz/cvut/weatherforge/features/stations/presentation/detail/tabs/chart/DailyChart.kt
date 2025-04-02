@@ -12,10 +12,8 @@ fun DailyChart(measurements: List<MeasurementDaily>, history: Boolean? = false) 
     if (measurements.isEmpty()) {
         Text("Data nedostupná")
     } else {
-        // Sort measurements by date in ascending order
         val sortedMeasurements = measurements.sortedBy { it.date }
 
-        // Transform sorted measurements to entries and labels
         val entries = transformDailyToEntries(sortedMeasurements)
         var labels: List<String>
         if(history == true){
@@ -27,7 +25,6 @@ fun DailyChart(measurements: List<MeasurementDaily>, history: Boolean? = false) 
                 sortedMeasurements.map { getLocalizedDateString(it.date.toJavaLocalDate()) }
         }
 
-        // Display the chart
         LineChartComposable(entries, labels)
     }
 }

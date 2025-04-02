@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -226,9 +227,13 @@ fun ResultCard(
             )
         }
         Icon(
-            imageVector = if (station.isFavorite) Icons.Outlined.Star else Icons.Outlined.Star,
-            contentDescription = "Favorite Station",
-            tint = if (station.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f), // Use primary and onSurface colors for favorite icon
+            imageVector = if (station.isFavorite) Icons.Filled.Star else Icons.Outlined.Star,
+            contentDescription = if (station.isFavorite) "Remove from favorites" else "Add to favorites",
+            tint = if (station.isFavorite) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+            },
             modifier = Modifier
                 .padding(start = 4.dp)
                 .clickable { onToggleFavorite() }

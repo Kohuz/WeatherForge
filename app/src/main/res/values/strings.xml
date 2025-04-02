@@ -110,7 +110,7 @@
     <string name="active_stations">Aktivní</string>
     <string name="inactive_stations">Neaktivní</string>
 
-    <string name="records_screen_title">Záznamy počasí</string>
+    <string name="records_screen_title">Top 10 měření</string>
 
     <!-- Element Dropdown -->
 
