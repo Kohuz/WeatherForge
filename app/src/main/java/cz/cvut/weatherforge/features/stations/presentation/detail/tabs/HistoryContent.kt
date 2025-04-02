@@ -30,6 +30,7 @@ import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toKotlinLocalDate
 import java.time.LocalDate
 
+val resolutions = listOf("Den a měsíc", "Měsíčně")
 
 @Composable
 fun HistoryContent(
@@ -42,7 +43,7 @@ fun HistoryContent(
     val resolutions = listOf("Den a měsíc", "Měsíčně")
     val selectedResolution = historyContentState.selectedResolutionIndex
 
-    LaunchedEffect(historyContentState.selectedGraphDate, historyContentState.selectedElement) {
+    LaunchedEffect(historyContentState.selectedGraphDate, historyContentState.selectedElement, historyContentState.selectedResolutionIndex) {
         historyContentState.selectedElement?.let { element ->
             historyContentState.selectedGraphDate?.let { date ->
                 when (selectedResolution) {
@@ -104,7 +105,8 @@ private fun DateSelectionButton(
     date: LocalDate?,
     showPicker: Boolean,
     onShowPicker: () -> Unit,
-    pickerContent: @Composable () -> Unit
+    pickerContent: @Composable () -> Unit,
+    state: HistoryContentViewModel.HistoryContentState
 ) {
     OutlinedButton(
         onClick = onShowPicker,
@@ -122,7 +124,7 @@ private fun DateSelectionButton(
             Text(
                 text = stringResource(
                     labelRes,
-                    date?.toString() ?: stringResource(R.string.no_date_selected)
+                    date?.formatForResolution(resolutions[state.selectedResolutionIndex])?: stringResource(R.string.no_date_selected)
                 )
             )
             Icon(
@@ -265,6 +267,7 @@ private fun ChartDateSelector(
         date = state.selectedGraphDate?.toJavaLocalDate(),
         showPicker = state.showGraphDatePicker,
         onShowPicker = { viewModel.showGraphDatePicker(true) },
+        state = state,
         pickerContent = {
             ResolutionDatePickerDialog(
                 minimumDate = minDate,
@@ -291,7 +294,7 @@ private fun ChartDisplay(
                 "Den a měsíc" -> {
                     when {
                         state.dailyAndMonthlyMeasurements != null -> {
-                            DailyChart(state.dailyAndMonthlyMeasurements.measurements)
+                            DailyChart(state.dailyAndMonthlyMeasurements.measurements, history = true)
                         }
                         state.isLoading -> LoadingIndicator()
                         else -> Text("No daily data available")
@@ -300,7 +303,7 @@ private fun ChartDisplay(
                 "Měsíčně" -> {
                     when {
                         state.monthlyMeasurements != null -> {
-                            MonthlyChart(state.monthlyMeasurements.measurements)
+                            MonthlyChart(state.monthlyMeasurements.measurements, history = true)
                         }
                         state.isLoading -> LoadingIndicator()
                         else -> Text("No monthly data available")

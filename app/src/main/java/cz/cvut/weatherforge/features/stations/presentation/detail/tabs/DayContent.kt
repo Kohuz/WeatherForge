@@ -133,7 +133,8 @@ private fun DateSelectionButton(
     date: LocalDate?,
     showPicker: Boolean,
     onShowPicker: () -> Unit,
-    pickerContent: @Composable () -> Unit
+    pickerContent: @Composable () -> Unit,
+
 ) {
     OutlinedButton(
         onClick = onShowPicker,

@@ -4,6 +4,8 @@ import ResolutionDatePickerDialog
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -49,6 +51,7 @@ import kotlinx.datetime.toJavaLocalDate
 import java.time.LocalDate
 
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun GraphContent(
     station: Station,
@@ -72,11 +75,11 @@ fun GraphContent(
             onDateSelected = { date ->
                 graphContentViewModel.setFromDate(date)
             },
-            dateToShow = LocalDate.now().minusMonths(3)
+            dateToShow = graphContentState.fromDate ?: LocalDate.now().minusMonths(3)
         )
     }
 
-    if (graphContentState.showToDatePicker) {
+    if (graphContentState.showToDatePicker && graphContentState.fromDate != null) {
         ResolutionDatePickerDialog(
             minimumDate = graphContentState.fromDate,
             resolution = resolutions[selectedResolution],
@@ -84,7 +87,7 @@ fun GraphContent(
             onDateSelected = { date ->
                 graphContentViewModel.setToDate(date)
             },
-            dateToShow = LocalDate.now().minusMonths(1)
+            dateToShow = graphContentState.toDate ?: LocalDate.now().minusMonths(1)
         )
     }
 
@@ -132,6 +135,39 @@ fun GraphContent(
             )
         }
 
+        // Radio buttons for selecting resolution
+        FlowRow (
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+        ) {
+            resolutions.forEachIndexed { index, resolution ->
+                Row(
+                    modifier = Modifier
+                        .selectable(
+                            selected = (index == selectedResolution),
+                            onClick = { graphContentViewModel.selectResolution(index) },
+                            role = Role.RadioButton
+                        )
+                        .padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = (index == selectedResolution),
+                        onClick = { graphContentViewModel.selectResolution(index) }
+                    )
+                    Text(
+                        resolution,
+                        maxLines = 2,
+                        softWrap = true,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.width(80.dp)
+                    )
+                }
+            }
+        }
+
+
         // Show date selectors only if an element is selected
         if (graphContentState.selectedElement != null) {
             // Date Selectors for fromDate and toDate
@@ -167,7 +203,7 @@ fun GraphContent(
                 ) {
                     Text(
                         text = graphContentState.fromDate?.formatForResolution(resolutions[selectedResolution])
-                            ?: stringResource(R.string.select_to_date),
+                            ?: stringResource(R.string.select_from_date),
                         modifier = Modifier.padding(8.dp)
                     )
                     Icon(
@@ -208,38 +244,6 @@ fun GraphContent(
             }
         }
 
-        // Radio buttons for selecting resolution
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            resolutions.forEachIndexed { index, resolution ->
-                Row(
-                    modifier = Modifier
-                        .selectable(
-                            selected = (index == selectedResolution),
-                            onClick = { graphContentViewModel.selectResolution(index) },
-                            role = Role.RadioButton
-                        )
-                        .padding(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    RadioButton(
-                        selected = (index == selectedResolution),
-                        onClick = { graphContentViewModel.selectResolution(index) }
-                    )
-                        Text(
-                            resolution,
-                            maxLines = 2,
-                            softWrap = true,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.width(80.dp)
-                        )
-                }
-            }
-        }
 
         // Display the chart
         if (graphContentState.selectedElement != null && graphContentState.fromDate != null && graphContentState.toDate != null) {
@@ -328,6 +332,7 @@ fun StationElementDropdown(
 fun LocalDate.formatForResolution(resolution: String): String {
     return when (resolution) {
         "Denně" -> this.toString()
+        "Den a měsíc" -> "${this.dayOfMonth}. ${this.monthValue}."
         "Měsíc a rok" -> "${this.monthValue}/${this.year}"
         "Ročně" -> this.year.toString()
         else -> this.toString()
