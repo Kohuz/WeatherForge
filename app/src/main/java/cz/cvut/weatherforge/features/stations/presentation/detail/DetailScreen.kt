@@ -1,13 +1,17 @@
 package cz.cvut.weatherforge.features.stations.presentation.detail
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.HelpOutline
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -17,11 +21,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.maps.model.LatLng
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.GraphContent
@@ -94,6 +100,13 @@ fun DetailScreen(
                                 contentDescription = if (station.isFavorite) "Unfavorite" else "Favorite"
                             )
                         }
+                        IconButton(onClick = { detailScreenViewModel.showHelpDialog() }) {
+                            Icon(
+                                imageVector = Icons.Default.HelpOutline,
+                                contentDescription = "Help",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
                 )
             }
@@ -122,12 +135,69 @@ fun DetailScreen(
                     2 -> DayContent(stationId, dayContentViewModel, detailScreenViewModel)
                     3 -> HistoryContent(stationId, historyContentViewModel, detailScreenViewModel)
                 }
+                if (screenState.showHelpDialog) {
+                    HelpDialog(
+                        selectedTabIndex = selectedTabIndex,
+                        onDismiss = { detailScreenViewModel.dismissHelpDialog() }
+                    )
+                }
             }
         }
     }
 }
 
 
+@Composable
+private fun HelpDialog(
+    selectedTabIndex: Int,
+    onDismiss: () -> Unit
+) {
+    val (title, message) = when (selectedTabIndex) {
+        0 -> "Overview Help" to """
+            • View basic station information
+            • See current weather conditions
+            • Access quick statistics
+            """.trimIndent()
 
+        1 -> "Graph Help" to """
+            • Select a measurement element from dropdown
+            • Choose time resolution (Daily/Monthly/Yearly)
+            • Set date range using date pickers
+            • View generated chart below
+            """.trimIndent()
+
+        2 -> "Today in History Help" to """
+            • View historical data for today's date
+            • Compare with previous years
+            • See averages and extremes
+            """.trimIndent()
+
+        3 -> "Historical Trends Help" to """
+            • View long-term historical trends
+            • Compare different time periods
+            • Analyze seasonal patterns
+            """.trimIndent()
+
+        else -> "Help" to "This screen shows station data"
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(title) },
+        text = {
+            Column {
+                Text(message)
+                Spacer(modifier = Modifier.height(8.dp))
+                Text("Tip: You can tap on data points for more details",
+                    style = MaterialTheme.typography.bodySmall)
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Got it!")
+            }
+        }
+    )
+}
 
 

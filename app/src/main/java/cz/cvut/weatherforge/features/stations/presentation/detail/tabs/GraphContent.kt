@@ -87,8 +87,8 @@ fun GraphContent(
             onDateSelected = { date ->
                 graphContentViewModel.setToDate(date)
             },
-            dateToShow = graphContentState.toDate ?: LocalDate.now().minusMonths(1)
-        )
+            dateToShow = graphContentState.fromDate?.let { graphContentState.fromDate?.let { md -> maxOf(it, md) } ?: it }
+                ?:  graphContentState.fromDate?.let { maxOf(LocalDate.now().minusMonths(3), it) } ?: LocalDate.now().minusMonths(3)        )
     }
 
     // Fetch data when all parameters are available
