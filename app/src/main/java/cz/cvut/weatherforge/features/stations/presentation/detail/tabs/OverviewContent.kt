@@ -1,9 +1,7 @@
 package cz.cvut.weatherforge.features.stations.presentation.detail.tabs
 
 import InfoCard
-import InfoCardData
 import NearbyStationInfoCard
-import SwipeableInfoCard
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -23,9 +21,7 @@ import cz.cvut.weatherforge.features.stations.data.model.Station
 import cz.cvut.weatherforge.features.stations.data.model.isActive
 import cz.cvut.weatherforge.features.stations.presentation.detail.DetailScreenViewModel
 import kotlinx.datetime.toJavaLocalDate
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
-import java.util.Locale
+import kotlinx.datetime.toJavaLocalDateTime
 
 @Composable
 fun OverviewContent(station: Station, viewModel: DetailScreenViewModel, navigateToDetail: (id: String) -> Unit) {
@@ -53,7 +49,7 @@ fun OverviewContent(station: Station, viewModel: DetailScreenViewModel, navigate
                 if (!station.isActive()) {
                     Pair(
                         stringResource(R.string.detail_end_of_measurement),
-                        station.endDate.toString()
+                        getLocalizedDateString(station.endDate.date.toJavaLocalDate())
                     )
                 } else {
                     null

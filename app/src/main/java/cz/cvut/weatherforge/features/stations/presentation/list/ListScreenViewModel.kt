@@ -36,6 +36,12 @@ class ListScreenViewModel(private val repository: StationRepository) : ViewModel
         Favorites
     }
 
+    enum class SortingOption {
+        Alphabetical,
+        BeginDate,
+        Elevation
+    }
+
     init {
         loadStations()
     }

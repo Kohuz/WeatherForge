@@ -269,7 +269,7 @@ fun CurrentWeatherMeasurementsInfoCard(
                 null
             }
         },
-        footer = "${stringResource(R.string.updated)} ${measurements.first().timestamp.toJavaLocalDateTime().format(formatter)}",
+        footer = "${stringResource(R.string.updated)} ${measurements.first().timestamp.toJavaLocalDateTime().plusHours(2).format(formatter)}",
         modifier = modifier
     )
 }

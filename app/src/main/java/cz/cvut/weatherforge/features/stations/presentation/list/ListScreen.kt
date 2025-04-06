@@ -64,6 +64,7 @@ fun ListScreen(navigateToDetail: (id: String) -> Unit, viewModel: ListScreenView
     val screenState by viewModel.screenStateStream.collectAsStateWithLifecycle()
     val results = screenState.results
     val loading = screenState.loading
+    val currentSortingCriteria = screenState.sortingCriteria
     val currentFilter = screenState.currentFilter
     val dialogOpen = screenState.dialogOpen
 
@@ -114,7 +115,8 @@ fun ListScreen(navigateToDetail: (id: String) -> Unit, viewModel: ListScreenView
                                     station = station,
                                     onClick = { navigateToDetail(station.stationId) },
                                     onToggleFavorite = { viewModel.toggleFavorite(station.stationId) },
-                                    currentFilter = currentFilter
+                                    currentFilter = currentFilter,
+                                    currentSortingCriteria = currentSortingCriteria
                                 )
                             }
                         }
@@ -191,7 +193,8 @@ fun ResultCard(
     station: Station,
     onClick: () -> Unit,
     onToggleFavorite: () -> Unit,
-    currentFilter: ListScreenViewModel.Filter
+    currentFilter: ListScreenViewModel.Filter,
+    currentSortingCriteria: String
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -237,6 +240,12 @@ fun ResultCard(
                 .padding(start = 4.dp)
                 .clickable { onToggleFavorite() }
         )
+        if(currentSortingCriteria === "Elevation") {
+            Text(text = "${station.elevation.toInt()} m n.m.")
+        }
+        if(currentSortingCriteria === "Begin date" && station.startDate != null) {
+            Text(text = getLocalizedDateString(station.startDate.date.toJavaLocalDate()))
+        }
     }
 }
 
