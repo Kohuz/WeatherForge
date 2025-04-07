@@ -150,8 +150,8 @@ fun ListScreen(navigateToDetail: (id: String) -> Unit, viewModel: ListScreenView
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun FilterChangeButtons(
-    onFilterChange: (ListScreenViewModel.Filter) -> Unit,
-    currentFilter: ListScreenViewModel.Filter,
+    onFilterChange: (StationFilter) -> Unit,
+    currentFilter: StationFilter,
 ) {
     FlowRow(
         modifier = Modifier
@@ -160,29 +160,29 @@ fun FilterChangeButtons(
         horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
     ) {
         FilterChip(
-            selected = currentFilter == ListScreenViewModel.Filter.Active,
-            onClick = { onFilterChange(ListScreenViewModel.Filter.Active) },
+            selected = currentFilter == StationFilter.Active,
+            onClick = { onFilterChange(StationFilter.Active) },
             label = { Text(stringResource(R.string.active)) },
 
         )
 
         FilterChip(
-            selected = currentFilter == ListScreenViewModel.Filter.Inactive,
-            onClick = { onFilterChange(ListScreenViewModel.Filter.Inactive) },
+            selected = currentFilter == StationFilter.Inactive,
+            onClick = { onFilterChange(StationFilter.Inactive) },
             label = { Text(stringResource(R.string.inactive)) },
 
         )
 
         FilterChip(
-            selected = currentFilter == ListScreenViewModel.Filter.All,
-            onClick = { onFilterChange(ListScreenViewModel.Filter.All) },
+            selected = currentFilter == StationFilter.All,
+            onClick = { onFilterChange(StationFilter.All) },
             label = { Text(stringResource(R.string.all)) },
 
         )
 
         FilterChip(
-            selected = currentFilter == ListScreenViewModel.Filter.Favorites,
-            onClick = { onFilterChange(ListScreenViewModel.Filter.Favorites) },
+            selected = currentFilter == StationFilter.Favorites,
+            onClick = { onFilterChange(StationFilter.Favorites) },
             label = { Text(stringResource(R.string.favorites)) },
         )
     }
@@ -193,8 +193,8 @@ fun ResultCard(
     station: Station,
     onClick: () -> Unit,
     onToggleFavorite: () -> Unit,
-    currentFilter: ListScreenViewModel.Filter,
-    currentSortingCriteria: String
+    currentFilter: StationFilter,
+    currentSortingCriteria: SortingOption
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -219,7 +219,7 @@ fun ResultCard(
                 tint = MaterialTheme.colorScheme.primary
             )
         }
-        if (currentFilter == ListScreenViewModel.Filter.Inactive) {
+        if (currentFilter == StationFilter.Inactive) {
             Text(
                 modifier = Modifier.padding(8.dp),
                 text = getLocalizedDateString(station.endDate.date.toJavaLocalDate()),
@@ -240,10 +240,10 @@ fun ResultCard(
                 .padding(start = 4.dp)
                 .clickable { onToggleFavorite() }
         )
-        if(currentSortingCriteria === "Elevation") {
+        if(currentSortingCriteria === SortingOption.Elevation) {
             Text(text = "${station.elevation.toInt()} m n.m.")
         }
-        if(currentSortingCriteria === "Begin date" && station.startDate != null) {
+        if(currentSortingCriteria === SortingOption.BeginDate && station.startDate != null) {
             Text(text = getLocalizedDateString(station.startDate.date.toJavaLocalDate()))
         }
     }
@@ -303,9 +303,9 @@ fun TopSearchBar(query: String, onQueryChange: (String) -> Unit) {
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SortingOptions(
-    sortingCriteria: String,
+    sortingCriteria: SortingOption,
     ascendingOrder: Boolean,
-    onSortingCriteriaChange: (String) -> Unit,
+    onSortingCriteriaChange: (SortingOption) -> Unit,
     onAscendingOrderChange: (Boolean) -> Unit,
 ) {
     FlowRow(
@@ -315,12 +315,12 @@ fun SortingOptions(
         horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
     ) {
         FilterChip(
-            selected = sortingCriteria == "Elevation",
+            selected = sortingCriteria == SortingOption.Elevation,
             onClick = {
-                if (sortingCriteria == "Elevation") {
+                if (sortingCriteria == SortingOption.Elevation) {
                     onAscendingOrderChange(!ascendingOrder)
                 } else {
-                    onSortingCriteriaChange("Elevation")
+                    onSortingCriteriaChange(SortingOption.Elevation)
                     onAscendingOrderChange(true)
                 }
             },
@@ -334,7 +334,7 @@ fun SortingOptions(
                 )
             },
             trailingIcon = {
-                if (sortingCriteria == "Elevation") {
+                if (sortingCriteria == SortingOption.Elevation) {
                     Icon(
                         imageVector = if (ascendingOrder) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                         contentDescription = stringResource(R.string.sorting_order)
@@ -344,12 +344,12 @@ fun SortingOptions(
         )
 
         FilterChip(
-            selected = sortingCriteria == "Begin Date",
+            selected = sortingCriteria == SortingOption.BeginDate,
             onClick = {
-                if (sortingCriteria == "Begin Date") {
+                if (sortingCriteria == SortingOption.BeginDate) {
                     onAscendingOrderChange(!ascendingOrder)
                 } else {
-                    onSortingCriteriaChange("Begin Date")
+                    onSortingCriteriaChange(SortingOption.BeginDate)
                     onAscendingOrderChange(true)
                 }
             },
@@ -361,7 +361,7 @@ fun SortingOptions(
                 modifier = Modifier.width(80.dp)
             ) },
             trailingIcon = {
-                if (sortingCriteria == "Begin Date") {
+                if (sortingCriteria == SortingOption.BeginDate) {
                     Icon(
                         imageVector = if (ascendingOrder) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                         contentDescription = stringResource(R.string.sorting_order)
@@ -371,12 +371,12 @@ fun SortingOptions(
         )
 
         FilterChip(
-            selected = sortingCriteria == "Alphabetical",
+            selected = sortingCriteria == SortingOption.Alphabetical,
             onClick = {
-                if (sortingCriteria == "Alphabetical") {
+                if (sortingCriteria == SortingOption.Alphabetical) {
                     onAscendingOrderChange(!ascendingOrder)
                 } else {
-                    onSortingCriteriaChange("Alphabetical")
+                    onSortingCriteriaChange(SortingOption.Alphabetical)
                     onAscendingOrderChange(true)
                 }
             },
@@ -388,7 +388,7 @@ fun SortingOptions(
                 modifier = Modifier.width(80.dp)
             ) },
             trailingIcon = {
-                if (sortingCriteria == "Alphabetical") {
+                if (sortingCriteria == SortingOption.Alphabetical) {
                     Icon(
                         imageVector = if (ascendingOrder) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                         contentDescription = stringResource(R.string.sorting_order)

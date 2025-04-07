@@ -11,6 +11,19 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+enum class StationFilter {
+    Active,
+    Inactive,
+    All,
+    Favorites
+}
+
+enum class SortingOption {
+    Alphabetical,
+    BeginDate,
+    Elevation
+}
+
 class ListScreenViewModel(private val repository: StationRepository) : ViewModel() {
     private val _screenStateStream = MutableStateFlow(ListScreenState())
     val screenStateStream get() = _screenStateStream.asStateFlow()
@@ -23,24 +36,12 @@ class ListScreenViewModel(private val repository: StationRepository) : ViewModel
         val loading: Boolean = false,
         val successful: Boolean = true,
         val currentQuery: String = "",
-        val currentFilter: Filter = Filter.All,
-        val sortingCriteria: String = "Alphabetical",
+        val currentFilter: StationFilter = StationFilter.All,
+        val sortingCriteria: SortingOption = SortingOption.Alphabetical,
         val ascendingOrder: Boolean = true,
         val dialogOpen: Boolean = false
     )
 
-    enum class Filter {
-        Active,
-        Inactive,
-        All,
-        Favorites
-    }
-
-    enum class SortingOption {
-        Alphabetical,
-        BeginDate,
-        Elevation
-    }
 
     init {
         loadStations()
@@ -70,7 +71,7 @@ class ListScreenViewModel(private val repository: StationRepository) : ViewModel
         }
     }
 
-    fun onFilterChange(filter: Filter) {
+    fun onFilterChange(filter: StationFilter) {
         _screenStateStream.update { state ->
             state.copy(currentFilter = filter)
         }
@@ -84,7 +85,7 @@ class ListScreenViewModel(private val repository: StationRepository) : ViewModel
         applyFilterAndSearch()
     }
 
-    fun setSortingCriteria(sortingCriteria: String) {
+    fun setSortingCriteria(sortingCriteria: SortingOption) {
         _screenStateStream.update { state ->
             state.copy(sortingCriteria = sortingCriteria)
         }
@@ -106,9 +107,9 @@ class ListScreenViewModel(private val repository: StationRepository) : ViewModel
 
         // Step 1: Filter by active/inactive/favorites
         val filteredByStatus = when (currentFilter) {
-            Filter.Active -> allStations.filter { it.isActive() }
-            Filter.Inactive -> allStations.filter { !it.isActive() }
-            Filter.Favorites -> allStations.filter { it.isFavorite } // Add this line
+            StationFilter.Active -> allStations.filter { it.isActive() }
+            StationFilter.Inactive -> allStations.filter { !it.isActive() }
+            StationFilter.Favorites -> allStations.filter { it.isFavorite } // Add this line
             else -> allStations
         }
 
@@ -121,9 +122,9 @@ class ListScreenViewModel(private val repository: StationRepository) : ViewModel
 
         // Step 3: Sort the filtered results
         val sortedResults = when (sortingCriteria) {
-            "Elevation" -> sortStationsByElevation(filteredByQuery, ascendingOrder)
-            "Begin Date" -> sortStationsByBeginDate(filteredByQuery, ascendingOrder)
-            "Alphabetical" -> sortStationsAlphabetically(filteredByQuery, ascendingOrder)
+            SortingOption.Elevation -> sortStationsByElevation(filteredByQuery, ascendingOrder)
+            SortingOption.BeginDate -> sortStationsByBeginDate(filteredByQuery, ascendingOrder)
+            SortingOption.Alphabetical -> sortStationsAlphabetically(filteredByQuery, ascendingOrder)
             else -> filteredByQuery
         }
 
