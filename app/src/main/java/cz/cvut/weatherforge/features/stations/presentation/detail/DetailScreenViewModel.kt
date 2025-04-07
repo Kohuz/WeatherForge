@@ -34,7 +34,8 @@ class DetailScreenViewModel(
         val allTimeRecords: List<RecordStats> = emptyList(),
         val dailyMeasurements: List<MeasurementDaily> = emptyList(),
         val monthlyMeasurements: List<MeasurementMonthly> = emptyList(),
-        val yearlyMeasurements: List<MeasurementYearly> = emptyList()
+        val yearlyMeasurements: List<MeasurementYearly> = emptyList(),
+        val showHelpDialog: Boolean = false,
     )
 
     init {
@@ -144,6 +145,14 @@ class DetailScreenViewModel(
             }
         }
     }
+    fun showHelpDialog() {
+        _screenStateStream.update { it.copy(showHelpDialog = true) }
+    }
+
+    fun dismissHelpDialog() {
+        _screenStateStream.update { it.copy(showHelpDialog = false) }
+    }
+
 
 }
 
