@@ -158,13 +158,11 @@
     • Data se načtou automaticky po výběru
     </string>
     <string name="help_history_content_message">
-    <b>Dva režimy zobrazení:</b>
-    • <b>Denní průběh:</b> Zobrazuje hodnoty pro tento den během historie
-    • <b>Měsíční přehled:</b> Zobrazuje hodnoty pro tento měsíc během historie
+    <b>Dva režimy zobrazení:</b>\n
+    • <b>Denní průběh:</b> Zobrazuje hodnoty pro tento den během historie\n
+    • <b>Měsíční přehled:</b> Zobrazuje hodnoty pro tento měsíc během historie\n
 
-    • Nejprve vyberte meteorologickou veličinu
-    • Zvolte typ zobrazení (denní/měsíční)
-    • Nastavte požadované datum
+    • Nejprve vyberte meteorologickou veličinu Zvolte veličinu, typ zobrazení a nastavte požadované datum\n
     • Graf se automaticky aktualizuje
 </string>
     <string name="understood">Rozumím</string>
