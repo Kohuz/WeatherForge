@@ -64,13 +64,6 @@ fun HistoryContent(
         // Resolution selector
         ResolutionSelector(historyContentViewModel, resolutions, selectedResolution)
 
-        // With this:
-        Text(
-            text = stringResource(R.string.select_element),
-            style = MaterialTheme.typography.labelLarge,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
         ElementDropdownMenu(
             items = detailState.elementCodelist,
             selectedItem = historyContentState.selectedElement,
@@ -293,19 +286,20 @@ private fun ChartDisplay(
             when (resolutions[selectedResolution]) {
                 "Den a měsíc" -> {
                     when {
+                        state.isLoading -> LoadingIndicator()
+
                         state.dailyAndMonthlyMeasurements != null -> {
                             DailyChart(state.dailyAndMonthlyMeasurements.measurements, history = true)
                         }
-                        state.isLoading -> LoadingIndicator()
                         else -> Text("No daily data available")
                     }
                 }
                 "Měsíčně" -> {
                     when {
+                        state.isLoading -> LoadingIndicator()
                         state.monthlyMeasurements != null -> {
                             MonthlyChart(state.monthlyMeasurements.measurements, history = true)
                         }
-                        state.isLoading -> LoadingIndicator()
                         else -> Text("No monthly data available")
                     }
                 }

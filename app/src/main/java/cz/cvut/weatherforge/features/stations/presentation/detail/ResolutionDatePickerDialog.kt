@@ -8,7 +8,7 @@ import java.time.LocalDate
 
 @Composable
 fun ResolutionDatePickerDialog(
-    minimumDate: LocalDate?,
+    minimumDate: LocalDate? = null,
     resolution: String,
     onDismiss: () -> Unit,
     onDateSelected: (LocalDate) -> Unit,

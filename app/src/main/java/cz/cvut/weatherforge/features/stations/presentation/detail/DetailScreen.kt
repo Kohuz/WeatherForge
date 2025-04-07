@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.HelpOutline
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Star
@@ -27,9 +28,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.maps.model.LatLng
+import cz.cvut.weatherforge.R
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.GraphContent
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.GraphContentViewModel
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.DayContent
@@ -100,12 +103,14 @@ fun DetailScreen(
                                 contentDescription = if (station.isFavorite) "Unfavorite" else "Favorite"
                             )
                         }
-                        IconButton(onClick = { detailScreenViewModel.showHelpDialog() }) {
-                            Icon(
-                                imageVector = Icons.Default.HelpOutline,
-                                contentDescription = "Help",
-                                tint = MaterialTheme.colorScheme.primary
-                            )
+                        if(selectedTabIndex != 0) {
+                            IconButton(onClick = { detailScreenViewModel.showHelpDialog() }) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.HelpOutline,
+                                    contentDescription = "Help",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
                         }
                     }
                 )
@@ -153,32 +158,13 @@ private fun HelpDialog(
     onDismiss: () -> Unit
 ) {
     val (title, message) = when (selectedTabIndex) {
-        0 -> "Overview Help" to """
-            • View basic station information
-            • See current weather conditions
-            • Access quick statistics
-            """.trimIndent()
+        1 -> stringResource(R.string.help) to stringResource(R.string.help_dialog_message_graph).trimIndent()
 
-        1 -> "Graph Help" to """
-            • Select a measurement element from dropdown
-            • Choose time resolution (Daily/Monthly/Yearly)
-            • Set date range using date pickers
-            • View generated chart below
-            """.trimIndent()
+        2 -> stringResource(R.string.help) to stringResource(R.string.help_day_content_message).trimIndent()
 
-        2 -> "Today in History Help" to """
-            • View historical data for today's date
-            • Compare with previous years
-            • See averages and extremes
-            """.trimIndent()
+        3 -> stringResource(R.string.help) to stringResource(R.string.help_history_content_message).trimIndent()
 
-        3 -> "Historical Trends Help" to """
-            • View long-term historical trends
-            • Compare different time periods
-            • Analyze seasonal patterns
-            """.trimIndent()
-
-        else -> "Help" to "This screen shows station data"
+        else -> "" to ""
     }
 
     AlertDialog(
@@ -187,14 +173,11 @@ private fun HelpDialog(
         text = {
             Column {
                 Text(message)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text("Tip: You can tap on data points for more details",
-                    style = MaterialTheme.typography.bodySmall)
             }
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("Got it!")
+                Text(stringResource(R.string.understood))
             }
         }
     )

@@ -57,6 +57,7 @@ fun InfoCard(
     title: String,
     footer: String? = null,
     items: List<Pair<String, String>>,
+    nextCardHint: String? = null, // Add this parameter
     isClickable: Boolean = false,
     onClick: (String) -> Unit = {},
     modifier: Modifier = Modifier
@@ -79,7 +80,9 @@ fun InfoCard(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
             )
+
             Spacer(modifier = Modifier.height(8.dp))
+
             items.forEach { (label, value) ->
                 WeatherInfoRow(
                     label = label,
@@ -89,8 +92,20 @@ fun InfoCard(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
             }
+
             if (footer != null) {
                 Text(text = footer, style = AppTypography.bodySmall)
+            }
+
+            // Add next card hint if available
+            nextCardHint?.let { hint ->
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "→ $hint",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+                    modifier = Modifier.align(Alignment.End)
+                )
             }
         }
     }
@@ -162,5 +177,6 @@ fun WeatherInfoRow(
 data class InfoCardData(
     val title: String,
     val items: List<Pair<String, String>>,
-    val footer: String? = null
+    val footer: String? = null,
+    val nextCardHint: String? = null
 )

@@ -29,7 +29,9 @@ class DayContentViewModel(
 
         val dailyStats: ValueStatsResult? = null,
         val statsDay: MeasurementDailyResult? = null,
-        val isLoading: Boolean = false,
+        val isLongTermLoading: Boolean = false,
+        val isConcreteDayLoading: Boolean = false,
+
         val error: String? = null
     )
 
@@ -62,7 +64,7 @@ class DayContentViewModel(
 
 
     fun fetchLongTermStats(stationId: String) {
-        _state.update { it.copy(isLoading = true, error = null) }
+        _state.update { it.copy(isLongTermLoading = true, error = null) }
         viewModelScope.launch {
             try {
                 val date =
@@ -80,20 +82,20 @@ class DayContentViewModel(
                 _state.update {
                     it.copy(
                         dailyStats = dailyStats,
-                        isLoading = false
+                        isLongTermLoading = false
                     )
                 }
 
 
             } catch (t: Throwable) {
-                _state.update { it.copy(error = t.message, isLoading = false) }
+                _state.update { it.copy(error = t.message, isLongTermLoading = false) }
             }
 
         }
     }
 
     fun fetchConcreteDayData(stationId: String) {
-        _state.update { it.copy(isLoading = true, error = null) }
+        _state.update { it.copy(isConcreteDayLoading = true, error = null) }
         viewModelScope.launch {
             try {
                 val date =
@@ -109,12 +111,12 @@ class DayContentViewModel(
                 _state.update {
                     it.copy(
                         statsDay = concreteDayMeasurements,
-                        isLoading = false
+                        isConcreteDayLoading = false
                     )
                 }
 
             } catch (t: Throwable) {
-                _state.update { it.copy(error = t.message, isLoading = false) }
+                _state.update { it.copy(error = t.message, isConcreteDayLoading = false) }
             }
         }
     }

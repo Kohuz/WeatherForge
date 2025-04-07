@@ -56,14 +56,14 @@ fun DayContent(
 
         // Data display
         when {
-            historyContentState.isLoading -> LoadingIndicator()
+            historyContentState.isLongTermLoading -> LoadingIndicator()
             historyContentState.dailyStats != null -> DailyStatsCard(historyContentState.dailyStats!!)
             else -> LoadingIndicator()
         }
 
         // Concrete day date picker
         DateSelectionButton(
-            labelRes = R.string.select_date,
+            labelRes = R.string.select_date_day_content,
             date = historyContentState.selectedConcreteDayDate?.toJavaLocalDate(),
             showPicker = historyContentState.showConcreteDayDatePicker,
             onShowPicker = { dayContentViewModel.showConcreteDatePicker(true) },
@@ -74,12 +74,17 @@ fun DayContent(
                     onDismiss = { dayContentViewModel.showConcreteDatePicker(false) },
                     onDateSelected = { date -> dayContentViewModel.setSelectedConcreteDayDate(date.toKotlinLocalDate()) }
                 )
-            }
+            },
+            resolution = "Denně"
         )
 
-        if(historyContentState.statsDay != null && historyContentState.selectedConcreteDayDate != null) {
-            ConcreteDayStatsCard(historyContentState.statsDay!!, detailState.elementCodelist, historyContentState.selectedConcreteDayDate!!.toJavaLocalDate())
+        when {
+            historyContentState.isConcreteDayLoading -> LoadingIndicator()
+            historyContentState.statsDay != null && historyContentState.selectedConcreteDayDate != null ->
+                ConcreteDayStatsCard(historyContentState.statsDay!!, detailState.elementCodelist, historyContentState.selectedConcreteDayDate!!.toJavaLocalDate())
+            else -> LoadingIndicator()
         }
+
     }
 }
 
@@ -119,7 +124,8 @@ private fun DateSelectionSection(
                 onDismiss = { viewModel.showLongTermDatePicker(false) },
                 onDateSelected = { date -> viewModel.setSelectedLongTermDate(date.toKotlinLocalDate()) }
             )
-        }
+        },
+        resolution = "Den a měsíc",
     )
 
     Spacer(modifier = Modifier.height(16.dp))
@@ -134,6 +140,7 @@ private fun DateSelectionButton(
     showPicker: Boolean,
     onShowPicker: () -> Unit,
     pickerContent: @Composable () -> Unit,
+    resolution: String
 
 ) {
     OutlinedButton(
@@ -149,12 +156,14 @@ private fun DateSelectionButton(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(
-                text = stringResource(
-                    labelRes,
-                    getLocalizedDateString(date)
+            if (date != null) {
+                Text(
+                    text = stringResource(
+                        labelRes,
+                        date.formatForResolution(resolution)
+                    )
                 )
-            )
+            }
             Icon(
                 imageVector = Icons.Default.ArrowDropDown,
                 contentDescription = stringResource(R.string.select_date),

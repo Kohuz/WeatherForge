@@ -155,7 +155,7 @@ fun HomeScreen(
                                         )
                                         if (elementInfo != null) {
                                             val valueWithUnit =
-                                                "${record.highest?.value} ${elementInfo.unit}"
+                                                "${record.highest?.value} ${elementInfo.unit} (${record.highest?.recordDate.toString()})"
                                             elementInfo.name to valueWithUnit
                                         } else {
                                             null
@@ -167,7 +167,7 @@ fun HomeScreen(
                                         )
                                         if (elementInfo != null) {
                                             val valueWithUnit =
-                                                "${record.lowest?.value} ${elementInfo.unit}"
+                                                "${record.lowest?.value} ${elementInfo.unit} (${record.lowest?.recordDate.toString()})"
                                             elementInfo.name to valueWithUnit
                                         } else {
                                             null
@@ -177,9 +177,9 @@ fun HomeScreen(
                                             record.element,
                                             screenState.elementCodelist
                                         )
-                                        if (elementInfo != null && elementInfo.name != "Teplota") {
+                                        if (elementInfo != null && elementInfo.name != "Teplota" && elementInfo.name != "Množství srážek") {
                                             val valueWithUnit =
-                                                "${String.format("%.2f", record.average)} ${elementInfo.unit}"
+                                                "${String.format("%.2f", record.average)} ${elementInfo.unit} "
                                             elementInfo.name to valueWithUnit
                                         } else {
                                             null
@@ -204,7 +204,7 @@ fun HomeScreen(
                                         )
                                         if (elementInfo != null) {
                                             val valueWithUnit =
-                                                "${record.highest?.value} ${elementInfo.unit}"
+                                                "${record.highest?.value} ${elementInfo.unit} (${record.highest?.recordDate.toString()})"
                                             elementInfo.name to valueWithUnit
                                         } else {
                                             null
@@ -216,13 +216,14 @@ fun HomeScreen(
                                         )
                                         if (elementInfo != null) {
                                             val valueWithUnit =
-                                                "${record.lowest?.value} ${elementInfo.unit}"
+                                                "${record.lowest?.value} ${elementInfo.unit} (${record.lowest?.recordDate.toString()})"
                                             elementInfo.name to valueWithUnit
                                         } else {
                                             null
                                         }
                                     }
-                                }
+                                },
+                                nextCardHint = stringResource(R.string.allTimeRecords)
                             )
                             SwipeableInfoCard(
                                 infoCards = listOf(allTimeStationData, allTimeRecordData)
@@ -238,7 +239,7 @@ fun HomeScreen(
                 modifier = Modifier.fillMaxSize()
             ) {
                 CircularProgressIndicator(
-                    color = MaterialTheme.colorScheme.primary // Use primary color for the progress indicator
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }

@@ -4,8 +4,10 @@
     <string name="max">Maximum</string>
         <!-- Date Picker Strings -->
         <string name="select_day_month">Vyberte den a měsíc: %s</string>
-        <string name="select_date">Vyberte datum: </string>
-        <string name="no_date_selected">Není vybráno datum</string>
+    <string name="select_date_day_content">Vyberte datum: %s</string>
+
+    <string name="select_date">Vyberte datum: </string>
+    <string name="no_date_selected">Není vybráno datum</string>
 
         <!-- Error Message -->
         <string name="error_message">Chyba: %s</string>
@@ -47,7 +49,7 @@
 
 
     <string name="detail_information_about_station">Informace o stanici</string>
-    <string name="detail_current_state">Aktuální stav</string>
+    <string name="detail_current_state">Aktuální stav (hodina)</string>
     <string name="detail_location">Lokace</string>
     <string name="detail_elevation">Nadmořská výška</string>
     <string name="detail_coordinates">Souřadnice</string>
@@ -138,4 +140,33 @@
     <string name="station">Stanice\n</string>
     <string name="select_from_date">Vyberte datum OD</string>
     <string name="updated">"Aktualizováno: "</string>
+    <string name="overviewHelpTitle">Nápověda - přehled</string>
+    <string name="help">Jak na to</string>
+
+
+    <string name="help_dialog_message_default">Tato obrazovka zobrazuje data stanice</string>
+    <string name="help_dialog_message_graph">• Vyberte měřený prvek z rozbalovacího menu\n• Zvolte časové rozlišení (Denně/Měsíčně a ročně/Ročně)\n• Nastavte rozsah dat pomocí výběru datumů\n• Prohlédněte si vygenerovaný graf\n• Data se automaticky načtou po výběru kteréhokoliv z parametrů\n</string>
+    <string name="help_day_content_message">
+    • <b>Dlouhodobé statistiky (den a měsíc):</b>\n
+    Zobrazí průměrné hodnoty pro vybraný den a měsíc napříč všemi lety\n
+    (např. 15. březen - ukáže statistiky pro 15.3. z různých let)\n\n
+
+    • <b>Konkrétní den (přesné datum):</b>\n
+    Zobrazí skutečně naměřené hodnoty pro vybraný konkrétní den\n
+    (např. 15.3.2020 - ukáže data pouze pro tento konkrétní den)\n\n
+
+    • Data se načtou automaticky po výběru
+    </string>
+    <string name="help_history_content_message">
+    <b>Dva režimy zobrazení:</b>
+    • <b>Denní průběh:</b> Zobrazuje hodnoty pro tento den během historie
+    • <b>Měsíční přehled:</b> Zobrazuje hodnoty pro tento měsíc během historie
+
+    • Nejprve vyberte meteorologickou veličinu
+    • Zvolte typ zobrazení (denní/měsíční)
+    • Nastavte požadované datum
+    • Graf se automaticky aktualizuje
+</string>
+    <string name="understood">Rozumím</string>
+    <string name="allTimeRecords">Celorepublikové rekordy</string>
 </resources>
