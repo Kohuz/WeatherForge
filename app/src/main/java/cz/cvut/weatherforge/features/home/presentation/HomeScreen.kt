@@ -37,6 +37,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.location.LocationServices
 import cz.cvut.weatherforge.R
 import cz.cvut.weatherforge.core.utils.elementAbbreviationToNameUnitPair
+import cz.cvut.weatherforge.core.utils.getLocalizedDateString
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementLatest
 import cz.cvut.weatherforge.features.stations.data.model.ElementCodelistItem
 import kotlinx.datetime.toJavaLocalDate
@@ -204,7 +205,7 @@ fun HomeScreen(
                                         )
                                         if (elementInfo != null) {
                                             val valueWithUnit =
-                                                "${record.highest?.value} ${elementInfo.unit} (${record.highest?.recordDate.toString()})"
+                                                "${record.highest?.value} ${elementInfo.unit} (${getLocalizedDateString(record.highest?.recordDate?.toJavaLocalDate())})"
                                             elementInfo.name to valueWithUnit
                                         } else {
                                             null
@@ -216,7 +217,7 @@ fun HomeScreen(
                                         )
                                         if (elementInfo != null) {
                                             val valueWithUnit =
-                                                "${record.lowest?.value} ${elementInfo.unit} (${record.lowest?.recordDate.toString()})"
+                                                "${record.lowest?.value} ${elementInfo.unit} (${getLocalizedDateString(record.lowest?.recordDate?.toJavaLocalDate())})"
                                             elementInfo.name to valueWithUnit
                                         } else {
                                             null
