@@ -190,7 +190,7 @@ fun GraphContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
-                shape = MaterialTheme.shapes.medium,
+                shape = MaterialTheme.shapes.medium, // Rounded corners
                 colors = ButtonDefaults.outlinedButtonColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                     contentColor = MaterialTheme.colorScheme.onSurface
@@ -331,7 +331,7 @@ fun StationElementDropdown(
 
 fun LocalDate.formatForResolution(resolution: String): String {
     return when (resolution) {
-        "Denně" -> getLocalizedDateString(this)
+        "Denně" -> this.toString()
         "Den a měsíc" -> "${this.dayOfMonth}. ${this.monthValue}."
         "Měsíc a rok" -> "${this.monthValue}/${this.year}"
         "Ročně" -> this.year.toString()

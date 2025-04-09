@@ -92,9 +92,7 @@ fun OverviewContent(station: Station, viewModel: DetailScreenViewModel, navigate
                         )
                         if (elementInfo != null) {
                             val valueWithUnit =
-                                "${record.highest?.value} ${elementInfo.unit} (${getLocalizedDateString(
-                                    record.highest?.recordDate?.toJavaLocalDate()
-                                )})"
+                                "${record.highest?.value} ${elementInfo.unit} (${record.highest?.recordDate.toString()})"
                             elementInfo.name to valueWithUnit
                         } else {
                             null
@@ -107,9 +105,7 @@ fun OverviewContent(station: Station, viewModel: DetailScreenViewModel, navigate
                         )
                         if (elementInfo != null) {
                             val valueWithUnit =
-                                "${record.lowest?.value} ${elementInfo.unit} (${getLocalizedDateString(
-                                    record.lowest?.recordDate?.toJavaLocalDate()
-                                )})"
+                                "${record.lowest?.value} ${elementInfo.unit} (${record.lowest?.recordDate.toString()})"
                             elementInfo.name to valueWithUnit
                         } else {
                             null
@@ -122,7 +118,7 @@ fun OverviewContent(station: Station, viewModel: DetailScreenViewModel, navigate
                         )
                         if (elementInfo != null) {
                             val valueWithUnit =
-                                "${record.lowest?.value} ${elementInfo.unit} (${getLocalizedDateString(record.lowest?.recordDate?.toJavaLocalDate())})"
+                                "${record.lowest?.value} ${elementInfo.unit} (${record.lowest?.recordDate.toString()})"
                             elementInfo.name to valueWithUnit
                         } else {
                             null

@@ -1,7 +1,10 @@
 package cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart
 
 
+import android.content.Context
 import android.graphics.Color
+import android.widget.TextView
+import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
@@ -10,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.MarkerView
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
@@ -23,6 +27,9 @@ import cz.cvut.weatherforge.features.measurements.data.model.MeasurementDaily
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementMonthly
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementYearly
 import com.github.mikephil.charting.formatter.ValueFormatter
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import com.github.mikephil.charting.utils.MPPointF
 
 @Composable
 fun LineChartComposable(entries: List<Entry>, labels: List<String>) {
@@ -105,7 +112,21 @@ fun LineChartComposable(entries: List<Entry>, labels: List<String>) {
 
                 legend.isEnabled = false
 
-                // Refresh the chart
+                val marker = ValueMarker(context, R.layout.marker_view)
+                marker.chartView = this
+                this.marker = marker
+
+                // Enable marker on click
+                setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+                    override fun onValueSelected(e: Entry?, h: Highlight?) {
+                        // Marker will auto-show
+                    }
+
+                    override fun onNothingSelected() {
+                        // Optional: hide marker when nothing selected
+                    }
+                })
+
                 invalidate()
             }
         },
@@ -156,7 +177,9 @@ fun LineChartComposable(entries: List<Entry>, labels: List<String>) {
             // Update X-axis labels
             lineChart.xAxis.valueFormatter = IndexAxisValueFormatter(labels)
 
-            // Refresh the chart
+
+
+
             lineChart.invalidate()
         },
         modifier = Modifier
@@ -188,5 +211,20 @@ fun transformYearlyToEntries(measurements: List<MeasurementYearly>): List<Entry>
             index.toFloat(), // X-axis: Index of the year
             measurement.value?.toFloat() ?: 0f // Y-axis: Yearly value (or 0 if null)
         )
+    }
+}
+
+class ValueMarker(context: Context, layoutResource: Int) : MarkerView(context, layoutResource) {
+
+    private val tvValue: TextView = findViewById(R.id.tvValue)
+
+    // Adjust marker position to appear above the point
+    override fun getOffset(): MPPointF {
+        return MPPointF(-(width / 2f), -height - 10f)
+    }
+
+    override fun refreshContent(e: Entry?, highlight: Highlight?) {
+        tvValue.text = "%.1f".format(e?.y ?: 0f) // Show just the Y-value with 1 decimal
+        super.refreshContent(e, highlight)
     }
 }

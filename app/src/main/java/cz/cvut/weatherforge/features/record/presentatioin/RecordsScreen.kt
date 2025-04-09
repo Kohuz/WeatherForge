@@ -132,8 +132,7 @@ fun RecordsScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = getLocalizedDateString(LocalDate.parse(screenState.selectedDate)).takeIf { it.isNotEmpty() }
-                                        ?: stringResource(R.string.select_date),
+                                    text = screenState.selectedDate ?: stringResource(R.string.select_date),
                                     modifier = Modifier.padding(8.dp)
                                 )
                                 Icon(
