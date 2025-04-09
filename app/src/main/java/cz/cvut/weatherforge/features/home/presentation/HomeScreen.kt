@@ -22,11 +22,16 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -55,6 +60,7 @@ fun HomeScreen(
     val screenState by viewModel.screenStateStream.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
+    var selectedTabIndex by remember { mutableIntStateOf(0) }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -69,11 +75,9 @@ fun HomeScreen(
     LaunchedEffect(Unit) {
         when (PackageManager.PERMISSION_GRANTED) {
             ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) -> {
-                // Permission already granted, fetch location
                 viewModel.fetchUserLocation(context, fusedLocationClient)
             }
             else -> {
-                // Request permission
                 permissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
             }
         }
@@ -133,102 +137,133 @@ fun HomeScreen(
                             }
                         }
 
+                        if (screenState.allTimeRecords.isNotEmpty() && screenState.alltimeStationRecords.isNotEmpty()) {
+                            val tabs = listOf(
+                                stringResource(R.string.records_at_station),
+                                stringResource(R.string.records)
+                            )
+
+                            Column(modifier = Modifier.fillMaxWidth()) {
+                                TabRow(
+                                    selectedTabIndex = selectedTabIndex,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    tabs.forEachIndexed { index, title ->
+                                        Tab(
+                                            selected = selectedTabIndex == index,
+                                            onClick = { selectedTabIndex = index },
+                                            text = { Text(text = title) }
+                                        )
+                                    }
+                                }
+
+                                when (selectedTabIndex) {
+                                    0 -> {
+                                        val allTimeStationData = InfoCardData(
+                                            title = stringResource(R.string.records_at_station),
+                                            items = screenState.alltimeStationRecords.mapNotNull { record ->
+                                                if (record.element == "TMA" ||
+                                                    record.element == "Fmax" ||
+                                                    record.element == "SVH" ||
+                                                    record.element == "SNO" ||
+                                                    record.element == "SRA" ||
+                                                    record.element == "SCE"
+                                                ) {
+                                                    val elementInfo = elementAbbreviationToNameUnitPair(
+                                                        record.element,
+                                                        screenState.elementCodelist
+                                                    )
+                                                    if (elementInfo != null) {
+                                                        val valueWithUnit =
+                                                            "${record.highest?.value} ${elementInfo.unit} (${record.highest?.recordDate.toString()})"
+                                                        elementInfo.name to valueWithUnit
+                                                    } else {
+                                                        null
+                                                    }
+                                                } else {
+                                                    val elementInfo = elementAbbreviationToNameUnitPair(
+                                                        record.element,
+                                                        screenState.elementCodelist
+                                                    )
+                                                    if (elementInfo != null) {
+                                                        val valueWithUnit =
+                                                            "${record.lowest?.value} ${elementInfo.unit} (${record.lowest?.recordDate.toString()})"
+                                                        elementInfo.name to valueWithUnit
+                                                    } else {
+                                                        null
+                                                    }
+                                                }
+                                            }
+                                        )
+                                        InfoCard(
+                                            title = allTimeStationData.title,
+                                            items = allTimeStationData.items,
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                    }
+                                    1 -> {
+                                        val allTimeRecordData = InfoCardData(
+                                            title = stringResource(R.string.records),
+                                            items = screenState.allTimeRecords.mapNotNull { record ->
+                                                if (record.element == "TMA" ||
+                                                    record.element == "Fmax" ||
+                                                    record.element == "SVH" ||
+                                                    record.element == "SNO" ||
+                                                    record.element == "SCE"
+                                                ) {
+                                                    val elementInfo = elementAbbreviationToNameUnitPair(
+                                                        record.element,
+                                                        screenState.elementCodelist
+                                                    )
+                                                    if (elementInfo != null) {
+                                                        val valueWithUnit =
+                                                            "${record.highest?.value} ${elementInfo.unit} (${record.highest?.recordDate.toString()})"
+                                                        elementInfo.name to valueWithUnit
+                                                    } else {
+                                                        null
+                                                    }
+                                                } else if (record.element == "TMI") {
+                                                    val elementInfo = elementAbbreviationToNameUnitPair(
+                                                        record.element,
+                                                        screenState.elementCodelist
+                                                    )
+                                                    if (elementInfo != null) {
+                                                        val valueWithUnit =
+                                                            "${record.lowest?.value} ${elementInfo.unit} (${record.lowest?.recordDate.toString()})"
+                                                        elementInfo.name to valueWithUnit
+                                                    } else {
+                                                        null
+                                                    }
+                                                } else {
+                                                    val elementInfo = elementAbbreviationToNameUnitPair(
+                                                        record.element,
+                                                        screenState.elementCodelist
+                                                    )
+                                                    if (elementInfo != null && elementInfo.name != "Teplota" && elementInfo.name != "Množství srážek") {
+                                                        val valueWithUnit =
+                                                            "${String.format("%.2f", record.average)} ${elementInfo.unit} "
+                                                        elementInfo.name to valueWithUnit
+                                                    } else {
+                                                        null
+                                                    }
+                                                }
+                                            }
+                                        )
+                                        InfoCard(
+                                            title = allTimeRecordData.title,
+                                            items = allTimeRecordData.items,
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
                         NearbyStationInfoCard(
                             title = stringResource(R.string.station_near),
                             screenState.nearbyStations,
                             onClick = navigateToDetail
                         )
-
-                        if (screenState.allTimeRecords.isNotEmpty() && screenState.alltimeStationRecords.isNotEmpty()) {
-                            val allTimeRecordData = InfoCardData(
-                                title = stringResource(R.string.records),
-                                items = screenState.allTimeRecords.mapNotNull { record ->
-                                    if (record.element == "TMA" ||
-                                        record.element == "Fmax" ||
-                                        record.element == "SVH" ||
-                                        record.element == "SNO" ||
-                                        record.element == "SCE"
-                                    ) {
-                                        val elementInfo = elementAbbreviationToNameUnitPair(
-                                            record.element,
-                                            screenState.elementCodelist
-                                        )
-                                        if (elementInfo != null) {
-                                            val valueWithUnit =
-                                                "${record.highest?.value} ${elementInfo.unit} (${record.highest?.recordDate.toString()})"
-                                            elementInfo.name to valueWithUnit
-                                        } else {
-                                            null
-                                        }
-                                    } else if (record.element == "TMI") {
-                                        val elementInfo = elementAbbreviationToNameUnitPair(
-                                            record.element,
-                                            screenState.elementCodelist
-                                        )
-                                        if (elementInfo != null) {
-                                            val valueWithUnit =
-                                                "${record.lowest?.value} ${elementInfo.unit} (${record.lowest?.recordDate.toString()})"
-                                            elementInfo.name to valueWithUnit
-                                        } else {
-                                            null
-                                        }
-                                    } else {
-                                        val elementInfo = elementAbbreviationToNameUnitPair(
-                                            record.element,
-                                            screenState.elementCodelist
-                                        )
-                                        if (elementInfo != null && elementInfo.name != "Teplota" && elementInfo.name != "Množství srážek") {
-                                            val valueWithUnit =
-                                                "${String.format("%.2f", record.average)} ${elementInfo.unit} "
-                                            elementInfo.name to valueWithUnit
-                                        } else {
-                                            null
-                                        }
-                                    }
-                                }
-                            )
-
-                            val allTimeStationData = InfoCardData(
-                                title = stringResource(R.string.records_at_station),
-                                items = screenState.alltimeStationRecords.mapNotNull { record ->
-                                    if (record.element == "TMA" ||
-                                        record.element == "Fmax" ||
-                                        record.element == "SVH" ||
-                                        record.element == "SNO" ||
-                                        record.element == "SRA" ||
-                                        record.element == "SCE"
-                                    ) {
-                                        val elementInfo = elementAbbreviationToNameUnitPair(
-                                            record.element,
-                                            screenState.elementCodelist
-                                        )
-                                        if (elementInfo != null) {
-                                            val valueWithUnit =
-                                                "${record.highest?.value} ${elementInfo.unit} (${record.highest?.recordDate.toString()})"
-                                            elementInfo.name to valueWithUnit
-                                        } else {
-                                            null
-                                        }
-                                    } else {
-                                        val elementInfo = elementAbbreviationToNameUnitPair(
-                                            record.element,
-                                            screenState.elementCodelist
-                                        )
-                                        if (elementInfo != null) {
-                                            val valueWithUnit =
-                                                "${record.lowest?.value} ${elementInfo.unit} (${record.lowest?.recordDate.toString()})"
-                                            elementInfo.name to valueWithUnit
-                                        } else {
-                                            null
-                                        }
-                                    }
-                                },
-                                nextCardHint = stringResource(R.string.allTimeRecords)
-                            )
-                            SwipeableInfoCard(
-                                infoCards = listOf(allTimeStationData, allTimeRecordData)
-                            )
-                        }
                     }
                 }
             }

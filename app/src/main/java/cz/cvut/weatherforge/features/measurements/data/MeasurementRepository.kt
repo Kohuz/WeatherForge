@@ -80,6 +80,7 @@ class MeasurementRepository(
                 "FMAX" -> measurements.filter { it.mdFunction == "MAX" }
                 "SCE" -> measurements.filter { it.mdFunction == "GE(1)" }
                 "SNO" -> measurements.filter { it.mdFunction == "GE(1)" }
+                "SRA" -> measurements.filter { it.mdFunction == "SUM" }
                 else -> measurements
             }
             MeasurementYearlyResult(filteredMeasurements, isSuccess = true)

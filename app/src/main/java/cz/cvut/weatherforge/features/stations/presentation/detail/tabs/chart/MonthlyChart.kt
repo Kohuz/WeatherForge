@@ -21,7 +21,7 @@ fun MonthlyChart(measurements: List<MeasurementMonthly>, history: Boolean? = fal
             labels = measurementsWithoutLast.map { it.year.toString() }
         }
         else {
-            labels = measurementsWithoutLast.map { it.month.toString() }
+            labels = measurementsWithoutLast.map { "${it.month}/${it.year}" }
         }
 
         LineChartComposable(entries, labels)

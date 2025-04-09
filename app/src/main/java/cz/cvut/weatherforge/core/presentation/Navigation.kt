@@ -10,6 +10,7 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -34,26 +35,32 @@ sealed class Screens(val route: String) {
 
     sealed class TopLevel(route: String) : Screens(route) {
         abstract val icon: ImageVector
+        abstract val text: String
 
         data object Map : TopLevel("map/{latitude}/{longitude}") {
             override val icon = Icons.Filled.Place
             fun createRoute(latitude: Double, longitude: Double) = "map/$latitude/$longitude"
+            override val text = "Mapa"
         }
 
         data object DefaultMap : TopLevel("map") { // Add a default route for the map
             override val icon = Icons.Filled.Place
+            override val text = "Mapa"
         }
 
         data object List : TopLevel("list") {
             override val icon = Icons.AutoMirrored.Filled.List
+            override val text = "Seznam"
         }
 
         data object Home : TopLevel("home") {
             override val icon = Icons.Filled.Home
+            override val text = "Domů"
         }
 
         data object Records : TopLevel("records") {
             override val icon = Icons.Filled.Leaderboard
+            override val text = "Top měření"
         }
 
         companion object {
@@ -78,6 +85,7 @@ fun Navigation() {
                 Screens.TopLevel.all.forEach { screen ->
                     NavigationBarItem(
                         icon = { Icon(screen.icon, contentDescription = null) },
+                        label = { Text(screen.text) },
                         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                         onClick = {
                             navController.navigate(screen.route) {

@@ -41,8 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cz.cvut.weatherforge.R
 import cz.cvut.weatherforge.core.utils.getLocalizedDateString
+import cz.cvut.weatherforge.features.stations.data.model.ElementCodelistItem
 import cz.cvut.weatherforge.features.stations.data.model.Station
-import cz.cvut.weatherforge.features.stations.data.model.StationElement
 import cz.cvut.weatherforge.features.stations.presentation.detail.DetailScreenViewModel
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.DailyChart
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.chart.MonthlyChart
@@ -68,7 +68,7 @@ fun GraphContent(
     if (graphContentState.showFromDatePicker) {
         ResolutionDatePickerDialog(
             minimumDate = station.stationElements
-                .find { it.elementAbbreviation == graphContentState.selectedElement!!.elementAbbreviation }
+                .find { it.elementAbbreviation == graphContentState.selectedElement!!.abbreviation }
                 ?.beginDate?.date?.toJavaLocalDate(),
             resolution = resolutions[selectedResolution],
             onDismiss = { graphContentViewModel.showFromDatePicker(false) },
@@ -87,8 +87,8 @@ fun GraphContent(
             onDateSelected = { date ->
                 graphContentViewModel.setToDate(date)
             },
-            dateToShow = graphContentState.fromDate?.let { graphContentState.fromDate?.let { md -> maxOf(it, md) } ?: it }
-                ?:  graphContentState.fromDate?.let { maxOf(LocalDate.now().minusMonths(3), it) } ?: LocalDate.now().minusMonths(3)        )
+            dateToShow = graphContentState.fromDate!!.plusMonths(1) ?: LocalDate.now().minusMonths(2),
+        )
     }
 
     // Fetch data when all parameters are available
@@ -99,21 +99,21 @@ fun GraphContent(
                         station.stationId,
                         graphContentState.fromDate.toString(),
                         graphContentState.toDate.toString(),
-                        graphContentState.selectedElement!!.elementAbbreviation
+                        graphContentState.selectedElement!!.abbreviation
                     )
 
                     "Měsíc a rok" -> detailScreenViewModel.fetchMonthlyMeasurements(
                         station.stationId,
                         graphContentState.fromDate.toString(),
                         graphContentState.toDate.toString(),
-                        graphContentState.selectedElement!!.elementAbbreviation
+                        graphContentState.selectedElement!!.abbreviation
                     )
 
                     "Ročně" -> detailScreenViewModel.fetchYearlyMeasurements(
                         station.stationId,
                         graphContentState.fromDate.toString(),
                         graphContentState.toDate.toString(),
-                        graphContentState.selectedElement!!.elementAbbreviation
+                        graphContentState.selectedElement!!.abbreviation
                     )
                 }
             }
@@ -127,7 +127,9 @@ fun GraphContent(
     ) {
         detailScreenState.station?.let {
             StationElementDropdown(
-                items = it.stationElements,
+                items = detailScreenState.elementCodelist.filter { element ->
+                    it.stationElements.any { se -> se.elementAbbreviation == element.abbreviation }
+                },
                 selectedItem = graphContentState.selectedElement,
                 onItemSelected = { element ->
                     graphContentViewModel.selectElement(element)
@@ -135,11 +137,13 @@ fun GraphContent(
             )
         }
 
+        Text(stringResource(R.string.selectResolution))
         // Radio buttons for selecting resolution
-        FlowRow (
+        FlowRow(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp),
+                .padding(vertical = 4.dp), // Less vertical space
+            horizontalArrangement = Arrangement.spacedBy(4.dp) // Reduced spacing
         ) {
             resolutions.forEachIndexed { index, resolution ->
                 Row(
@@ -149,19 +153,24 @@ fun GraphContent(
                             onClick = { graphContentViewModel.selectResolution(index) },
                             role = Role.RadioButton
                         )
-                        .padding(8.dp),
+                        .padding(4.dp), // Less padding
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     RadioButton(
                         selected = (index == selectedResolution),
-                        onClick = { graphContentViewModel.selectResolution(index) }
+                        onClick = { graphContentViewModel.selectResolution(index) },
+                        modifier = Modifier.size(20.dp) // Slightly smaller radio button
                     )
+                    val label = when (resolution) {
+                        "Měsíc a rok" -> stringResource(R.string.monthly)
+                        else -> resolution
+                    }
                     Text(
-                        resolution,
-                        maxLines = 2,
-                        softWrap = true,
+                        label,
+                        maxLines = 1,
+                        softWrap = false,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.width(80.dp)
+                        modifier = Modifier.width(70.dp) // Narrower width
                     )
                 }
             }
@@ -172,7 +181,7 @@ fun GraphContent(
         if (graphContentState.selectedElement != null) {
             // Date Selectors for fromDate and toDate
             val beginDate = station.stationElements
-                .find { it.elementAbbreviation == graphContentState.selectedElement!!.elementAbbreviation }
+                .find { it.elementAbbreviation == graphContentState.selectedElement!!.abbreviation }
                 ?.beginDate
 
             if (beginDate != null) {
@@ -270,9 +279,9 @@ fun GraphContent(
 
 @Composable
 fun StationElementDropdown(
-    items: List<StationElement>,
-    selectedItem: StationElement?,
-    onItemSelected: (StationElement) -> Unit
+    items: List<ElementCodelistItem>,
+    selectedItem: ElementCodelistItem?,
+    onItemSelected: (ElementCodelistItem) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) } // Internal state for dropdown visibility
 
@@ -297,7 +306,7 @@ fun StationElementDropdown(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = selectedItem?.elementName ?: stringResource(R.string.select_element),
+                    text = selectedItem?.name ?: stringResource(R.string.select_element),
                     modifier = Modifier.padding(8.dp)
                 )
                 Icon(
@@ -321,7 +330,7 @@ fun StationElementDropdown(
                         expanded = false // Close dropdown after selection
                     },
                     text = {
-                        Text(text = item.elementName)
+                        Text(text = item.name)
                     }
                 )
             }

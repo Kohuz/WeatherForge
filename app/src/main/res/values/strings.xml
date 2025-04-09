@@ -167,4 +167,6 @@
 </string>
     <string name="understood">Rozumím</string>
     <string name="allTimeRecords">Celorepublikové rekordy</string>
+    <string name="selectResolution">Vyberte rozlišení měření: </string>
+    <string name="monthly">Měsíčně</string>
 </resources>

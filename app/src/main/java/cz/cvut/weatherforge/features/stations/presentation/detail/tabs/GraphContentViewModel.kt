@@ -24,7 +24,7 @@ class GraphContentViewModel(
     data class GraphContentState(
         val selectedResolutionIndex: Int = 0,
         val expanded: Boolean = false,
-        val selectedElement: StationElement? = null,
+        val selectedElement: ElementCodelistItem? = null,
         val fromDate: LocalDate? = null,
         val toDate: LocalDate? = null,
         val showFromDatePicker: Boolean = false,
@@ -40,7 +40,7 @@ class GraphContentViewModel(
         _graphContentStateStream.update { it.copy(expanded = expanded) }
     }
 
-    fun selectElement(element: StationElement) {
+    fun selectElement(element: ElementCodelistItem) {
         _graphContentStateStream.update { it.copy(selectedElement = element) }
     }
 
