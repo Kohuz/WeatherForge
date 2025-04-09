@@ -77,6 +77,7 @@ fun RecordsScreen(
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
+                .padding(horizontal = 16.dp)
         ) {
             when (screenState.loading) {
                 true -> {

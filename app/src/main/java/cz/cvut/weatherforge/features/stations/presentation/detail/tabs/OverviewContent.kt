@@ -57,11 +57,6 @@ fun OverviewContent(station: Station, viewModel: DetailScreenViewModel, navigate
             ).filterNotNull()
         )
 
-        NearbyStationInfoCard(
-            title = stringResource(R.string.station_near),
-            screenState.nearbyStations,
-            onClick = navigateToDetail
-        )
 
 
         if (screenState.station != null && station.isActive() && station.stationLatestMeasurements.isNotEmpty()) {
@@ -92,7 +87,9 @@ fun OverviewContent(station: Station, viewModel: DetailScreenViewModel, navigate
                         )
                         if (elementInfo != null) {
                             val valueWithUnit =
-                                "${record.highest?.value} ${elementInfo.unit} (${record.highest?.recordDate.toString()})"
+                                "${record.highest?.value} ${elementInfo.unit} (${getLocalizedDateString(
+                                    record.highest?.recordDate?.toJavaLocalDate()
+                                )})"
                             elementInfo.name to valueWithUnit
                         } else {
                             null
@@ -105,7 +102,7 @@ fun OverviewContent(station: Station, viewModel: DetailScreenViewModel, navigate
                         )
                         if (elementInfo != null) {
                             val valueWithUnit =
-                                "${record.lowest?.value} ${elementInfo.unit} (${record.lowest?.recordDate.toString()})"
+                                "${record.lowest?.value} ${elementInfo.unit} (${getLocalizedDateString(record.lowest?.recordDate?.toJavaLocalDate())})"
                             elementInfo.name to valueWithUnit
                         } else {
                             null
@@ -118,7 +115,9 @@ fun OverviewContent(station: Station, viewModel: DetailScreenViewModel, navigate
                         )
                         if (elementInfo != null) {
                             val valueWithUnit =
-                                "${record.lowest?.value} ${elementInfo.unit} (${record.lowest?.recordDate.toString()})"
+                                "${record.lowest?.value} ${elementInfo.unit} (${getLocalizedDateString(
+                                    record.lowest?.recordDate?.toJavaLocalDate()
+                                )})"
                             elementInfo.name to valueWithUnit
                         } else {
                             null
@@ -128,7 +127,12 @@ fun OverviewContent(station: Station, viewModel: DetailScreenViewModel, navigate
                 }
             )
         }
-       
-        
+        NearbyStationInfoCard(
+            title = stringResource(R.string.station_near),
+            screenState.nearbyStations,
+            onClick = navigateToDetail
+        )
+
+
     }
 }

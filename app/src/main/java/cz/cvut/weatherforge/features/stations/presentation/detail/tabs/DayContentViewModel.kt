@@ -100,7 +100,7 @@ class DayContentViewModel(
             try {
                 val date =
                     _state.value.selectedConcreteDayDate?.toString() ?: java.time.LocalDate.now()
-                        .minusYears(1)
+                        .minusMonths(1)
                         .toString()
 
                 _state.update { it.copy(selectedConcreteDayDate  = LocalDate.parse(date)) }

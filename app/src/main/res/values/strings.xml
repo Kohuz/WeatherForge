@@ -169,4 +169,5 @@
     <string name="allTimeRecords">Celorepublikové rekordy</string>
     <string name="selectResolution">Vyberte rozlišení měření: </string>
     <string name="monthly">Měsíčně</string>
+    <string name="element_unit">"Jednotka veličiny: "</string>
 </resources>

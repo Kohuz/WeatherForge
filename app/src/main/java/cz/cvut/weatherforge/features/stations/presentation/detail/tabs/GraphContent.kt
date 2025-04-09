@@ -192,6 +192,15 @@ fun GraphContent(
                         .padding(vertical = 8.dp)
                 )
             }
+            if (graphContentState.selectedElement != null) {
+                Text(
+                    text = "${stringResource(R.string.element_unit)}: ${graphContentState.selectedElement!!.unit}",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                )
+            }
+
 
             // From Date Selector
             OutlinedButton(

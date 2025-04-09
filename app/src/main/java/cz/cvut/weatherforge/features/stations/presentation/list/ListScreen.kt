@@ -240,7 +240,7 @@ fun ResultCard(
                 .padding(start = 4.dp)
                 .clickable { onToggleFavorite() }
         )
-        if(currentSortingCriteria === SortingOption.Elevation) {
+        if(currentSortingCriteria === SortingOption.Elevation && station.elevation.toInt() != -1) {
             Text(text = "${station.elevation.toInt()} m n.m.")
         }
         if(currentSortingCriteria === SortingOption.BeginDate && station.startDate != null) {
