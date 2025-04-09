@@ -112,7 +112,7 @@ fun LineChartComposable(entries: List<Entry>, labels: List<String>) {
 
                 legend.isEnabled = false
 
-                val marker = ValueMarker(context, R.layout.marker_view)
+                val marker = ValueMarker(context, R.layout.marker_view, labels)
                 marker.chartView = this
                 this.marker = marker
 
@@ -214,7 +214,11 @@ fun transformYearlyToEntries(measurements: List<MeasurementYearly>): List<Entry>
     }
 }
 
-class ValueMarker(context: Context, layoutResource: Int) : MarkerView(context, layoutResource) {
+class ValueMarker(
+    context: Context,
+    layoutResource: Int,
+    private val labels: List<String>
+) : MarkerView(context, layoutResource) {
 
     private val tvValue: TextView = findViewById(R.id.tvValue)
 
@@ -224,7 +228,10 @@ class ValueMarker(context: Context, layoutResource: Int) : MarkerView(context, l
     }
 
     override fun refreshContent(e: Entry?, highlight: Highlight?) {
-        tvValue.text = "%.1f".format(e?.y ?: 0f) // Show just the Y-value with 1 decimal
+        val index = e?.x?.toInt() ?: 0
+        val date = if (index < labels.size) labels[index] else ""
+        val value = "%.1f".format(e?.y ?: 0f)
+        tvValue.text = "$date: $value" // Show both date and value
         super.refreshContent(e, highlight)
     }
 }

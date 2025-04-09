@@ -331,7 +331,7 @@ fun StationElementDropdown(
 
 fun LocalDate.formatForResolution(resolution: String): String {
     return when (resolution) {
-        "Denně" -> this.toString()
+        "Denně" -> getLocalizedDateString(this)
         "Den a měsíc" -> "${this.dayOfMonth}. ${this.monthValue}."
         "Měsíc a rok" -> "${this.monthValue}/${this.year}"
         "Ročně" -> this.year.toString()

@@ -57,7 +57,7 @@ fun DetailScreen(
     val screenState by detailScreenViewModel.screenStateStream.collectAsStateWithLifecycle()
     val station = screenState.station
     val selectedTabIndex = screenState.selectedTabIndex
-    val tabs = listOf("Přehled", "Graf", "Dnešek v historii", "Historické průběhy")
+    val tabs = listOf("Přehled", "Časový průběh", "Dnešek v historii", "Roční srovnání")
 
     LaunchedEffect(stationId) {
         detailScreenViewModel.loadStation(stationId)
