@@ -139,6 +139,7 @@ fun NearbyStationInfoCard(
     items: List<Pair<Station, Double?>>,
     onClick: (id: String) -> Unit,
     modifier: Modifier = Modifier,
+    icon: ImageVector
     ) {
     Card(
         modifier = modifier
@@ -161,7 +162,7 @@ fun NearbyStationInfoCard(
             ) {
 
                     Icon(
-                        imageVector = Icons.Default.Place,
+                        imageVector = icon,
                         contentDescription = "Nearby stations",
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier
@@ -251,7 +252,7 @@ private fun NearbyStationItem(
                     )
                 )
             } ?: Text(
-                text = "N/A",
+                text = "",
                 style = MaterialTheme.typography.bodyMedium.copy(
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                 )

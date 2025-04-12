@@ -30,6 +30,7 @@ class HomeScreenViewModel(private val stationRepository: StationRepository, priv
 
     data class HomeScreenState(
         val closestStation: Station? = null,
+        val favoriteStations: List<Station> = emptyList(),
         val nearbyStations: List<Pair<Station, Double>> = emptyList(),
         val elementCodelist: List<ElementCodelistItem> = emptyList(),
         val actualMeasurements: List<MeasurementLatest> = emptyList(),
@@ -65,6 +66,7 @@ class HomeScreenViewModel(private val stationRepository: StationRepository, priv
                 fetchClosestStation(currentLocation)
                 fetchNearbyStations(currentLocation)
             }
+
             setLoadingState(false)
         }
     }
@@ -80,6 +82,21 @@ class HomeScreenViewModel(private val stationRepository: StationRepository, priv
             closestStationResult.station?.let { station ->
                 fetchTodayAllTimeStationRecords(station.stationId)
             }
+        }
+    }
+
+    suspend fun fetchFavorites() {
+        viewModelScope.launch {
+            setLoadingState(true)
+
+            val stations = stationRepository.getStations()
+            val favoriteStations = stations.stations.filter { station ->
+                station.isFavorite
+            }
+            _screenStateStream.update { state ->
+                state.copy(favoriteStations = favoriteStations)
+            }
+            setLoadingState(false)
         }
     }
 
@@ -136,13 +153,11 @@ class HomeScreenViewModel(private val stationRepository: StationRepository, priv
                         LatLng(it.latitude, it.longitude)
                     } ?: defaultLocation
 
-                    // Only update and load if location changed significantly
                     if (!newLocation.isSameAs(_screenStateStream.value.userLocation)) {
                         _screenStateStream.update { state ->
                             state.copy(userLocation = newLocation)
                         }
 
-                        // Only load info if this is a new location we haven't loaded before
                         if (!newLocation.isSameAs(lastLoadedLocation)) {
                             lastLoadedLocation = newLocation
                             loadInfo()

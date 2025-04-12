@@ -180,4 +180,6 @@
 
     <!-- Additional strings for measurement time -->
     <string name="recorded_at">Naměřeno v %s</string>
+    <string name="station_inactive">Stanice již není aktivní</string>
+    <string name="staion_favorites">Oblibené stanice</string>
 </resources>

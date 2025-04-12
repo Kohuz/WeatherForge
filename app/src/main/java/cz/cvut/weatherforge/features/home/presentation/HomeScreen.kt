@@ -13,12 +13,17 @@ import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -40,6 +45,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -88,6 +95,7 @@ fun HomeScreen(
                 permissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
             }
         }
+        viewModel.fetchFavorites()
     }
 
     when (screenState.loading) {
@@ -95,33 +103,52 @@ fun HomeScreen(
             Scaffold(
                 topBar = {
                     Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(MaterialTheme.colorScheme.surface)
+                            .padding(vertical = 8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+                        // Title with conditional loading state
                         Text(
-                            modifier = Modifier.padding(8.dp),
                             text = stringResource(R.string.nearest_station),
-                            style = MaterialTheme.typography.headlineLarge,
-                            color = MaterialTheme.colorScheme.onSurface
+                            style = MaterialTheme.typography.titleLarge, // More appropriate than headlineLarge
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
                         )
-                        screenState.closestStation?.let {
-                            Text(
-                                modifier = Modifier
-                                    .padding(8.dp)
-                                    .clickable {
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        when {
+                            screenState.closestStation == null -> {
+                                // Loading state
+                                CircularProgressIndicator(
+                                    strokeWidth = 2.dp,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                            else -> {
+                                // Station info with better visual hierarchy
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier.clickable {
                                         navigateToDetail(screenState.closestStation!!.stationId)
-                                    },
-                                text = screenState.closestStation!!.location,
-                                style = MaterialTheme.typography.headlineMedium,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
+                                    }
+                                ) {
+                                    Text(
+                                        text = screenState.closestStation!!.location,
+                                        style = MaterialTheme.typography.headlineLarge.copy(
+                                            fontWeight = FontWeight.SemiBold
+                                        ),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+
+                                }
+                            }
                         }
                     }
                 }
-            ) { paddingValues ->
+            ){ paddingValues ->
                 Box(
                     modifier = Modifier
                         .padding(paddingValues)
@@ -190,13 +217,20 @@ fun HomeScreen(
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }
+                        NearbyStationInfoCard(
+                            title = stringResource(R.string.staion_favorites),
+                            screenState.favoriteStations.map { Pair(it, null) },
+                            onClick = navigateToDetail,
+                            icon = Icons.Default.Star
+                        )
 
                         NearbyStationInfoCard(
                             title = stringResource(R.string.station_near),
                             screenState.nearbyStations,
                             onClick = navigateToDetail,
-
+                            icon = Icons.Default.Place
                         )
+
 
                     }
                 }

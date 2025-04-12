@@ -1,16 +1,23 @@
 package cz.cvut.weatherforge.features.stations.presentation.detail
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.HelpOutline
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.SyncProblem
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,17 +29,24 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.maps.model.LatLng
 import cz.cvut.weatherforge.R
+import cz.cvut.weatherforge.features.stations.data.model.isActive
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.GraphContent
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.GraphContentViewModel
 import cz.cvut.weatherforge.features.stations.presentation.detail.tabs.DayContent
@@ -68,7 +82,25 @@ fun DetailScreen(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(text = station.location) },
+                    title = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                modifier = Modifier
+                                    .background(
+                                        color = when (station.isActive()) {
+                                            true -> Color.Green
+                                            false -> Color.Gray
+                                        },
+                                        shape = CircleShape
+                                    )
+                                    .padding(end = 8.dp)
+                            )
+                            Column {
+                                Text(station.location)
+
+                            }
+                        }
+                    },
                     navigationIcon = {
                         IconButton(onClick = { navigateUp() }) {
                             Icon(
@@ -122,13 +154,36 @@ fun DetailScreen(
                     .padding(innerPadding),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                if (!station.isActive()) {
+                    WarningBanner()
+                }
                 // TabRow to display tabs
-                TabRow(selectedTabIndex = selectedTabIndex) {
+                TabRow(
+                    selectedTabIndex = selectedTabIndex,
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.primary,
+                    indicator = { tabPositions ->
+                        SecondaryIndicator(
+                            modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
+                            height = 3.dp,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                ) {
                     tabs.forEachIndexed { index, title ->
                         Tab(
-                            text = { Text(title) },
                             selected = selectedTabIndex == index,
-                            onClick = { detailScreenViewModel.selectTab(index) }
+                            onClick = { detailScreenViewModel.selectTab(index) },
+                            text = {
+                                Text(
+                                    text = title,
+                                    style = MaterialTheme.typography.labelLarge,
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            },
+                            selectedContentColor = MaterialTheme.colorScheme.primary,
+                            unselectedContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                         )
                     }
                 }
@@ -183,4 +238,28 @@ private fun HelpDialog(
     )
 }
 
+@Composable
+private fun WarningBanner() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.errorContainer)
+            .padding(horizontal = 12.dp, vertical = 8.dp), // Reduced vertical padding
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = Icons.Filled.SyncProblem,
+            contentDescription = stringResource(R.string.station_inactive),
+            tint = MaterialTheme.colorScheme.onErrorContainer,
+        )
+        Spacer(Modifier.width(8.dp)) // Reduced spacing
+        Text(
+            text = stringResource(R.string.station_inactive),
+            style = MaterialTheme.typography.bodySmall.copy( // Smaller text
+                fontWeight = FontWeight.Bold
+            ),
+            color = MaterialTheme.colorScheme.onErrorContainer
+        )
+    }
+}
 

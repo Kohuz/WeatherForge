@@ -30,11 +30,21 @@ class StationRepository(
 
     suspend fun getStation(stationId: String): StationResult {
         return try {
-            val station = stationRemoteDataSource.getStation(stationId)
-            StationResult(station, isSuccess = true)
+            val localStation = stationLocalDataSource.getStation(stationId)
+            if (localStation != null) {
+                StationResult(localStation, isSuccess = true)
+            } else {
+                val remoteStation = stationRemoteDataSource.getStation(stationId)
+                StationResult(remoteStation, isSuccess = true)
+            }
         } catch (t: Throwable) {
-            Log.v("api", t.toString())
-            StationResult(null, isSuccess = false)
+            Log.e("StationRepository", "Error fetching station $stationId: ${t.message}")
+            val fallbackStation = stationLocalDataSource.getStation(stationId)
+            if (fallbackStation != null) {
+                StationResult(fallbackStation, isSuccess = false)
+            } else {
+                StationResult(null, isSuccess = false)
+            }
         }
     }
 
