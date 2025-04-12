@@ -170,4 +170,15 @@
     <string name="selectResolution">Vyberte rozlišení měření: </string>
     <string name="monthly">Měsíčně</string>
     <string name="element_unit">"Jednotka veličiny: "</string>
+
+    <!-- For ConcreteDayStatsCard -->
+    <string name="daily_measurements">Denní měření</string>
+    <string name="for_date">Pro datum:</string>
+
+    <!-- For DailyStatsCard -->
+    <string name="statistical_summary">Statistické údaje</string>
+    <string name="historical_averages">Historické průměry a extrémy</string>
+
+    <!-- Additional strings for measurement time -->
+    <string name="recorded_at">Naměřeno v %s</string>
 </resources>

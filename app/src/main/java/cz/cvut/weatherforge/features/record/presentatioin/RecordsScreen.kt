@@ -1,5 +1,7 @@
 package cz.cvut.weatherforge.features.record.presentatioin
 
+import InfoCard
+import InfoCardData
 import ResolutionDatePickerDialog
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,9 +43,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cz.cvut.weatherforge.R
+import cz.cvut.weatherforge.core.utils.elementAbbreviationToNameUnitPair
 import cz.cvut.weatherforge.core.utils.getLocalizedDateString
 import cz.cvut.weatherforge.core.utils.getUnitByElementAbbreviation
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementDaily
+import cz.cvut.weatherforge.features.record.data.model.RecordStats
 import cz.cvut.weatherforge.features.stations.data.model.ElementCodelistItem
 import cz.cvut.weatherforge.features.stations.data.model.Station
 import kotlinx.datetime.toJavaLocalDate
@@ -57,8 +61,8 @@ fun RecordsScreen(
 ) {
     val screenState by viewModel.screenStateStream.collectAsStateWithLifecycle()
 
-    LaunchedEffect(screenState.selectedStation, screenState.selectedDate, screenState.selectedElement) {
-        if (screenState.selectedStation != null || screenState.selectedDate != null && screenState.selectedElement != null) {
+    LaunchedEffect(screenState.selectedDate, screenState.selectedElement) {
+        if (screenState.selectedDate != null && screenState.selectedElement != null) {
             viewModel.fetchMeasurements()
         }
     }
@@ -175,6 +179,11 @@ fun RecordsScreen(
                                 )
                             }
                         }
+                        AllTimeRecordsCard(
+                            allTimeRecords = screenState.allTimeRecords,
+                            elementCodelist = screenState.elementCodelist,
+                            modifier = Modifier.fillMaxWidth()
+                        )
                     }
                 }
             }
@@ -242,8 +251,69 @@ fun ElementDropdownMenu(
                 )
             }
         }
+
     }
 }
+
+@Composable
+fun AllTimeRecordsCard(
+    allTimeRecords: List<RecordStats>,
+    elementCodelist: List<ElementCodelistItem>,
+    modifier: Modifier = Modifier
+) {
+    val recordData = InfoCardData(
+        title = stringResource(R.string.records),
+        items = allTimeRecords.mapNotNull { record ->
+            when {
+                record.element in listOf("TMA", "Fmax", "SVH", "SNO", "SCE") -> {
+                    val elementInfo = elementAbbreviationToNameUnitPair(
+                        record.element,
+                        elementCodelist
+                    )
+                    elementInfo?.let {
+                        val valueWithUnit =
+                            "${record.highest?.value} ${it.unit} (${getLocalizedDateString(record.highest?.recordDate?.toJavaLocalDate())})"
+                        it.name to valueWithUnit
+                    }
+                }
+                record.element == "TMI" -> {
+                    val elementInfo = elementAbbreviationToNameUnitPair(
+                        record.element,
+                        elementCodelist
+                    )
+                    elementInfo?.let {
+                        val valueWithUnit =
+                            "${record.lowest?.value} ${it.unit} (${getLocalizedDateString(
+                                record.lowest?.recordDate?.toJavaLocalDate()
+                            )})"
+                        it.name to valueWithUnit
+                    }
+                }
+                else -> {
+                    val elementInfo = elementAbbreviationToNameUnitPair(
+                        record.element,
+                        elementCodelist
+                    )
+                    elementInfo?.takeIf {
+                        it.name != "Teplota" && it.name != "Množství srážek"
+                    }?.let {
+                        val valueWithUnit =
+                            "${String.format("%.2f", record.average)} ${it.unit} "
+                        it.name to valueWithUnit
+                    }
+                }
+            }
+        }
+    )
+
+    InfoCard(
+        title = recordData.title,
+        items = recordData.items,
+        modifier = modifier
+    )
+}
+
+
 @Composable
 fun MeasurementsTable(measurements: List<MeasurementDaily>, selectedElement: ElementCodelistItem?, stations: List<Station>, elementCodelist: List<ElementCodelistItem>) {
 

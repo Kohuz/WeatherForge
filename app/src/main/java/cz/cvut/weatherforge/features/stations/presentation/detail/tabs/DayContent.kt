@@ -8,11 +8,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Insights
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cz.cvut.weatherforge.R
@@ -37,7 +39,6 @@ fun DayContent(
 ) {
     val historyContentState by dayContentViewModel.historyContentState.collectAsStateWithLifecycle()
     val detailState by detailViewModel.screenStateStream.collectAsStateWithLifecycle()
-    val resolutions = listOf("Den a měsíc", "Měsíčně")
 
     // Effects for data loading
     LaunchedEffects(dayContentViewModel, stationId)
@@ -48,18 +49,8 @@ fun DayContent(
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        // Date selection section
-        DateSelectionSection(dayContentViewModel, historyContentState, detailState)
-
         // Error display
         historyContentState.error?.let { ErrorMessage(it) }
-
-        // Data display
-        when {
-            historyContentState.isLongTermLoading -> LoadingIndicator()
-            historyContentState.dailyStats != null -> DailyStatsCard(historyContentState.dailyStats!!)
-            else -> LoadingIndicator()
-        }
 
         // Concrete day date picker
         DateSelectionButton(
@@ -72,19 +63,38 @@ fun DayContent(
                     minimumDate = detailState.station?.startDate?.date?.toJavaLocalDate(),
                     resolution = "Denně",
                     onDismiss = { dayContentViewModel.showConcreteDatePicker(false) },
-                    onDateSelected = { date -> dayContentViewModel.setSelectedConcreteDayDate(date.toKotlinLocalDate()) }
+                    onDateSelected = { date ->
+                        dayContentViewModel.setSelectedConcreteDayDate(date.toKotlinLocalDate())
+                        dayContentViewModel.setSelectedLongTermDate(date.toKotlinLocalDate())
+                    }
                 )
             },
             resolution = "Denně"
         )
 
-        when {
-            historyContentState.isConcreteDayLoading -> LoadingIndicator()
-            historyContentState.statsDay != null && historyContentState.selectedConcreteDayDate != null ->
-                ConcreteDayStatsCard(historyContentState.statsDay!!, detailState.elementCodelist, historyContentState.selectedConcreteDayDate!!.toJavaLocalDate())
-            else -> LoadingIndicator()
+        // Single loading indicator for all content
+        if (historyContentState.isLoading) {
+            LoadingIndicator()
+        } else {
+            // Show all content once loading is complete
+            historyContentState.statsDay?.let { statsDay ->
+                historyContentState.selectedConcreteDayDate?.let { date ->
+                    ConcreteDayStatsCard(
+                        statsDay = statsDay,
+                        elementCodelist = detailState.elementCodelist,
+                        date = date.toJavaLocalDate()
+                    )
+                }
+            }
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 8.dp),
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
+            )
+            historyContentState.dailyStats?.let { dailyStats ->
+                DailyStatsCard(dailyStats)
+            }
         }
-
     }
 }
 
@@ -105,33 +115,7 @@ private fun LaunchedEffects(
 
 }
 
-@Composable
-private fun DateSelectionSection(
-    viewModel: DayContentViewModel,
-    state: DayContentViewModel.DayContentState,
-    detailState: DetailScreenViewModel.DetailScreenState
-) {
-    // Long term date picker
-    DateSelectionButton(
-        labelRes = R.string.select_day_month,
-        date = state.selectedLongTermDate?.toJavaLocalDate(),
-        showPicker = state.showLongTermDatePicker,
-        onShowPicker = { viewModel.showLongTermDatePicker(true) },
-        pickerContent = {
-            ResolutionDatePickerDialog(
-                minimumDate = state.selectedLongTermDate?.toJavaLocalDate(),
-                resolution = "Den a měsíc",
-                onDismiss = { viewModel.showLongTermDatePicker(false) },
-                onDateSelected = { date -> viewModel.setSelectedLongTermDate(date.toKotlinLocalDate()) }
-            )
-        },
-        resolution = "Den a měsíc",
-    )
 
-    Spacer(modifier = Modifier.height(16.dp))
-
-
-}
 
 @Composable
 private fun DateSelectionButton(
@@ -202,29 +186,70 @@ private fun DailyStatsCard(dailyStats: ValueStatsResult) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = stringResource(R.string.weather_statistics),
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
-            Row(modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween) {
-
-                TemperatureStats(dailyStats)
-                PrecipitationStats(dailyStats)
+            // Header with icon
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Default.Insights,
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Column {
+                    Text(
+                        text = stringResource(R.string.weather_statistics),
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                    )
+                    Text(
+                        text = stringResource(R.string.historical_averages),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Row(modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween) {
+            // Use a Column to stack the rows vertically
+            Column(modifier = Modifier.fillMaxWidth()) {
+                BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                    val columnWidth = maxWidth / 2 - 8.dp // Half width minus padding
 
-                WindStats(dailyStats)
-                SnowStats(dailyStats)
+                    // First row - Temperature and Precipitation
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Box(modifier = Modifier.width(columnWidth)) {
+                            TemperatureStats(dailyStats)
+                        }
+                        Box(modifier = Modifier.width(columnWidth)) {
+                            PrecipitationStats(dailyStats)
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                    val columnWidth = maxWidth / 2 - 8.dp // Half width minus padding
+
+                    // Second row - Wind and Snow
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Box(modifier = Modifier.width(columnWidth)) {
+                            WindStats(dailyStats)
+                        }
+                        Box(modifier = Modifier.width(columnWidth)) {
+                            SnowStats(dailyStats)
+                        }
+                    }
+                }
             }
         }
     }
@@ -232,105 +257,111 @@ private fun DailyStatsCard(dailyStats: ValueStatsResult) {
 
 @Composable
 private fun TemperatureStats(dailyStats: ValueStatsResult) {
-    Column {
+    Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = stringResource(R.string.temperature),
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            modifier = Modifier.padding(bottom = 4.dp)
         )
-        Text(stringResource(R.string.min_temperature, dailyStats.valueStats.find { it.element == "TMI" }?.lowest ?: "--"))
-        Text(stringResource(R.string.max_temperature, dailyStats.valueStats.find { it.element == "TMA" }?.highest ?: "--"))
-        Text(stringResource(R.string.avg_temperature, dailyStats.valueStats.find { it.element == "T" }?.average?.let { "%.1f".format(it) } ?: "--"))
+        StatItem(
+            label = stringResource(R.string.min_temperature),
+            value = dailyStats.valueStats.find { it.element == "TMI" }?.lowest?.toString()
+        )
+        StatItem(
+            label = stringResource(R.string.max_temperature),
+            value = dailyStats.valueStats.find { it.element == "TMA" }?.highest?.toString()
+        )
+        StatItem(
+            label = stringResource(R.string.avg_temperature),
+            value = dailyStats.valueStats.find { it.element == "T" }?.average?.let { "%.1f".format(it) }
+        )
     }
 }
 
 @Composable
 private fun PrecipitationStats(dailyStats: ValueStatsResult) {
-    Column {
+    Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = stringResource(R.string.precipitation),
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            modifier = Modifier.padding(bottom = 4.dp)
         )
-        Text(stringResource(R.string.max_precipitation, dailyStats.valueStats.find { it.element == "SRA" }?.highest ?: "--"))
-        Text(stringResource(R.string.avg_precipitation, dailyStats.valueStats.find { it.element == "SRA" }?.average?.let { "%.1f".format(it) } ?: "--"))
+        StatItem(
+            label = stringResource(R.string.max_precipitation),
+            value = dailyStats.valueStats.find { it.element == "SRA" }?.highest?.toString()
+        )
+        StatItem(
+            label = stringResource(R.string.avg_precipitation),
+            value = dailyStats.valueStats.find { it.element == "SRA" }?.average?.let { "%.1f".format(it) }
+        )
     }
 }
 
 @Composable
 private fun WindStats(dailyStats: ValueStatsResult) {
-    Column {
+    Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = stringResource(R.string.wind),
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            modifier = Modifier.padding(bottom = 4.dp)
         )
-
-        // Maximum wind speed
-        Text(
-            text = stringResource(
-                R.string.max_wind,
-                dailyStats.valueStats.find { it.element == "Fmax" }?.highest ?: "--"
-            )
+        StatItem(
+            label = stringResource(R.string.max_wind),
+            value = dailyStats.valueStats.find { it.element == "Fmax" }?.highest?.toString()
         )
-
-        // Average wind speed
-        Text(
-            text = stringResource(
-                R.string.avg_wind,
-                dailyStats.valueStats.find { it.element == "F" }?.average?.let {
-                    "%.1f".format(it)
-                } ?: "--"
-            )
+        StatItem(
+            label = stringResource(R.string.avg_wind),
+            value = dailyStats.valueStats.find { it.element == "F" }?.average?.let { "%.1f".format(it) }
         )
     }
 }
 
 @Composable
 private fun SnowStats(dailyStats: ValueStatsResult) {
-    Column {
+    Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = stringResource(R.string.snow),
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            modifier = Modifier.padding(bottom = 4.dp)
         )
-
-        // Maximum snow depth
-        Text(
-            text = stringResource(
-                R.string.max_snow,
-                dailyStats.valueStats.find { it.element == "SCE" }?.highest ?: "--"
-            )
+        StatItem(
+            label = stringResource(R.string.max_snow),
+            value = dailyStats.valueStats.find { it.element == "SCE" }?.highest?.let { "%.1f".format(it) }
         )
-
-        // Maximum new snow
-        Text(
-            text = stringResource(
-                R.string.max_new_snow,
-                dailyStats.valueStats.find { it.element == "SNO" }?.highest?.let {
-                    "%.1f".format(it)
-                } ?: "--"
-            )
+        StatItem(
+            label = stringResource(R.string.max_new_snow),
+            value = dailyStats.valueStats.find { it.element == "SNO" }?.highest?.let { "%.1f".format(it) }
         )
-
-        // Average snow depth
-        Text(
-            text = stringResource(
-                R.string.avg_snow,
-                dailyStats.valueStats.find { it.element == "SCE" }?.average?.let {
-                    "%.1f".format(it)
-                } ?: "--"
-            )
+        StatItem(
+            label = stringResource(R.string.avg_snow),
+            value = dailyStats.valueStats.find { it.element == "SCE" }?.average?.let { "%.1f".format(it) }
         )
-
-        // Average new snow
-        Text(
-            text = stringResource(
-                R.string.avg_new_snow,
-                dailyStats.valueStats.find { it.element == "SNO" }?.average?.let {
-                    "%.1f".format(it)
-                } ?: "--"
-            )
+        StatItem(
+            label = stringResource(R.string.avg_new_snow),
+            value = dailyStats.valueStats.find { it.element == "SNO" }?.average?.let { "%.1f".format(it) }
         )
     }
 }
 
+@Composable
+private fun StatItem(label: String, value: String?) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        // Extract the base label text without the format specifier
+        val baseLabel = label.substringBefore(":") + ":"
+        Text(
+            text = value?.let {
+                String.format(label, it)
+
+
+            } ?: "--",
+            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+            modifier = Modifier.padding(start = 8.dp)
+        )
+    }
+}
 @Composable
 private fun ConcreteDayStatsCard(
     statsDay: MeasurementDailyResult,
@@ -341,7 +372,9 @@ private fun ConcreteDayStatsCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(

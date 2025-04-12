@@ -35,19 +35,15 @@ class RecordsScreenViewModel(
     val screenStateStream get() = _screenStateStream.asStateFlow()
 
     data class RecordsScreenState(
-        val selectedTabIndex: Int = 0,
         val elementCodelist: List<ElementCodelistItem> = emptyList(),
         val allStations: List<Station> = emptyList(),
         val allTimeRecords: List<RecordStats> = emptyList(),
         val dayRecords: List<RecordStats> = emptyList(),
         val selectedElement: ElementCodelistItem? = null,
-        val selectedStation: Station? = null,
-        val selectedStationName: String? = null,
         val selectedDate: String? = null,
         val showDatePicker: Boolean = false,
         val loading: Boolean = false,
         val measurements: List<MeasurementDaily> = emptyList(),
-        val searchQuery: String = "",
         val selectedOption: String = "Date",
         val expanded: Boolean = false
     )
@@ -124,10 +120,9 @@ class RecordsScreenViewModel(
     fun fetchMeasurements() {
         viewModelScope.launch {
             val selectedElement = _screenStateStream.value.selectedElement
-            val selectedStation = _screenStateStream.value.selectedStation
             val selectedDate = _screenStateStream.value.selectedDate
 
-            if (selectedElement != null && (selectedStation != null || selectedDate != null)) {
+            if (selectedElement != null && selectedDate != null) {
                 setLoadingState(true)
 
                 val result = measurementRepository.getMeasurementsTop(

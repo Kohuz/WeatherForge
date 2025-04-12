@@ -30,10 +30,7 @@ class HomeScreenViewModel(private val stationRepository: StationRepository, priv
         val nearbyStations: List<Pair<Station, Double>> = emptyList(),
         val elementCodelist: List<ElementCodelistItem> = emptyList(),
         val actualMeasurements: List<MeasurementLatest> = emptyList(),
-        val todayStationRecords: List<StationRecord> = emptyList(),
-        val todayAlltimeRecords: List<StationRecord> = emptyList(),
         val alltimeStationRecords: List<RecordStats> = emptyList(),
-        val allTimeRecords: List<RecordStats> = emptyList(),
         val loading: Boolean = false,
         val successful: Boolean = true,
         val userLocation: LatLng? = null
@@ -58,9 +55,6 @@ class HomeScreenViewModel(private val stationRepository: StationRepository, priv
                 fetchNearbyStations(userLocation)
 
             }
-
-            fetchAllTimeRecords()
-
             setLoadingState(false)
         }
     }
@@ -108,18 +102,6 @@ class HomeScreenViewModel(private val stationRepository: StationRepository, priv
             updateNearbyStations(nearbyStationsWithDistance)
         }
     }
-
-    private fun fetchAllTimeRecords() {
-        viewModelScope.launch {
-            val allTimeRecordsResult = recordRepository.getAllTimeRecords()
-            if (allTimeRecordsResult.isSuccess) {
-                _screenStateStream.update { state ->
-                    state.copy(allTimeRecords = allTimeRecordsResult.stats)
-                }
-            }
-        }
-    }
-
 
     private suspend fun updateNearbyStations(nearbyStations: List<Pair<Station, Double>>) {
         _screenStateStream.update { state ->
