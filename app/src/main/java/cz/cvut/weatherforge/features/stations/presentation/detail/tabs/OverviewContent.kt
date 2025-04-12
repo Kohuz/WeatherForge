@@ -71,7 +71,7 @@ fun OverviewContent(station: Station, viewModel: DetailScreenViewModel, navigate
 
         if (screenState.allTimeRecords.isNotEmpty()) {
             InfoCard(
-                title = stringResource(R.string.records),
+                title = stringResource(R.string.records_at_station),
                 items = screenState.allTimeRecords.mapNotNull { record ->
                     if(record.element == "T" || record.element == "F") {
                         return

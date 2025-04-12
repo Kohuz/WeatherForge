@@ -20,10 +20,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.math.abs
 
 class HomeScreenViewModel(private val stationRepository: StationRepository, private val recordRepository: RecordRepository) : ViewModel() {
     private val _screenStateStream = MutableStateFlow(HomeScreenState())
     val screenStateStream get() = _screenStateStream.asStateFlow()
+    private var lastLoadedLocation: LatLng? = null
+
 
     data class HomeScreenState(
         val closestStation: Station? = null,
@@ -45,15 +48,22 @@ class HomeScreenViewModel(private val stationRepository: StationRepository, priv
         }
     }
 
-    fun loadInfo() {
+    fun loadInfo(forceRefresh: Boolean = false) {
         viewModelScope.launch {
+            val currentLocation = _screenStateStream.value.userLocation
+            if (currentLocation == null ||
+                (lastLoadedLocation != null &&
+                        !currentLocation.isSameAs(lastLoadedLocation) &&
+                        !forceRefresh)) {
+                return@launch
+            }
+
             setLoadingState(true)
-            val userLocation = _screenStateStream.value.userLocation
+            lastLoadedLocation = currentLocation // Update the last loaded location
 
-            if (userLocation != null) {
-                fetchClosestStation(userLocation)
-                fetchNearbyStations(userLocation)
-
+            if (currentLocation != null) {
+                fetchClosestStation(currentLocation)
+                fetchNearbyStations(currentLocation)
             }
             setLoadingState(false)
         }
@@ -118,37 +128,53 @@ class HomeScreenViewModel(private val stationRepository: StationRepository, priv
     private val defaultLocation = LatLng(50.0755, 14.4378) // Default to Prague, for example
 
     fun fetchUserLocation(context: Context, fusedLocationClient: FusedLocationProviderClient) {
-        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED) {
             try {
                 fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                    val userLatLng = location?.let {
+                    val newLocation = location?.let {
                         LatLng(it.latitude, it.longitude)
-                    } ?: defaultLocation // Use default location if location is null
+                    } ?: defaultLocation
 
-                    _screenStateStream.update { state ->
-                        state.copy(userLocation = userLatLng)
+                    // Only update and load if location changed significantly
+                    if (!newLocation.isSameAs(_screenStateStream.value.userLocation)) {
+                        _screenStateStream.update { state ->
+                            state.copy(userLocation = newLocation)
+                        }
+
+                        // Only load info if this is a new location we haven't loaded before
+                        if (!newLocation.isSameAs(lastLoadedLocation)) {
+                            lastLoadedLocation = newLocation
+                            loadInfo()
+                        }
                     }
-                    loadInfo()
                 }.addOnFailureListener { e ->
-                    Log.e("locc", "Failed to fetch location: ${e.localizedMessage}")
-                    _screenStateStream.update { state ->
-                        state.copy(userLocation = defaultLocation)
-                    }
-                    loadInfo()
+                    Log.e("Location", "Failed to fetch location: ${e.localizedMessage}")
+                    handleLocationError()
                 }
             } catch (e: SecurityException) {
-                Log.w("locc", "Permission for location access was revoked: ${e.localizedMessage}")
-                _screenStateStream.update { state ->
-                    state.copy(userLocation = defaultLocation)
-                }
-                loadInfo()
+                Log.w("Location", "Permission revoked: ${e.localizedMessage}")
+                handleLocationError()
             }
         } else {
-            Log.e("locc", "Location permission is not granted.")
+            Log.e("Location", "Permission not granted")
+            handleLocationError()
+        }
+    }
+
+    private fun handleLocationError() {
+        // Only update and load if we don't already have the default location
+        if (!defaultLocation.isSameAs(_screenStateStream.value.userLocation)) {
             _screenStateStream.update { state ->
                 state.copy(userLocation = defaultLocation)
             }
+            lastLoadedLocation = defaultLocation
             loadInfo()
         }
+    }
+    private fun LatLng.isSameAs(other: LatLng?, threshold: Double = 0.001): Boolean {
+        return other != null &&
+                abs(this.latitude - other.latitude) < threshold &&
+                abs(this.longitude - other.longitude) < threshold
     }
 }

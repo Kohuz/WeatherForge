@@ -41,10 +41,9 @@
 
     <string name="nearest_station">Nejbližší stanice</string>
     <string name="station_near">Stanice poblíž</string>
-    <string name="weather_at_nearest">Počasí na nejbližší stanici</string>
+    <string name="weather_at_nearest">Počasí na nejbližší stanici za poslední hodinu</string>
     <string name="records_at_station">Rekordy na stanici</string>
     <string name="records">Rekordy celkem</string>
-    <string name="records_today">Rekordy celkem</string>
 
 
 

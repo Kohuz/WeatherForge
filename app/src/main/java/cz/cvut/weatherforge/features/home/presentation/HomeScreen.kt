@@ -3,7 +3,6 @@ package cz.cvut.weatherforge.features.home.presentation
 import InfoCard
 import InfoCardData
 import NearbyStationInfoCard
-import SwipeableInfoCard
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -19,12 +18,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshState
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -53,6 +57,7 @@ import java.time.format.FormatStyle
 import java.util.Locale
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     viewModel: HomeScreenViewModel = koinViewModel(),
@@ -61,6 +66,8 @@ fun HomeScreen(
     val screenState by viewModel.screenStateStream.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
+
+
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -118,19 +125,17 @@ fun HomeScreen(
                 Box(
                     modifier = Modifier
                         .padding(paddingValues)
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background)
-                        .verticalScroll(rememberScrollState())
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(16.dp)
+                            .verticalScroll(rememberScrollState())
                     ) {
                         if (screenState.closestStation != null) {
                             screenState.closestStation?.stationLatestMeasurements?.let {
                                 CurrentWeatherMeasurementsInfoCard(
-                                    title = stringResource(R.string.weather_at_nearest),
+                                    title = stringResource(R.string.detail_current_state),
                                     measurements = it,
                                     elementCodelist = screenState.elementCodelist,
                                 )
@@ -138,58 +143,61 @@ fun HomeScreen(
                         }
 
                         if (screenState.alltimeStationRecords.isNotEmpty()) {
-                                                                    val allTimeStationData = InfoCardData(
-                                            title = stringResource(R.string.records_at_station),
-                                            items = screenState.alltimeStationRecords.mapNotNull { record ->
-                                                if (record.element == "TMA" ||
-                                                    record.element == "Fmax" ||
-                                                    record.element == "SVH" ||
-                                                    record.element == "SNO" ||
-                                                    record.element == "SRA" ||
-                                                    record.element == "SCE"
-                                                ) {
-                                                    val elementInfo = elementAbbreviationToNameUnitPair(
-                                                        record.element,
-                                                        screenState.elementCodelist
-                                                    )
-                                                    if (elementInfo != null) {
-                                                        val valueWithUnit =
-                                                            "${record.highest?.value} ${elementInfo.unit} (${getLocalizedDateString(
-                                                                record.highest?.recordDate?.toJavaLocalDate()
-                                                            )})"
-                                                        elementInfo.name to valueWithUnit
-                                                    } else {
-                                                        null
-                                                    }
-                                                } else {
-                                                    val elementInfo = elementAbbreviationToNameUnitPair(
-                                                        record.element,
-                                                        screenState.elementCodelist
-                                                    )
-                                                    if (elementInfo != null) {
-                                                        val valueWithUnit =
-                                                            "${record.lowest?.value} ${elementInfo.unit} (${getLocalizedDateString(
-                                                                record.lowest?.recordDate?.toJavaLocalDate()
-                                                            )})"
-                                                        elementInfo.name to valueWithUnit
-                                                    } else {
-                                                        null
-                                                    }
-                                                }
-                                            }
+                            val allTimeStationData = InfoCardData(
+                                title = stringResource(R.string.records_at_station),
+
+                                items = screenState.alltimeStationRecords.mapNotNull { record ->
+                                    if (record.element == "TMA" ||
+                                        record.element == "Fmax" ||
+                                        record.element == "SVH" ||
+                                        record.element == "SNO" ||
+                                        record.element == "SRA" ||
+                                        record.element == "SCE"
+                                    ) {
+                                        val elementInfo = elementAbbreviationToNameUnitPair(
+                                            record.element,
+                                            screenState.elementCodelist
                                         )
-                                        InfoCard(
-                                            title = allTimeStationData.title,
-                                            items = allTimeStationData.items,
-                                            modifier = Modifier.fillMaxWidth()
+                                        if (elementInfo != null) {
+                                            val valueWithUnit =
+                                                "${record.highest?.value} ${elementInfo.unit} (${getLocalizedDateString(
+                                                    record.highest?.recordDate?.toJavaLocalDate()
+                                                )})"
+                                            elementInfo.name to valueWithUnit
+                                        } else {
+                                            null
+                                        }
+                                    } else {
+                                        val elementInfo = elementAbbreviationToNameUnitPair(
+                                            record.element,
+                                            screenState.elementCodelist
                                         )
+                                        if (elementInfo != null) {
+                                            val valueWithUnit =
+                                                "${record.lowest?.value} ${elementInfo.unit} (${getLocalizedDateString(
+                                                    record.lowest?.recordDate?.toJavaLocalDate()
+                                                )})"
+                                            elementInfo.name to valueWithUnit
+                                        } else {
+                                            null
+                                        }
                                     }
+                                }
+                            )
+                            InfoCard(
+                                title = allTimeStationData.title,
+                                items = allTimeStationData.items,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
 
                         NearbyStationInfoCard(
                             title = stringResource(R.string.station_near),
                             screenState.nearbyStations,
-                            onClick = navigateToDetail
+                            onClick = navigateToDetail,
+
                         )
+
                     }
                 }
             }
@@ -206,7 +214,6 @@ fun HomeScreen(
         }
     }
 }
-
 
 @Composable
 fun CurrentWeatherMeasurementsInfoCard(

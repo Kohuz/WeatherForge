@@ -146,57 +146,6 @@ private fun LoadingIndicator() {
 }
 
 
-
-@Composable
-private fun ConcreteDayStatsCard(
-    statsDay: MeasurementDailyResult,
-    elementCodelist: List<ElementCodelistItem>
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = "${stringResource(R.string.daily_stats)} lll",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
-            statsDay.measurements.forEach { measurement ->
-                val nameUnitPair = elementAbbreviationToNameUnitPair(measurement.element, elementCodelist)
-                MeasurementRow(measurement, nameUnitPair)
-            }
-        }
-    }
-}
-
-@Composable
-private fun MeasurementRow(
-    measurement: MeasurementDaily,
-    nameUnitPair: ElementCodelistItem?
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        nameUnitPair?.let {
-            Text(
-                text = it.name,
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                text = "${measurement.value} ${it.unit}",
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
-    }
-}
-
 @Composable
 private fun ResolutionSelector(
     viewModel: HistoryContentViewModel,
@@ -256,7 +205,7 @@ private fun ChartDateSelector(
     resolution: String
 ) {
     DateSelectionButton(
-        labelRes = R.string.select_day_month,
+        labelRes = if(resolution == "Den a měsíc") R.string.select_day_month else R.string.select_month,
         date = state.selectedGraphDate?.toJavaLocalDate(),
         showPicker = state.showGraphDatePicker,
         onShowPicker = { viewModel.showGraphDatePicker(true) },
