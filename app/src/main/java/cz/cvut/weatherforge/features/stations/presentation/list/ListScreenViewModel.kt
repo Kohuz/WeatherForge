@@ -109,15 +109,18 @@ class ListScreenViewModel(private val repository: StationRepository) : ViewModel
         val filteredByStatus = when (currentFilter) {
             StationFilter.Active -> allStations.filter { it.isActive() }
             StationFilter.Inactive -> allStations.filter { !it.isActive() }
-            StationFilter.Favorites -> allStations.filter { it.isFavorite } // Add this line
+            StationFilter.Favorites -> allStations.filter { it.isFavorite }
             else -> allStations
         }
 
-        // Step 2: Filter by search query
+        // Step 2: Filter by search query (improved)
         val filteredByQuery = if (currentQuery.isBlank()) {
             filteredByStatus
         } else {
-            filteredByStatus.filter { it.location.startsWith(currentQuery, ignoreCase = true) }
+            val normalizedQuery = currentQuery.normalizeForSearch()
+            filteredByStatus.filter { station ->
+                station.location.normalizeForSearch().contains(normalizedQuery)
+            }
         }
 
         // Step 3: Sort the filtered results
@@ -128,10 +131,19 @@ class ListScreenViewModel(private val repository: StationRepository) : ViewModel
             else -> filteredByQuery
         }
 
-        // Update the state with the final results
+        // Update the state
         _screenStateStream.update { state ->
             state.copy(results = sortedResults, loading = false, dialogOpen = false)
         }
+    }
+    
+
+    // Alternative (if the above doesn't handle all diacritics well)
+    private fun String.normalizeForSearch(): String {
+        return java.text.Normalizer
+            .normalize(this, java.text.Normalizer.Form.NFD) // Decompose accents
+            .replace(Regex("[^\\p{ASCII}]"), "") // Remove non-ASCII (accents)
+            .lowercase()
     }
 
     private fun sortStationsByElevation(stations: List<Station>, ascending: Boolean): List<Station> {
