@@ -103,7 +103,7 @@ fun RecordsScreen(
                         // Element Dropdown
                         Text(
                             text = stringResource(R.string.select_element),
-                            style = MaterialTheme.typography.labelLarge,
+                            style = MaterialTheme.typography.bodyLarge,
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
                         ElementDropdownMenu(
