@@ -55,6 +55,7 @@ import cz.cvut.weatherforge.R
 import cz.cvut.weatherforge.core.utils.elementAbbreviationToNameUnitPair
 import cz.cvut.weatherforge.core.utils.getLocalizedDateString
 import cz.cvut.weatherforge.features.measurements.data.model.MeasurementLatest
+import cz.cvut.weatherforge.features.record.data.model.RecordStats
 import cz.cvut.weatherforge.features.stations.data.model.ElementCodelistItem
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toJavaLocalDateTime
@@ -63,8 +64,6 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale
 
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     viewModel: HomeScreenViewModel = koinViewModel(),
@@ -74,8 +73,7 @@ fun HomeScreen(
     val context = LocalContext.current
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
 
-
-
+    // Handle location permission request
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -109,10 +107,9 @@ fun HomeScreen(
                             .padding(vertical = 8.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        // Title with conditional loading state
                         Text(
                             text = stringResource(R.string.nearest_station),
-                            style = MaterialTheme.typography.titleLarge, // More appropriate than headlineLarge
+                            style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
                         )
 
@@ -120,14 +117,12 @@ fun HomeScreen(
 
                         when {
                             screenState.closestStation == null -> {
-                                // Loading state
                                 CircularProgressIndicator(
                                     strokeWidth = 2.dp,
                                     color = MaterialTheme.colorScheme.primary
                                 )
                             }
                             else -> {
-                                // Station info with better visual hierarchy
                                 Column(
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     modifier = Modifier.clickable {
@@ -142,23 +137,20 @@ fun HomeScreen(
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis
                                     )
-
                                 }
                             }
                         }
                     }
                 }
             ){ paddingValues ->
-                Box(
-                    modifier = Modifier
-                        .padding(paddingValues)
-                ) {
+                Box(modifier = Modifier.padding(paddingValues)) {
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(16.dp)
                             .verticalScroll(rememberScrollState())
                     ) {
+                        // Display current weather measurements
                         if (screenState.closestStation != null) {
                             screenState.closestStation?.stationLatestMeasurements?.let {
                                 CurrentWeatherMeasurementsInfoCard(
@@ -169,10 +161,10 @@ fun HomeScreen(
                             }
                         }
 
+                        // Display station records if available
                         if (screenState.alltimeStationRecords.isNotEmpty()) {
                             val allTimeStationData = InfoCardData(
                                 title = stringResource(R.string.records_at_station),
-
                                 items = screenState.alltimeStationRecords.mapNotNull { record ->
                                     if (record.element == "TMA" ||
                                         record.element == "Fmax" ||
@@ -181,33 +173,9 @@ fun HomeScreen(
                                         record.element == "SRA" ||
                                         record.element == "SCE"
                                     ) {
-                                        val elementInfo = elementAbbreviationToNameUnitPair(
-                                            record.element,
-                                            screenState.elementCodelist
-                                        )
-                                        if (elementInfo != null) {
-                                            val valueWithUnit =
-                                                "${record.highest?.value} ${elementInfo.unit} (${getLocalizedDateString(
-                                                    record.highest?.recordDate?.toJavaLocalDate()
-                                                )})"
-                                            elementInfo.name to valueWithUnit
-                                        } else {
-                                            null
-                                        }
+                                        processRecord(record, screenState.elementCodelist, true)
                                     } else {
-                                        val elementInfo = elementAbbreviationToNameUnitPair(
-                                            record.element,
-                                            screenState.elementCodelist
-                                        )
-                                        if (elementInfo != null) {
-                                            val valueWithUnit =
-                                                "${record.lowest?.value} ${elementInfo.unit} (${getLocalizedDateString(
-                                                    record.lowest?.recordDate?.toJavaLocalDate()
-                                                )})"
-                                            elementInfo.name to valueWithUnit
-                                        } else {
-                                            null
-                                        }
+                                        processRecord(record, screenState.elementCodelist, false)
                                     }
                                 }
                             )
@@ -217,6 +185,8 @@ fun HomeScreen(
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }
+
+                        // Display favorite and nearby stations
                         NearbyStationInfoCard(
                             title = stringResource(R.string.staion_favorites),
                             screenState.favoriteStations.map { Pair(it, null) },
@@ -230,8 +200,6 @@ fun HomeScreen(
                             onClick = navigateToDetail,
                             icon = Icons.Default.Place
                         )
-
-
                     }
                 }
             }
@@ -249,6 +217,9 @@ fun HomeScreen(
     }
 }
 
+/**
+ * Displays current weather measurements in a card format
+ */
 @Composable
 fun CurrentWeatherMeasurementsInfoCard(
     title: String,
@@ -256,8 +227,10 @@ fun CurrentWeatherMeasurementsInfoCard(
     elementCodelist: List<ElementCodelistItem>,
     modifier: Modifier = Modifier,
 ) {
+    // Format timestamp for display
     val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
         .withLocale(Locale("cs", "CZ"))
+
     InfoCard(
         title = title,
         items = measurements.mapNotNull { measurement ->
@@ -265,14 +238,26 @@ fun CurrentWeatherMeasurementsInfoCard(
                 measurement.element,
                 elementCodelist
             )
-            if (elementInfo != null) {
-                val valueWithUnit = "${measurement.value} ${elementInfo.unit}"
-                elementInfo.name to valueWithUnit
-            } else {
-                null
+            elementInfo?.let { "${measurement.value} ${it.unit}" }?.let {
+                elementInfo.name to it
             }
         },
         footer = "${stringResource(R.string.updated)} ${measurements.first().timestamp.toJavaLocalDateTime().plusHours(2).format(formatter)}",
         modifier = modifier
     )
+}
+
+/**
+ * Helper function for processing station record data
+ */
+private fun processRecord(
+    record: RecordStats,
+    elementCodelist: List<ElementCodelistItem>,
+    useHighest: Boolean
+): Pair<String, String>? {
+    val elementInfo = elementAbbreviationToNameUnitPair(record.element, elementCodelist) ?: return null
+    val recordData = if (useHighest) record.highest else record.lowest
+    return elementInfo.name to "${recordData?.value} ${elementInfo.unit} (${
+        getLocalizedDateString(recordData?.recordDate?.toJavaLocalDate())
+    })"
 }

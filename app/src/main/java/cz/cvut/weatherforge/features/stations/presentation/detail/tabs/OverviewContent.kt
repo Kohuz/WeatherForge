@@ -125,7 +125,6 @@ fun OverviewContent(station: Station, viewModel: DetailScreenViewModel, navigate
                             null
                         }
                     }
-
                 }
             )
         }

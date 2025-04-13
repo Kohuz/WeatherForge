@@ -87,6 +87,8 @@ fun ListScreen(navigateToDetail: (id: String) -> Unit, viewModel: ListScreenView
                             .fillMaxSize()
                     ) {
                         HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
+
+                        // Filter and sorting controls section
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -150,6 +152,9 @@ fun ListScreen(navigateToDetail: (id: String) -> Unit, viewModel: ListScreenView
     }
 }
 
+/**
+ * Displays filter chips for different station states (Active/Inactive/All/Favorites)
+ */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun FilterChangeButtons(
@@ -191,6 +196,9 @@ fun FilterChangeButtons(
     }
 }
 
+/**
+ * Displays a single station item with its details and favorite toggle
+ */
 @Composable
 fun ResultCard(
     station: Station,
@@ -207,6 +215,7 @@ fun ResultCard(
             .background(MaterialTheme.colorScheme.surface)
             .padding(8.dp)
     ) {
+        // Station name
         Text(
             modifier = Modifier.padding(8.dp),
             text = station.location,

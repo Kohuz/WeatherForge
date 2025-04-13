@@ -69,11 +69,13 @@ fun DetailScreen(
     dayContentViewModel: DayContentViewModel = koinViewModel(),
     historyContentViewModel: HistoryContentViewModel = koinViewModel()
 ) {
+    // Collect state from ViewModel
     val screenState by detailScreenViewModel.screenStateStream.collectAsStateWithLifecycle()
     val station = screenState.station
     val selectedTabIndex = screenState.selectedTabIndex
     val tabs = listOf("Přehled", "Časový průběh", "Dnešek v historii", "Roční srovnání")
 
+    // Load station data when screen opens or stationId changes
     LaunchedEffect(stationId) {
         detailScreenViewModel.loadStation(stationId)
         detailScreenViewModel.loadRecords()
@@ -85,6 +87,7 @@ fun DetailScreen(
                 TopAppBar(
                     title = {
                         Row(verticalAlignment = Alignment.CenterVertically) {
+                            // Status indicator dot
                             Box(
                                 modifier = Modifier
                                     .background(
@@ -98,7 +101,6 @@ fun DetailScreen(
                             )
                             Column {
                                 Text(station.location)
-
                             }
                         }
                     },
@@ -111,7 +113,7 @@ fun DetailScreen(
                         }
                     },
                     actions = {
-                        // Add a button to navigate to the map
+                        // Map navigation button
                         IconButton(onClick = {
                             val stationLatLng = LatLng(station.latitude, station.longitude)
                             navigateToMap(stationLatLng)
@@ -121,6 +123,7 @@ fun DetailScreen(
                                 contentDescription = "View on Map"
                             )
                         }
+                        // Favorite toggle button
                         IconButton(
                             onClick = {
                                 detailScreenViewModel.toggleFavorite(station.stationId)
@@ -136,6 +139,7 @@ fun DetailScreen(
                                 contentDescription = if (station.isFavorite) "Unfavorite" else "Favorite"
                             )
                         }
+                        // Help button (hidden on overview tab)
                         if(selectedTabIndex != 0) {
                             IconButton(onClick = { detailScreenViewModel.showHelpDialog() }) {
                                 Icon(
@@ -155,10 +159,12 @@ fun DetailScreen(
                     .padding(innerPadding),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                // Show warning if station is inactive
                 if (!station.isActive()) {
                     WarningBanner()
                 }
-                // TabRow to display tabs
+
+                // Tab navigation for different data views
                 TabRow(
                     selectedTabIndex = selectedTabIndex,
                     containerColor = MaterialTheme.colorScheme.surface,
@@ -190,13 +196,15 @@ fun DetailScreen(
                     }
                 }
 
-                // Display content based on the selected tab
+                // Tab content switcher
                 when (selectedTabIndex) {
                     0 -> OverviewContent(station, detailScreenViewModel, navigateToDetail)
                     1 -> GraphContent(station, detailScreenViewModel, graphContentViewModel)
                     2 -> DayContent(stationId, dayContentViewModel, detailScreenViewModel)
                     3 -> HistoryContent(stationId, historyContentViewModel, detailScreenViewModel)
                 }
+
+                // Help dialog conditionally shown
                 if (screenState.showHelpDialog) {
                     HelpDialog(
                         selectedTabIndex = selectedTabIndex,
@@ -208,7 +216,9 @@ fun DetailScreen(
     }
 }
 
-
+/**
+ * Help dialog showing information about the current tab
+ */
 @Composable
 private fun HelpDialog(
     selectedTabIndex: Int,
@@ -216,11 +226,8 @@ private fun HelpDialog(
 ) {
     val (title, message) = when (selectedTabIndex) {
         1 -> stringResource(R.string.help) to stringResource(R.string.help_dialog_message_graph).trimIndent()
-
         2 -> stringResource(R.string.help) to stringResource(R.string.help_day_content_message).trimIndent()
-
         3 -> stringResource(R.string.help) to stringResource(R.string.help_history_content_message).trimIndent()
-
         else -> "" to ""
     }
 
@@ -240,13 +247,16 @@ private fun HelpDialog(
     )
 }
 
+/**
+ * Warning banner for inactive stations
+ */
 @Composable
 private fun WarningBanner() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.errorContainer)
-            .padding(horizontal = 12.dp, vertical = 8.dp), // Reduced vertical padding
+            .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
@@ -254,10 +264,10 @@ private fun WarningBanner() {
             contentDescription = stringResource(R.string.station_inactive),
             tint = MaterialTheme.colorScheme.onErrorContainer,
         )
-        Spacer(Modifier.width(8.dp)) // Reduced spacing
+        Spacer(Modifier.width(8.dp))
         Text(
             text = stringResource(R.string.station_inactive),
-            style = MaterialTheme.typography.bodySmall.copy( // Smaller text
+            style = MaterialTheme.typography.bodySmall.copy(
                 fontWeight = FontWeight.Bold
             ),
             color = MaterialTheme.colorScheme.onErrorContainer

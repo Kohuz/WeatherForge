@@ -125,7 +125,6 @@ private fun DateSelectionButton(
     onShowPicker: () -> Unit,
     pickerContent: @Composable () -> Unit,
     resolution: String
-
 ) {
     OutlinedButton(
         onClick = onShowPicker,
@@ -235,7 +234,7 @@ private fun DailyStatsCard(dailyStats: ValueStatsResult) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                    val columnWidth = maxWidth / 2 - 8.dp // Half width minus padding
+                    val columnWidth = maxWidth / 2 - 8.dp
 
                     // Second row - Wind and Snow
                     Row(
@@ -349,8 +348,6 @@ private fun StatItem(label: String, value: String?) {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        // Extract the base label text without the format specifier
-        val baseLabel = label.substringBefore(":") + ":"
         Text(
             text = value?.let {
                 String.format(label, it)
