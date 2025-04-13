@@ -1,6 +1,8 @@
 package cz.cvut.weatherforge.features.stations.presentation.detail.tabs
 
 import ResolutionDatePickerDialog
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,6 +27,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
@@ -140,41 +144,19 @@ fun GraphContent(
         Text(stringResource(R.string.selectResolution))
         // Radio buttons for selecting resolution
         FlowRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp), // Less vertical space
-            horizontalArrangement = Arrangement.spacedBy(4.dp) // Reduced spacing
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             resolutions.forEachIndexed { index, resolution ->
-                Row(
-                    modifier = Modifier
-                        .selectable(
-                            selected = (index == selectedResolution),
-                            onClick = { graphContentViewModel.selectResolution(index) },
-                            role = Role.RadioButton
-                        )
-                        .padding(4.dp), // Less padding
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    RadioButton(
-                        selected = (index == selectedResolution),
-                        onClick = { graphContentViewModel.selectResolution(index) },
-                        modifier = Modifier.size(20.dp) // Slightly smaller radio button
-                    )
-                    val label = when (resolution) {
-                        "Měsíc a rok" -> stringResource(R.string.monthly)
-                        else -> resolution
-                    }
-                    Text(
-                        label,
-                        maxLines = 1,
-                        softWrap = false,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.width(70.dp) // Narrower width
-                    )
-                }
+                ResolutionChip(
+                    resolution = resolution,
+                    isSelected = index == selectedResolution,
+                    onSelected = { graphContentViewModel.selectResolution(index) }
+                )
             }
         }
+
 
 
         // Show date selectors only if an element is selected
@@ -346,7 +328,48 @@ fun StationElementDropdown(
         }
     }
 }
+@Composable
+fun ResolutionChip(
+    resolution: String,
+    isSelected: Boolean,
+    onSelected: () -> Unit
+) {
+    val label = when (resolution) {
+        "Měsíc a rok" -> stringResource(R.string.monthly)
+        else -> resolution
+    }
 
+    Surface(
+        modifier = Modifier
+            .clip(MaterialTheme.shapes.medium)
+            .border(
+                width = 1.dp,
+                color = if (isSelected) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.outline,
+                shape = MaterialTheme.shapes.medium
+            )
+            .clickable { onSelected() },
+        color = if (isSelected) MaterialTheme.colorScheme.primaryContainer
+        else MaterialTheme.colorScheme.surface,
+        shape = MaterialTheme.shapes.medium
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            RadioButton(
+                selected = isSelected,
+                onClick = null, // handled by parent
+                modifier = Modifier.size(20.dp)
+            )
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelLarge,
+                modifier = Modifier.padding(start = 4.dp)
+            )
+        }
+    }
+}
 fun LocalDate.formatForResolution(resolution: String): String {
     return when (resolution) {
         "Denně" -> getLocalizedDateString(this)

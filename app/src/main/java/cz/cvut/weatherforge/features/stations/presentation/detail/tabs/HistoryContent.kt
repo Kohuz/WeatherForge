@@ -159,10 +159,10 @@ private fun ResolutionSelector(
         verticalAlignment = Alignment.CenterVertically
     ) {
         resolutions.forEachIndexed { index, resolution ->
-            ResolutionRadioButton(
-                text = resolution,
-                selected = index == selectedResolution,
-                onClick = { viewModel.selectResolution(index) }
+            ResolutionChip(
+                resolution = resolution,
+                isSelected = index == selectedResolution,
+                onSelected = { viewModel.selectResolution(index) },
             )
         }
     }

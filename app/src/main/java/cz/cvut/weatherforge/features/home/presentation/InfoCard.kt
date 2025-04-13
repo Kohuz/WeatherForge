@@ -78,6 +78,13 @@ fun InfoCard(
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(end = 8.dp)
                         )
+                    stringResource(R.string.records) ->
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ShowChart,
+                            contentDescription = "",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
                     stringResource(R.string.detail_information_about_station) ->
                         Icon(
                             imageVector = Icons.Filled.Info,

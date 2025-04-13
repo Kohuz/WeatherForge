@@ -30,21 +30,27 @@ class StationRepository(
 
     suspend fun getStation(stationId: String): StationResult {
         return try {
-            val localStation = stationLocalDataSource.getStation(stationId)
-            if (localStation != null) {
-                StationResult(localStation, isSuccess = true)
-            } else {
-                val remoteStation = stationRemoteDataSource.getStation(stationId)
-                StationResult(remoteStation, isSuccess = true)
+            // Get remote data
+            val remoteStation = stationRemoteDataSource.getStation(stationId) ?:
+            return StationResult(null, isSuccess = false)
+
+            // Get favorite status
+            val isFavorite = try {
+                stationLocalDataSource.getStation(stationId)?.isFavorite ?: false
+            } catch (e: Exception) {
+                false // If local check fails, default to not favorite
             }
+
+            // Create enriched station (adapt this to your model)
+            val enrichedStation = remoteStation.copy(
+                isFavorite = isFavorite,
+                // Add other local preferences here if needed
+            )
+
+            StationResult(enrichedStation, isSuccess = true)
         } catch (t: Throwable) {
-            Log.e("StationRepository", "Error fetching station $stationId: ${t.message}")
-            val fallbackStation = stationLocalDataSource.getStation(stationId)
-            if (fallbackStation != null) {
-                StationResult(fallbackStation, isSuccess = false)
-            } else {
-                StationResult(null, isSuccess = false)
-            }
+            Log.e("StationRepository", "Error: ${t.message}")
+            StationResult(null, isSuccess = false)
         }
     }
 

@@ -268,8 +268,7 @@ fun TopSearchBar(query: String, onQueryChange: (String) -> Unit) {
                     }
                 ),
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp),
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(10.dp),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Done
