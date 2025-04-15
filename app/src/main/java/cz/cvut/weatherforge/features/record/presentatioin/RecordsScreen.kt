@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -166,18 +167,14 @@ fun RecordsScreen(
 
                         // Display measurements in a table
                         if (screenState.measurements.isNotEmpty()) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .weight(1f) // Takes all remaining space
-                            ) {
+
                                 MeasurementsTable(
                                     measurements = screenState.measurements,
                                     selectedElement = screenState.selectedElement,
                                     stations = screenState.allStations,
                                     elementCodelist = screenState.elementCodelist
                                 )
-                            }
+
                         }
                         AllTimeRecordsCard(
                             allTimeRecords = screenState.allTimeRecords,
@@ -325,14 +322,13 @@ fun MeasurementsTable(measurements: List<MeasurementDaily>, selectedElement: Ele
         // Table header
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
                 text = stringResource(R.string.table_header_value),
                 style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.weight(1f).padding(5.dp)
+                modifier = Modifier.weight(1f)
             )
             Text(
                 text = stringResource(R.string.station),
@@ -345,6 +341,7 @@ fun MeasurementsTable(measurements: List<MeasurementDaily>, selectedElement: Ele
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
+                .heightIn(min = 300.dp, max = 500.dp)
         ) {
             items(measurements) { measurement ->
                 Row(
@@ -355,7 +352,7 @@ fun MeasurementsTable(measurements: List<MeasurementDaily>, selectedElement: Ele
                 ) {
                     Text(
                         text = "${measurement.value.toString()} ${getUnitByElementAbbreviation(measurement.element, elementCodelist)}",
-                        modifier = Modifier.weight(1f).padding(5.dp)
+                        modifier = Modifier.weight(1f)
                     )
                     stations.find { station -> station.stationId == measurement.stationId }?.let {
                         Text(
