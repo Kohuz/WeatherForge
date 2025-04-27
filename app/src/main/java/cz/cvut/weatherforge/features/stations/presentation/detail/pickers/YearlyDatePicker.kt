@@ -43,7 +43,7 @@ fun YearlyDatePicker(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.select_year)) }, // Localized title
+        title = { Text(stringResource(R.string.select_year)) },
         text = {
             Column {
                 // Use the YearPicker composable
@@ -52,36 +52,36 @@ fun YearlyDatePicker(
                     onYearSelected = { year -> selectedYear = year },
                     minimumYear = minimumDate?.year ?: 1950,
                     maximumYear = LocalDate.now().year,
-                    startFromCurrentYear = true // Start from the current year in descending order
+                    startFromCurrentYear = true
                 )
             }
         },
         confirmButton = {
             Button(
                 onClick = {
-                    val selectedDate = LocalDate.of(selectedYear, 1, 1) // Default to the first day of the year
+                    val selectedDate = LocalDate.of(selectedYear, 1, 1)
                     onDateSelected(selectedDate)
                     onDismiss()
                 },
-                shape = MaterialTheme.shapes.medium, // Rounded corners
+                shape = MaterialTheme.shapes.medium,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
-                Text(stringResource(R.string.ok)) // Localized button text
+                Text(stringResource(R.string.ok))
             }
         },
         dismissButton = {
             Button(
                 onClick = onDismiss,
-                shape = MaterialTheme.shapes.medium, // Rounded corners
+                shape = MaterialTheme.shapes.medium,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                     contentColor = MaterialTheme.colorScheme.onSurface
                 )
             ) {
-                Text(stringResource(R.string.cancel)) // Localized button text
+                Text(stringResource(R.string.cancel))
             }
         }
     )
@@ -97,9 +97,9 @@ fun YearPicker(
 ) {
     val years = remember {
         if (startFromCurrentYear) {
-            (maximumYear downTo minimumYear).toList() // Descending order
+            (maximumYear downTo minimumYear).toList()
         } else {
-            (minimumYear..maximumYear).toList() // Ascending order
+            (minimumYear..maximumYear).toList()
         }
     }
 
@@ -108,7 +108,7 @@ fun YearPicker(
     Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
         OutlinedButton(
             onClick = { expanded = true },
-            shape = MaterialTheme.shapes.medium, // Rounded corners
+            shape = MaterialTheme.shapes.medium,
             colors = ButtonDefaults.outlinedButtonColors(
                 containerColor = MaterialTheme.colorScheme.surface,
                 contentColor = MaterialTheme.colorScheme.onSurface
@@ -129,7 +129,7 @@ fun YearPicker(
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            modifier = Modifier.fillMaxWidth(0.5f) // Limit dropdown width
+            modifier = Modifier.fillMaxWidth(0.5f)
         ) {
             years.forEach { year ->
                 DropdownMenuItem(

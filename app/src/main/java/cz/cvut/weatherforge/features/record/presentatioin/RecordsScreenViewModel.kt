@@ -50,13 +50,11 @@ class RecordsScreenViewModel(
 
     init {
         viewModelScope.launch {
-            // Load elements codelist
             val elementCodelistResult = stationRepository.getElementsCodelist()
             if (elementCodelistResult.isSuccess) {
                 _screenStateStream.update { it.copy(elementCodelist = elementCodelistResult.elements) }
             }
 
-            // Load all stations
             setLoadingState(true)
 
             loadInfo()
@@ -95,7 +93,6 @@ class RecordsScreenViewModel(
     }
 
 
-    // Method to select an element
     fun selectElement(element: ElementCodelistItem) {
         _screenStateStream.update { state ->
             state.copy(selectedElement = element)
@@ -103,20 +100,17 @@ class RecordsScreenViewModel(
     }
 
 
-    // Method to show/hide the date picker
     fun showDatePicker(show: Boolean) {
         _screenStateStream.update { state ->
             state.copy(showDatePicker = show)
         }
     }
 
-    // Method to set the selected date
     fun setSelectedDate(date: String) {
         _screenStateStream.update { state ->
             state.copy(selectedDate = date)
         }
     }
-    // Method to fetch measurements based on selected element, station, and date
     fun fetchMeasurements() {
         viewModelScope.launch {
             val selectedElement = _screenStateStream.value.selectedElement
@@ -142,7 +136,6 @@ class RecordsScreenViewModel(
         }
     }
 
-    // Method to set the loading state
     private suspend fun setLoadingState(isLoading: Boolean) {
         _screenStateStream.update { state ->
             state.copy(loading = isLoading)

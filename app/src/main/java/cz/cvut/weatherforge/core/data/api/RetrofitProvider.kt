@@ -13,7 +13,6 @@ object RetrofitProvider {
 
     fun provide(): Retrofit {
         return Retrofit.Builder()
-           // .baseUrl("http://192.168.0.236:8081/")
             .baseUrl("http://157.180.20.129:8081/")
 
 

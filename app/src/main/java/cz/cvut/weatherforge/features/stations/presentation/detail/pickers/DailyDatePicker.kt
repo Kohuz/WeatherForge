@@ -36,7 +36,7 @@ fun DailyDatePicker(
     dateToShow: LocalDate? = null
 ) {
     val initialSelectedDateMillis = dateToShow
-        ?.withDayOfMonth(1) // Start of the month
+        ?.withDayOfMonth(1)
         ?.atStartOfDay(ZoneId.systemDefault())
         ?.toInstant()
         ?.toEpochMilli()
@@ -83,7 +83,7 @@ fun DailyDatePicker(
                     }
                     onDismiss()
                 },
-                shape = MaterialTheme.shapes.medium, // Rounded corners
+                shape = MaterialTheme.shapes.medium,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary

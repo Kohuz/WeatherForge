@@ -12,12 +12,8 @@ import androidx.compose.material.TabRowDefaults.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.filled.Cloud
-import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Place
-import androidx.compose.material.icons.filled.PriorityHigh
-import androidx.compose.material.icons.filled.ShowChart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -30,11 +26,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.ui.theme.AppTypography
 import cz.cvut.weatherforge.R
 import cz.cvut.weatherforge.features.stations.data.model.Station
 
@@ -51,8 +44,8 @@ fun InfoCard(
         modifier = modifier
             .fillMaxWidth()
             .padding(8.dp),
-        shape = RoundedCornerShape(12.dp), // Increased corner radius
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp) // Reduced elevation
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
             modifier = Modifier
@@ -110,7 +103,6 @@ fun InfoCard(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            // Items with better spacing
             items.forEachIndexed { index, (label, value) ->
                 WeatherInfoRow(
                     label = label,
@@ -123,7 +115,6 @@ fun InfoCard(
                 }
             }
 
-            // Footer with better styling
             footer?.let {
                 Text(
                     text = it,
@@ -162,7 +153,6 @@ fun NearbyStationInfoCard(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            // Title with optional icon
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(bottom = 12.dp)
@@ -219,7 +209,6 @@ private fun NearbyStationItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Station info with potential icon
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     imageVector = Icons.Default.LocationOn,
@@ -266,7 +255,6 @@ private fun NearbyStationItem(
             )
         }
 
-        // Optional divider between items
         if (showDivider) {
             Divider(
                 color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f),

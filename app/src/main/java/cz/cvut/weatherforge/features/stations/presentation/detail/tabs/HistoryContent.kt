@@ -1,6 +1,7 @@
 package cz.cvut.weatherforge.features.stations.presentation.detail.tabs
 
 import ResolutionDatePickerDialog
+import android.util.Log
 import androidx.compose.runtime.Composable
 
 import androidx.compose.foundation.layout.*
@@ -115,10 +116,10 @@ private fun DateSelectionButton(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = stringResource(
-                    labelRes,
-                    date?.formatForResolution(resolutions[state.selectedResolutionIndex])?: stringResource(R.string.no_date_selected)
-                )
+                text = "${stringResource(labelRes)} ${
+                    date?.formatForResolution(resolutions[state.selectedResolutionIndex])
+                        ?: stringResource(R.string.no_date_selected)
+                }".trim()
             )
             Icon(
                 imageVector = Icons.Default.ArrowDropDown,
@@ -168,32 +169,6 @@ private fun ResolutionSelector(
     }
 }
 
-@Composable
-private fun ResolutionRadioButton(
-    text: String,
-    selected: Boolean,
-    onClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .selectable(
-                selected = selected,
-                onClick = onClick,
-                role = Role.RadioButton
-            )
-            .padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        RadioButton(
-            selected = selected,
-            onClick = null // null because we handle click in parent Row
-        )
-        Text(
-            text = text,
-            modifier = Modifier.padding(start = 8.dp)
-        )
-    }
-}
 
 
 
@@ -218,7 +193,7 @@ private fun ChartDateSelector(
                 onDateSelected = { date ->
                     viewModel.setSelectedGraphDate(date.toKotlinLocalDate())
                 },
-                dateToShow = LocalDate.now().minusYears(1)
+                dateToShow = state.selectedGraphDate?.toJavaLocalDate() ?: LocalDate.now().minusYears(1)
             )
         }
     )

@@ -22,7 +22,7 @@ fun calculateDistancesForNearbyStations(
             station.latitude,
             station.longitude
         ) * 111.32 // Convert to kilometers
-        station to distance // Return Pair<Station, Double>
+        station to distance
     }
 }
 

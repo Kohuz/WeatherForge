@@ -26,12 +26,11 @@ fun MonthDatePicker(
     onDateSelected: (LocalDate) -> Unit,
     minimumDate: LocalDate? = LocalDate.of(1950, 1, 1),
 ) {
-    // State for year, month, and day
     var selectedMonth by remember { mutableStateOf(LocalDate.now().monthValue) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Vyberte měsíc") }, // Updated title
+        title = { Text("Vyberte měsíc") },
         text = {
             Column {
 
@@ -40,7 +39,7 @@ fun MonthDatePicker(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Měsíc:") // Localized label
+                    Text("Měsíc:")
                     Spacer(modifier = Modifier.width(8.dp))
                     DropdownMenuForMonths(
                         selectedMonth = selectedMonth,

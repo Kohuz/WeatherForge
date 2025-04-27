@@ -3,8 +3,8 @@
     <string name="min">Minimum</string>
     <string name="max">Maximum</string>
         <!-- Date Picker Strings -->
-        <string name="select_day_month">Vyberte den a měsíc: %s</string>
-    <string name="select_date_day_content">Vyberte datum: %s</string>
+        <string name="select_day_month">Vyberte den a měsíc:</string>
+    <string name="select_date_day_content">Vyberte datum:</string>
 
     <string name="select_date">Vyberte datum: </string>
     <string name="no_date_selected">Není vybráno datum</string>
@@ -43,7 +43,7 @@
     <string name="station_near">Stanice poblíž</string>
     <string name="weather_at_nearest">Počasí na nejbližší stanici za poslední hodinu</string>
     <string name="records_at_station">Rekordy na stanici</string>
-    <string name="records">Rekordy celkem</string>
+    <string name="records">Rekordy celorepublikové</string>
 
 
 
@@ -182,4 +182,5 @@
     <string name="recorded_at">Naměřeno v %s</string>
     <string name="station_inactive">Stanice již není aktivní</string>
     <string name="staion_favorites">Oblibené stanice</string>
+    <string name="daily_stats_tooltip">Konkrétní den v historii</string>
 </resources>

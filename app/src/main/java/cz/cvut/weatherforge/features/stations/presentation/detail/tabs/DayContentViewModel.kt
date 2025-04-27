@@ -38,16 +38,10 @@ class DayContentViewModel(
     private val _state = MutableStateFlow(DayContentState())
     val historyContentState get() = _state.asStateFlow()
 
-
-    fun toggleDropdown(expanded: Boolean) {
-        _state.update { it.copy(dropdownExpanded = expanded) }
-    }
-
     fun setSelectedConcreteDayDate(date: LocalDate) {
         _state.update { it.copy(selectedConcreteDayDate = date) }
     }
 
-    // Function to show/hide the date picker
     fun showConcreteDatePicker(show: Boolean) {
         _state.update { it.copy(showConcreteDayDatePicker = show) }
     }
@@ -55,12 +49,6 @@ class DayContentViewModel(
     fun setSelectedLongTermDate(date: LocalDate) {
         _state.update { it.copy(selectedLongTermDate = date) }
     }
-
-
-    fun showLongTermDatePicker(show: Boolean) {
-        _state.update { it.copy(showLongTermDatePicker = show) }
-    }
-
 
     fun fetchLongTermStats(stationId: String) {
         _state.update { it.copy(isLoading = true, error = null) }
@@ -72,10 +60,9 @@ class DayContentViewModel(
 
                 _state.update { it.copy(selectedLongTermDate = LocalDate.parse(date)) }
 
-                // Fetch data using the first date
+                // Fetch longterm data using the selected date
                 val dailyStats = repository.getStatsDayLongTerm(stationId, date)
 
-                // Fetch data using the second date
 
                 // Update the state with the fetched data
                 _state.update {
@@ -99,7 +86,7 @@ class DayContentViewModel(
             try {
                 val date =
                     _state.value.selectedConcreteDayDate?.toString() ?: java.time.LocalDate.now()
-                        .minusMonths(3)
+                        .minusYears(1)
                         .toString()
 
                 _state.update { it.copy(selectedConcreteDayDate  = LocalDate.parse(date)) }

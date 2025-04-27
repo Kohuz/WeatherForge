@@ -24,15 +24,4 @@ class Converters {
         }
     }
 
-    @TypeConverter
-    fun fromLocalDate(value: LocalDate?): String? {
-        return value?.toJavaLocalDate()?.format(formatter)
-    }
-
-    @TypeConverter
-    fun toLocalDate(value: String?): LocalDate? {
-        return value?.let {
-            java.time.LocalDate.parse(it, formatter).toKotlinLocalDate()
-        }
-    }
 }

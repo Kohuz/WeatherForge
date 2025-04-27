@@ -39,19 +39,18 @@ fun DayMonthlyDatePicker(
     onDismiss: () -> Unit,
     onDateSelected: (LocalDate) -> Unit
 ) {
-    val currentYear = LocalDate.now().year // Use the current year
+    val currentYear = LocalDate.now().year
     var selectedMonth by remember { mutableStateOf(LocalDate.now().monthValue) }
     var selectedDay by remember { mutableStateOf(LocalDate.now().dayOfMonth) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.select_day_and_month)) }, // Localized title
+        title = { Text(stringResource(R.string.select_day_and_month)) },
         text = {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Month Picker
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -65,13 +64,12 @@ fun DayMonthlyDatePicker(
                     )
                 }
 
-                // Day Picker
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(stringResource(R.string.day)) // Localized label
+                    Text(stringResource(R.string.day))
                     Spacer(modifier = Modifier.width(8.dp))
                     DayPicker(
                         selectedDay = selectedDay,
@@ -88,25 +86,25 @@ fun DayMonthlyDatePicker(
                     onDateSelected(selectedDate)
                     onDismiss()
                 },
-                shape = MaterialTheme.shapes.medium, // Rounded corners
+                shape = MaterialTheme.shapes.medium,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
-                Text(stringResource(R.string.ok)) // Localized button text
+                Text(stringResource(R.string.ok))
             }
         },
         dismissButton = {
             Button(
                 onClick = onDismiss,
-                shape = MaterialTheme.shapes.medium, // Rounded corners
+                shape = MaterialTheme.shapes.medium,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                     contentColor = MaterialTheme.colorScheme.onSurface
                 )
             ) {
-                Text(stringResource(R.string.cancel)) // Localized button text
+                Text(stringResource(R.string.cancel))
             }
         }
     )
@@ -138,7 +136,7 @@ fun DropdownMenuForMonths(
     Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
         OutlinedButton(
             onClick = { expanded = true },
-            shape = MaterialTheme.shapes.medium, // Rounded corners
+            shape = MaterialTheme.shapes.medium,
             colors = ButtonDefaults.outlinedButtonColors(
                 containerColor = MaterialTheme.colorScheme.surface,
                 contentColor = MaterialTheme.colorScheme.onSurface
@@ -159,7 +157,7 @@ fun DropdownMenuForMonths(
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            modifier = Modifier.fillMaxWidth(0.5f) // Limit dropdown width
+            modifier = Modifier.fillMaxWidth(0.5f)
         ) {
             Month.entries.forEach { month ->
                 DropdownMenuItem(
@@ -185,7 +183,7 @@ fun DayPicker(
     Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
         OutlinedButton(
             onClick = { expanded = true },
-            shape = MaterialTheme.shapes.medium, // Rounded corners
+            shape = MaterialTheme.shapes.medium,
             colors = ButtonDefaults.outlinedButtonColors(
                 containerColor = MaterialTheme.colorScheme.surface,
                 contentColor = MaterialTheme.colorScheme.onSurface
@@ -206,7 +204,7 @@ fun DayPicker(
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            modifier = Modifier.fillMaxWidth(0.5f) // Limit dropdown width
+            modifier = Modifier.fillMaxWidth(0.5f)
         ) {
             (1..maxDaysInMonth).forEach { day ->
                 DropdownMenuItem(

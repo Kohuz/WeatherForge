@@ -34,13 +34,12 @@ fun MonthYearDatePicker(
     onDismiss: () -> Unit,
     onDateSelected: (LocalDate) -> Unit
 ) {
-    // State for year and month
     var selectedYear by remember { mutableStateOf(LocalDate.now().year) }
     var selectedMonth by remember { mutableStateOf(LocalDate.now().monthValue) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.select_month_and_year)) }, // Localized title
+        title = { Text(stringResource(R.string.select_month_and_year)) },
         text = {
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -52,14 +51,14 @@ fun MonthYearDatePicker(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(stringResource(R.string.year)) // Localized label
+                    Text(stringResource(R.string.year))
                     Spacer(modifier = Modifier.width(8.dp))
                     YearPicker(
                         selectedYear = selectedYear,
                         onYearSelected = { year -> selectedYear = year },
-                        minimumYear = 1950, // Set a minimum year (can be adjusted)
-                        maximumYear = LocalDate.now().year, // Set the maximum year to the current year
-                        startFromCurrentYear = true // Start from the current year in descending order
+                        minimumYear = 1950,
+                        maximumYear = LocalDate.now().year,
+                        startFromCurrentYear = true
                     )
                 }
 
@@ -69,7 +68,7 @@ fun MonthYearDatePicker(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(stringResource(R.string.month)) // Localized label
+                    Text(stringResource(R.string.month))
                     Spacer(modifier = Modifier.width(8.dp))
                     DropdownMenuForMonths(
                         selectedMonth = selectedMonth,
@@ -81,29 +80,29 @@ fun MonthYearDatePicker(
         confirmButton = {
             Button(
                 onClick = {
-                    val selectedDate = LocalDate.of(selectedYear, selectedMonth, 1) // Default to the first day of the month
+                    val selectedDate = LocalDate.of(selectedYear, selectedMonth, 1)
                     onDateSelected(selectedDate)
                     onDismiss()
                 },
-                shape = MaterialTheme.shapes.medium, // Rounded corners
+                shape = MaterialTheme.shapes.medium,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
-                Text(stringResource(R.string.ok)) // Localized button text
+                Text(stringResource(R.string.ok))
             }
         },
         dismissButton = {
             Button(
                 onClick = onDismiss,
-                shape = MaterialTheme.shapes.medium, // Rounded corners
+                shape = MaterialTheme.shapes.medium,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                     contentColor = MaterialTheme.colorScheme.onSurface
                 )
             ) {
-                Text(stringResource(R.string.cancel)) // Localized button text
+                Text(stringResource(R.string.cancel))
             }
         }
     )

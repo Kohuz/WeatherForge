@@ -188,6 +188,9 @@ fun RecordsScreen(
     }
 }
 
+/**
+ * Dropdown menu for selecting weather elements to display.
+ */
 @Composable
 fun ElementDropdownMenu(
     items: List<ElementCodelistItem>,
@@ -195,7 +198,7 @@ fun ElementDropdownMenu(
     onItemSelected: (ElementCodelistItem) -> Unit,
     allowedElements: List<String> = listOf("TMI", "TMA", "SCE", "SNO", "SRA", "Fmax")
 ) {
-    var expanded by remember { mutableStateOf(false) } // Internal state for dropdown visibility
+    var expanded by remember { mutableStateOf(false) }
 
     val filteredItems = items.filter { it.abbreviation in allowedElements }
 
@@ -204,7 +207,6 @@ fun ElementDropdownMenu(
             .fillMaxWidth()
             .padding(vertical = 8.dp)
     ) {
-        // Enhanced Button to toggle dropdown visibility
         OutlinedButton(
             onClick = { expanded = true },
             modifier = Modifier.fillMaxWidth(),
@@ -252,6 +254,9 @@ fun ElementDropdownMenu(
     }
 }
 
+/**
+ * Displays all-time weather records in a card.
+ */
 @Composable
 fun AllTimeRecordsCard(
     allTimeRecords: List<RecordStats>,
@@ -310,7 +315,9 @@ fun AllTimeRecordsCard(
     )
 }
 
-
+/**
+ * Table displaying weather measurements data.
+ */
 @Composable
 fun MeasurementsTable(measurements: List<MeasurementDaily>, selectedElement: ElementCodelistItem?, stations: List<Station>, elementCodelist: List<ElementCodelistItem>) {
 

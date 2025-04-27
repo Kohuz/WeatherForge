@@ -25,7 +25,6 @@ class HistoryContentViewModel(
         val showGraphDatePicker: Boolean = false,
         val dailyAndMonthlyMeasurements: MeasurementDailyResult? = null,
         val monthlyMeasurements: MeasurementMonthlyResult? = null,
-        val statsDay: MeasurementDailyResult? = null,
         val isLoading: Boolean = false,
         val error: String? = null
     )
@@ -38,11 +37,6 @@ class HistoryContentViewModel(
     fun selectResolution(resolutionIndex: Int) {
         _state.update { it.copy(selectedResolutionIndex = resolutionIndex) }
     }
-
-    fun toggleDropdown(expanded: Boolean) {
-        _state.update { it.copy(dropdownExpanded = expanded) }
-    }
-
 
     fun showGraphDatePicker(show: Boolean) {
         _state.update { it.copy(showGraphDatePicker = show) }

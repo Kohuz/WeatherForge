@@ -43,7 +43,7 @@ sealed class Screens(val route: String) {
             override val text = "Mapa"
         }
 
-        data object DefaultMap : TopLevel("map") { // Add a default route for the map
+        data object DefaultMap : TopLevel("map") {
             override val icon = Icons.Filled.Place
             override val text = "Mapa"
         }
@@ -64,7 +64,7 @@ sealed class Screens(val route: String) {
         }
 
         companion object {
-            val all get() = listOf(Home, DefaultMap, List, Records) // Use DefaultMap in the bottom bar
+            val all get() = listOf(Home, DefaultMap, List, Records)
         }
     }
 
@@ -140,7 +140,7 @@ fun Navigation() {
                             navigateToDetail = { stationId ->
                                 navController.navigate(Screens.Detail.createRoute(stationId))
                             },
-                            stationLocation = stationLocation // Pass the station's location
+                            stationLocation = stationLocation
                         )
                     }
                 }

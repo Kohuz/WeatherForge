@@ -142,7 +142,7 @@ class HomeScreenViewModel(private val stationRepository: StationRepository, priv
         }
     }
 
-    private val defaultLocation = LatLng(50.0755, 14.4378) // Default to Prague, for example
+    private val defaultLocation = LatLng(50.0755, 14.4378) // Default to Prague
 
     fun fetchUserLocation(context: Context, fusedLocationClient: FusedLocationProviderClient) {
         if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION)

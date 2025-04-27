@@ -49,10 +49,8 @@ fun DayContent(
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        // Error display
         historyContentState.error?.let { ErrorMessage(it) }
 
-        // Concrete day date picker
         DateSelectionButton(
             labelRes = R.string.select_date_day_content,
             date = historyContentState.selectedConcreteDayDate?.toJavaLocalDate(),
@@ -66,7 +64,8 @@ fun DayContent(
                     onDateSelected = { date ->
                         dayContentViewModel.setSelectedConcreteDayDate(date.toKotlinLocalDate())
                         dayContentViewModel.setSelectedLongTermDate(date.toKotlinLocalDate())
-                    }
+                    },
+                    dateToShow = historyContentState.selectedConcreteDayDate?.toJavaLocalDate() ?: LocalDate.now().minusYears(1)
                 )
             },
             resolution = "Denně"
@@ -97,7 +96,9 @@ fun DayContent(
         }
     }
 }
-
+/**
+ * Handles side effects for data loading based on selected dates.
+ */
 @Composable
 private fun LaunchedEffects(
     viewModel: DayContentViewModel,
@@ -116,7 +117,9 @@ private fun LaunchedEffects(
 }
 
 
-
+/**
+ * Reusable date selection button with dropdown picker.
+ */
 @Composable
 private fun DateSelectionButton(
     labelRes: Int,
@@ -160,6 +163,9 @@ private fun DateSelectionButton(
     }
 }
 
+/**
+ * Displays error message in red text when data loading fails.
+ */
 @Composable
 private fun ErrorMessage(error: String) {
     Text(
@@ -169,6 +175,9 @@ private fun ErrorMessage(error: String) {
     )
 }
 
+/**
+ * Centered circular loading indicator for async operations.
+ */
 @Composable
 private fun LoadingIndicator() {
     Box(
@@ -179,6 +188,10 @@ private fun LoadingIndicator() {
     }
 }
 
+/**
+ * Card displaying historical weather averages for the selected date.
+ * Shows temperature, precipitation, wind, and snow statistics.
+ */
 @Composable
 private fun DailyStatsCard(dailyStats: ValueStatsResult) {
     Card(
@@ -359,6 +372,11 @@ private fun StatItem(label: String, value: String?) {
         )
     }
 }
+
+/**
+ * Card displaying concrete day's weather measurements.
+ * Shows all available measurements for the selected date.
+ */
 @Composable
 private fun ConcreteDayStatsCard(
     statsDay: MeasurementDailyResult,
@@ -374,11 +392,18 @@ private fun ConcreteDayStatsCard(
 
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = "${stringResource(R.string.daily_stats)} ${getLocalizedDateString(date)}",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
+            Column {
+                Text(
+                    text = "${stringResource(R.string.daily_stats)} ${getLocalizedDateString(date)}",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                Text(
+                    text = stringResource(R.string.daily_stats_tooltip),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
+            }
 
             statsDay.measurements.forEach { measurement ->
                 val nameUnitPair = elementAbbreviationToNameUnitPair(measurement.element, elementCodelist)
@@ -388,6 +413,9 @@ private fun ConcreteDayStatsCard(
     }
 }
 
+/**
+ * Single row displaying a measurement with its name, value and unit.
+ */
 @Composable
 private fun MeasurementRow(
     measurement: MeasurementDaily,

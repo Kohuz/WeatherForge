@@ -119,11 +119,9 @@ fun LineChartComposable(entries: List<Entry>, labels: List<String>) {
                 // Enable marker on click
                 setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
                     override fun onValueSelected(e: Entry?, h: Highlight?) {
-                        // Marker will auto-show
                     }
 
                     override fun onNothingSelected() {
-                        // Optional: hide marker when nothing selected
                     }
                 })
 
@@ -131,14 +129,13 @@ fun LineChartComposable(entries: List<Entry>, labels: List<String>) {
             }
         },
         update = { lineChart ->
-            // Update the chart data
             val dataSet = LineDataSet(entries, "Measurements").apply {
                 color = Color.BLUE
                 valueTextColor = Color.BLACK
                 lineWidth = 2f
                 setCircleColor(Color.RED)
                 mode = LineDataSet.Mode.LINEAR
-                setDrawValues(true) // Enable value display
+                setDrawValues(true)
                 valueTextSize = 10f
 
                 // Disable circles for individual data points
@@ -222,7 +219,7 @@ class ValueMarker(
 
     private val tvValue: TextView = findViewById(R.id.tvValue)
 
-    // Adjust marker position to appear above the point
+    // marker position to appear above the point
     override fun getOffset(): MPPointF {
         return MPPointF(-(width / 2f), -height - 10f)
     }
