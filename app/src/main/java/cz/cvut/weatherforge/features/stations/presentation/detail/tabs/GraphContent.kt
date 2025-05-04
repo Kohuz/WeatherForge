@@ -68,7 +68,6 @@ fun GraphContent(
     val selectedResolution = graphContentState.selectedResolutionIndex
     val resolutions = listOf("Denně", "Měsíc a rok", "Ročně")
 
-    // Show/hide date pickers
     if (graphContentState.showFromDatePicker) {
         ResolutionDatePickerDialog(
             minimumDate = station.stationElements
@@ -95,7 +94,6 @@ fun GraphContent(
         )
     }
 
-    // Fetch data when all parameters are available
     LaunchedEffect(selectedResolution, graphContentState.fromDate, graphContentState.toDate, graphContentState.selectedElement) {
         if (graphContentState.selectedElement != null && graphContentState.fromDate != null && graphContentState.toDate != null) {
                 when (resolutions[selectedResolution]) {
@@ -142,7 +140,6 @@ fun GraphContent(
         }
 
         Text(stringResource(R.string.selectResolution))
-        // Radio buttons for selecting resolution
         FlowRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -159,7 +156,6 @@ fun GraphContent(
 
 
 
-        // Show date selectors only if an element is selected
         if (graphContentState.selectedElement != null) {
             // Date Selectors for fromDate and toDate
             val beginDate = station.stationElements
@@ -274,7 +270,7 @@ fun StationElementDropdown(
     selectedItem: ElementCodelistItem?,
     onItemSelected: (ElementCodelistItem) -> Unit
 ) {
-    var expanded by remember { mutableStateOf(false) } // Internal state for dropdown visibility
+    var expanded by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -318,7 +314,7 @@ fun StationElementDropdown(
                 DropdownMenuItem(
                     onClick = {
                         onItemSelected(item)
-                        expanded = false // Close dropdown after selection
+                        expanded = false
                     },
                     text = {
                         Text(text = item.name)
@@ -359,7 +355,7 @@ fun ResolutionChip(
         ) {
             RadioButton(
                 selected = isSelected,
-                onClick = null, // handled by parent
+                onClick = null,
                 modifier = Modifier.size(20.dp)
             )
             Text(

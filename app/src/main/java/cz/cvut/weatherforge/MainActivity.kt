@@ -30,7 +30,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-// Helper function to apply Czech locale to a context
 private fun wrapContextWithCzechLocale(context: Context): Context {
     val czechLocale = java.util.Locale("cs", "CZ")
 

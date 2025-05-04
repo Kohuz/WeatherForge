@@ -113,7 +113,7 @@ class ListScreenViewModel(private val repository: StationRepository) : ViewModel
             else -> allStations
         }
 
-        // Step 2: Filter by search query (improved)
+        // Step 2: Filter by search query
         val filteredByQuery = if (currentQuery.isBlank()) {
             filteredByStatus
         } else {
@@ -131,18 +131,16 @@ class ListScreenViewModel(private val repository: StationRepository) : ViewModel
             else -> filteredByQuery
         }
 
-        // Update the state
         _screenStateStream.update { state ->
             state.copy(results = sortedResults, loading = false, dialogOpen = false)
         }
     }
     
 
-    // Alternative (if the above doesn't handle all diacritics well)
     private fun String.normalizeForSearch(): String {
         return java.text.Normalizer
-            .normalize(this, java.text.Normalizer.Form.NFD) // Decompose accents
-            .replace(Regex("[^\\p{ASCII}]"), "") // Remove non-ASCII (accents)
+            .normalize(this, java.text.Normalizer.Form.NFD)
+            .replace(Regex("[^\\p{ASCII}]"), "")
             .lowercase()
     }
 
@@ -180,7 +178,7 @@ class ListScreenViewModel(private val repository: StationRepository) : ViewModel
         _screenStateStream.update { state ->
             state.copy(dialogOpen = false, loading = true)
         }
-        loadStations() // Retry loading stations
+        loadStations()
     }
 
 
@@ -193,7 +191,6 @@ class ListScreenViewModel(private val repository: StationRepository) : ViewModel
                 } else {
                 repository.makeFavorite(stationId)
                 }
-                // Reload stations to reflect the updated favorite status
                 loadStations()
             }
         }

@@ -62,7 +62,6 @@ fun HistoryContent(
     ) {
 
 
-        // Resolution selector
         ResolutionSelector(historyContentViewModel, resolutions, selectedResolution)
 
         ElementDropdownMenu(
@@ -74,7 +73,6 @@ fun HistoryContent(
             allowedElements = listOf("TMI", "T", "F", "TMA", "SCE", "SNO", "SRA", "Fmax")
         )
 
-        // Chart date selection
         ChartDateSelector(
             historyContentViewModel,
             historyContentState,
@@ -82,7 +80,6 @@ fun HistoryContent(
             resolutions[selectedResolution]
         )
 
-        // Chart display
         ChartDisplay(
             historyContentState,
             selectedResolution,
@@ -230,7 +227,7 @@ private fun ChartDisplay(
             }
         }
         else -> {
-            Text("Prosím vyberte veličinu a datum pro zobrazení průběhu")
+            Text(stringResource(R.string.select_element_to_show))
         }
     }
 }

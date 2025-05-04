@@ -29,7 +29,6 @@ class HistoryContentViewModel(
         val error: String? = null
     )
 
-    // State for the HistoryContent
     private val _state = MutableStateFlow(HistoryContentState())
     val historyContentState get() = _state.asStateFlow()
 
@@ -56,14 +55,12 @@ class HistoryContentViewModel(
 
     fun fetchDailyMeasurements(stationId: String, element: String, date: LocalDate) {
         viewModelScope.launch {
-            // Set loading state
             _state.update { it.copy(isLoading = true, error = null)}
 
             try {
-                // Fetch daily measurements from the repository
+
                 val dailyMeasurements = repository.getMeasurementsDayAndMonth(stationId, date.toString(), element)
 
-                // Update state with the fetched data
                 _state.update {
                     it.copy(
                         dailyAndMonthlyMeasurements = dailyMeasurements,
@@ -73,7 +70,6 @@ class HistoryContentViewModel(
                 }
 
             } catch (e: Exception) {
-                // Handle errors and update state
                 _state.update {
                     it.copy(
                         error = e.message ?: "Failed to fetch daily measurements",
@@ -87,17 +83,13 @@ class HistoryContentViewModel(
 
     fun fetchMonthlyMeasurements(stationId: String, element: String, date: LocalDate) {
         viewModelScope.launch {
-            // Set loading state
             _state.update { it.copy(isLoading = true, error = null) }
-            // Set loading state
 
             try {
-                // Fetch monthly measurements from the repository
                 val monthlyMeasurements = repository.getMeasurementsMonth(stationId, date.toString(),element)
 
 
 
-                // Update state with the fetched data
                 _state.update {
                     it.copy(
                         monthlyMeasurements = monthlyMeasurements,
@@ -107,7 +99,6 @@ class HistoryContentViewModel(
                 }
 
             } catch (e: Exception) {
-                // Handle errors and update state
 
                 _state.update {
                     it.copy(

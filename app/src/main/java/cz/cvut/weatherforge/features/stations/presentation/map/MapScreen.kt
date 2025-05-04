@@ -55,13 +55,11 @@ fun MapScreen(
     stationLocation: LatLng? = null, // Nullable station location
     viewModel: MapScreenViewModel = koinViewModel()
 ) {
-    // Collect the screen state from the ViewModel
     val screenState by viewModel.screenStateStream.collectAsStateWithLifecycle()
     val results = screenState.results
     val cameraPositionState = rememberCameraPositionState()
     val coroutineScope = rememberCoroutineScope()
 
-    // Context and location-related variables
     val context = LocalContext.current
     val userLocation = screenState.userLocation
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
@@ -108,14 +106,13 @@ fun MapScreen(
     LaunchedEffect(stationLocation, userLocation) {
         val targetLocation = stationLocation ?: userLocation
         targetLocation?.let { location ->
-            val cameraPosition = CameraPosition.fromLatLngZoom(location, 12f) // Adjust zoom level as needed
+            val cameraPosition = CameraPosition.fromLatLngZoom(location, 12f)
             cameraPositionState.position = cameraPosition
         }
     }
 
     // Main UI layout
     Box(modifier = Modifier.fillMaxSize()) {
-        // Google Map
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
@@ -146,8 +143,7 @@ fun MapScreen(
                     false
                 },
                 clusterItemContent = { content ->
-                    // Display an icon for each station (using a more visible icon)
-                        Icon(Icons.Filled.LocationOn, contentDescription = content.location)
+                    Icon(Icons.Filled.LocationOn, contentDescription = content.location)
                 }
             )
         }
@@ -160,21 +156,21 @@ fun MapScreen(
                 .background(MaterialTheme.colorScheme.surface),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            // FilterChip to show all stations
+
             FilterChip(
                 selected = screenState.stationFilter == StationFilter.ALL,
                 onClick = { viewModel.updateStationFilter(StationFilter.ALL) },
                 label = { Text(context.getString(R.string.all_stations)) }
             )
 
-            // FilterChip to show active stations
+
             FilterChip(
                 selected = screenState.stationFilter == StationFilter.ACTIVE,
                 onClick = { viewModel.updateStationFilter(StationFilter.ACTIVE) },
                 label = { Text(context.getString(R.string.active_stations)) }
             )
 
-            // FilterChip to show inactive stations
+
             FilterChip(
                 selected = screenState.stationFilter == StationFilter.INACTIVE,
                 onClick = { viewModel.updateStationFilter(StationFilter.INACTIVE) },

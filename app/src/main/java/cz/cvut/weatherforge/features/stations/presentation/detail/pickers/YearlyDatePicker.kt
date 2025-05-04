@@ -46,7 +46,6 @@ fun YearlyDatePicker(
         title = { Text(stringResource(R.string.select_year)) },
         text = {
             Column {
-                // Use the YearPicker composable
                 YearPicker(
                     selectedYear = selectedYear,
                     onYearSelected = { year -> selectedYear = year },

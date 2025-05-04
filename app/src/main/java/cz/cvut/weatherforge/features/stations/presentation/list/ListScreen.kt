@@ -92,7 +92,7 @@ fun ListScreen(navigateToDetail: (id: String) -> Unit, viewModel: ListScreenView
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 4.dp), // Reduce vertical padding
+                                .padding(vertical = 4.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
                             Text(stringResource(R.string.filterBy))

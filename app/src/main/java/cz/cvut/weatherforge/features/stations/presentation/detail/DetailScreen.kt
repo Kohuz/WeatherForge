@@ -69,13 +69,11 @@ fun DetailScreen(
     dayContentViewModel: DayContentViewModel = koinViewModel(),
     historyContentViewModel: HistoryContentViewModel = koinViewModel()
 ) {
-    // Collect state from ViewModel
     val screenState by detailScreenViewModel.screenStateStream.collectAsStateWithLifecycle()
     val station = screenState.station
     val selectedTabIndex = screenState.selectedTabIndex
     val tabs = listOf("Přehled", "Časový průběh", "Den v historii", "Roční srovnání")
 
-    // Load station data when screen opens or stationId changes
     LaunchedEffect(stationId) {
         detailScreenViewModel.loadStation(stationId)
         detailScreenViewModel.loadRecords()
@@ -87,7 +85,6 @@ fun DetailScreen(
                 TopAppBar(
                     title = {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            // Status indicator dot
                             Box(
                                 modifier = Modifier
                                     .background(

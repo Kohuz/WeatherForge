@@ -2,36 +2,30 @@
     <string name="app_name">Weather forge</string>
     <string name="min">Minimum</string>
     <string name="max">Maximum</string>
-        <!-- Date Picker Strings -->
         <string name="select_day_month">Vyberte den a měsíc:</string>
     <string name="select_date_day_content">Vyberte datum:</string>
 
     <string name="select_date">Vyberte datum: </string>
     <string name="no_date_selected">Není vybráno datum</string>
 
-        <!-- Error Message -->
         <string name="error_message">Chyba: %s</string>
 
-        <!-- Weather Statistics -->
         <string name="weather_statistics">Statistika počasí pro tento den v historii</string>
 
-        <!-- Temperature -->
         <string name="temperature">Teplota</string>
         <string name="min_temperature">Min: %s °C</string>
         <string name="max_temperature">Max: %s °C</string>
         <string name="avg_temperature">Průměr: %s °C</string>
 
-        <!-- Precipitation -->
         <string name="precipitation">Srážky</string>
         <string name="max_precipitation">Max: %s mm</string>
         <string name="avg_precipitation">Průměr: %s mm</string>
 
-        <!-- Wind -->
         <string name="wind">Vítr</string>
         <string name="max_wind">Max: %s m/s</string>
         <string name="avg_wind">Průměr: %s m/s</string>
 
-        <!-- Snow -->
+
         <string name="snow">Sníh</string>
         <string name="max_snow">Max sněhu: %s cm</string>
         <string name="max_new_snow">Max nového sněhu: %s cm</string>
@@ -86,7 +80,6 @@
     <string name="november">Listopad</string>
     <string name="december">Prosinec</string>
 
-    <!-- Other Localized Strings -->
     <string name="select_day_and_month">Vyberte den a měsíc</string>
     <string name="month">Měsíc</string>
     <string name="day">Den</string>
@@ -113,25 +106,22 @@
 
     <string name="records_screen_title">Top 10 měření</string>
 
-    <!-- Element Dropdown -->
 
-    <!-- Radio Buttons -->
     <string name="option_date">Datum</string>
     <string name="option_station">Stanice</string>
 
-    <!-- Date Picker -->
+
     <string name="date_picker_label">Vyberte datum pro zobrazení záznamů</string>
 
-    <!-- Station Search -->
+
     <string name="search_station">Hledat stanici</string>
     <string name="search_station_hint">Zadejte název stanice</string>
 
-    <!-- Measurements Table -->
+
     <string name="table_header_date">Datum</string>
     <string name="table_header_value">Hodnota</string>
     <string name="measurements_table_label">Záznamy počasí</string>
 
-    <!-- Loading State -->
     <string name="loading">Načítání...</string>
     <string name="select_to_date">Vyberte datum DO</string>
     <string name="sortBy">Řadit dle</string>
@@ -170,17 +160,15 @@
     <string name="monthly">Měsíčně</string>
     <string name="element_unit">"Jednotka veličiny: "</string>
 
-    <!-- For ConcreteDayStatsCard -->
     <string name="daily_measurements">Denní měření</string>
     <string name="for_date">Pro datum:</string>
 
-    <!-- For DailyStatsCard -->
     <string name="statistical_summary">Statistické údaje</string>
     <string name="historical_averages">Historické průměry a extrémy</string>
 
-    <!-- Additional strings for measurement time -->
     <string name="recorded_at">Naměřeno v %s</string>
     <string name="station_inactive">Stanice již není aktivní</string>
     <string name="staion_favorites">Oblibené stanice</string>
     <string name="daily_stats_tooltip">Konkrétní den v historii</string>
+    <string name="select_element_to_show">Prosím vyberte veličinu a datum pro zobrazení průběhu</string>
 </resources>
